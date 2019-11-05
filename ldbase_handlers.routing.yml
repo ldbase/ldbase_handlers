@@ -1,0 +1,11 @@
+ldbase_handlers.edit_organization:
+  path: '/forms/ldbase-organization/{node}/edit'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editOrganization'
+    _title: 'Edit Organization'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
