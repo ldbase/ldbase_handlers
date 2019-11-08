@@ -43,9 +43,9 @@ use Drupal\webform\Entity\WebformSubmission;
     ];
     $field_website = $submission_array['website'];
     $field_location = [
-      'locality' => $submission_array['location']['city'],
-      'administrative_area' =>$submission_array['location']['state_province'],
-      'country_code' => $submission_array['location']['country'],
+      'locality' => $submission_array['location']['locality'],
+      'administrative_area' =>$submission_array['location']['administrative_area'],
+      'country_code' => $submission_array['location']['country_code'],
     ];
 
     if (!$nid) {

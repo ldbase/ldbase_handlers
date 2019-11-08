@@ -43,12 +43,9 @@ class LdbaseController extends ControllerBase {
     $website = $node->get('field_website')->getValue();
     $locationArray = $node->get('field_location')->getValue();
     $location = [
-      //'country_code' => $locationArray[0]['country_code'],
-      'country' => $locationArray[0]['country_code'],
-      //'administrative_area' => $locationArray[0]['administrative_area'],
-      'state_province' => $locationArray[0]['administrative_area'],
-      //'locality' => $locationArray[0]['locality'],
-      'city' => $locationArray[0]['locality'],
+      'country_code' => $locationArray[0]['country_code'],
+      'administrative_area' => $locationArray[0]['administrative_area'],
+      'locality' => $locationArray[0]['locality'],
     ];
 
      $values = [
