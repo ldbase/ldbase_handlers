@@ -47,6 +47,8 @@ class LdbaseController extends ControllerBase {
       'administrative_area' => $locationArray[0]['administrative_area'],
       'locality' => $locationArray[0]['locality'],
     ];
+    $image = $node->field_thumbnail->entity;
+    $image_fid = !empty($image) ? $image->id() : NULL;
 
      $values = [
       'data' => [
@@ -55,6 +57,7 @@ class LdbaseController extends ControllerBase {
         'website' => $website[0]['uri'],
         'location' => $location,
         'node_id' => $nid,
+        'image' => $image_fid,
       ]
     ];
 

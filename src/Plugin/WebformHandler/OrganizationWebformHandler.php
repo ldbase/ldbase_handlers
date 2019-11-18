@@ -48,6 +48,23 @@ use Drupal\webform\Entity\WebformSubmission;
       'country_code' => $submission_array['location']['country_code'],
     ];
 
+    // Get image upload, save to public files, attach to node.
+    $image_fid = $submission_array['image'];
+    if (!empty($image_fid)) {
+      $file = \Drupal\file\Entity\File::load($image_fid);
+      $path = $file->getFileUri();
+      $data = file_get_contents($path);
+      $node_img_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
+      $field_thumbnail = [
+        'target_id' => $node_img_file->id(),
+        'alt' => 'Thumbnail for ' . $title,
+        'title' => $title,
+      ];
+    }
+    else {
+      $field_thumbnail = NULL;
+    }
+
     if (!$nid) {
       // create node
       $node = Node::create([
@@ -57,6 +74,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'body' => $body,
         'field_website' => $field_website,
         'field_location' => $field_location,
+        'field_thumbnail' => $field_thumbnail,
       ]);
     }
     else {
@@ -66,9 +84,10 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('body', $body);
       $node->set('field_website', $field_website);
       $node->set('field_location', $field_location);
+      $node->set('field_thumbnail', $field_thumbnail);
     }
 
-  //save the node
-  $node->save();
+    //save the node
+    $node->save();
   }
  }
