@@ -9,3 +9,14 @@ ldbase_handlers.edit_organization:
     parameters:
       node:
         type: entity:node
+ldbase_handlers.edit_person:
+  path: '/forms/ldbase-person/{node}/edit'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editPerson'
+    _title: 'Edit Person'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
