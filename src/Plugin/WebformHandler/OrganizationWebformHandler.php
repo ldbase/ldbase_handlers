@@ -42,11 +42,7 @@ use Drupal\webform\Entity\WebformSubmission;
       'format' => 'basic_html',
     ];
     $field_website = $submission_array['website'];
-    $field_location = [
-      'locality' => $submission_array['location']['locality'],
-      'administrative_area' =>$submission_array['location']['administrative_area'],
-      'country_code' => $submission_array['location']['country_code'],
-    ];
+    $field_location = $submission_array['location'];
 
     // Get image upload, save to public files, attach to node.
     $image_fid = $submission_array['image'];

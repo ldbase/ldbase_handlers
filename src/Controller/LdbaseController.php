@@ -40,13 +40,14 @@ class LdbaseController extends ControllerBase {
     $nid = $node->id();
     $name = $node->getTitle();
     $description = $node->get('body')->value;
-    $website = $node->get('field_website')->getValue();
+    $websiteArray = $node->get('field_website')->getValue();
+    foreach ($websiteArray as $key => $value) {
+      $website[$key] = $value['uri'];
+    }
     $locationArray = $node->get('field_location')->getValue();
-    $location = [
-      'country_code' => $locationArray[0]['country_code'],
-      'administrative_area' => $locationArray[0]['administrative_area'],
-      'locality' => $locationArray[0]['locality'],
-    ];
+    foreach ($locationArray as $key=>$value) {
+      $location[$key] = $value;
+    }
     $image = $node->field_thumbnail->entity;
     $image_fid = !empty($image) ? $image->id() : NULL;
 
@@ -54,7 +55,7 @@ class LdbaseController extends ControllerBase {
       'data' => [
         'name' => $name,
         'description' => $description,
-        'website' => $website[0]['uri'],
+        'website' => $website,
         'location' => $location,
         'node_id' => $nid,
         'image' => $image_fid,
