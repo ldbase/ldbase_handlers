@@ -99,7 +99,12 @@ class LdbaseController extends ControllerBase {
     $orcid = $node->get('field_orcid')->getValue()[0];
     $web_presence = $node->get('field_web_presence')->getValue();
     $professional_titles = $node->get('field_professional_titles')->getValue();
-    $related_organizations = $node->get('field_related_organizations')->getValue();
+    $related_organizations_array = $node->get('field_related_organizations')->getValue();
+    foreach ($related_organizations_array as $key => $value) {
+      foreach ($value as $k2 => $v2) {
+        $related_organizations[$key] = $v2;
+      }
+    }
     $areas_of_expertise = $node->get('field_areas_of_expertise')->getValue();
 
     $thumbnail = $node->field_thumbnail->entity;
