@@ -136,4 +136,85 @@ class LdbaseController extends ControllerBase {
     $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
   }
+
+  /**
+   * Loads Document node data into webform for editing
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function editDocument(NodeInterface $node) {
+
+    // get node data
+    $nid = $node->id();
+    $title = $node->getTitle();
+    $description = $node->get('body')->value;
+    $authors = $node->get('field_related_persons')->getValue();
+    $document_type_array = $node->get('field_document_type')->getValue();
+    foreach ($document_type_array as $key => $value) {
+     $document_type[$key] = $value['target_id'];
+    }
+    $doi = $node->get('field_doi')->getValue();
+    $external_resource_array = $node->get('field_external_resource')->getValue();
+    foreach ($external_resource_array as $key => $value) {
+      $external_resource[$key] = $value['uri'];
+    }
+
+    foreach ($node->field_file as $key => $file_paragraph) {
+      $p = $file_paragraph->entity;
+
+      foreach ($p->field_file_format->getValue() as $delta_format) {
+        $file[$key]['file_format'] = $delta_format['target_id'];
+      }
+      foreach ($p->field_file_upload->getValue() as $delta_upload) {
+        $file[$key]['file_upload'] = $delta_upload['target_id'];
+      }
+      foreach ($p->field_file_version_description->getValue() as $delta_description)  {
+         $file[$key]['file_version_description'] = $delta_description['value'];
+      }
+      foreach ($p->field_format_version->getValue() as $delta_version)  {
+         $file[$key]['format_version'] = $delta_version['value'];
+      }
+    }
+
+    $license_array = $node->get('field_license')->getValue();
+    foreach ($license_array as $key => $value) {
+      $license[$key] = $value['target_id'];
+    }
+
+    foreach ($node->field_publication_info as $key => $pub_paragraph) {
+      $p = $pub_paragraph->entity;
+
+      foreach ($p->field_publication_date->getValue() as $delta_date) {
+        $publication_info[$key]['publication_date'] = $delta_date['value'];
+      }
+      foreach ($p->field_publication_source->getValue() as $delta_source) {
+        $publication_info[$key]['publication_source'] = $delta_source['uri'];
+      }
+    }
+
+    $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
+
+    $values = [
+      'data' => [
+        'node_id' => $nid,
+        'title' => $title,
+        'description' => $description,
+        'authors' => $authors,
+        'document_type' => $document_type,
+        'doi' => $doi,
+        'external_resource' => $external_resource,
+        'file' => $file,
+        'license' => $license,
+        'publication_info' => $publication_info,
+        'unaffiliated_citation' => $unaffiliated_citation,
+      ]
+    ];
+
+    $operation = 'edit';
+    // get organization webform and load values
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_document');
+    $webform = $webform->getSubmissionForm($values, $operation);
+    return $webform;
+  }
+
 }

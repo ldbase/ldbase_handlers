@@ -20,3 +20,14 @@ ldbase_handlers.edit_person:
     parameters:
       node:
         type: entity:node
+ldbase_handlers.edit_document:
+  path: '/forms/ldbase-document/{node}/edit'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editDocument'
+    _title: 'Edit Document'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
