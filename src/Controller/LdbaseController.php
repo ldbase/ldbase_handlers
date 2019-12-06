@@ -113,7 +113,7 @@ class LdbaseController extends ControllerBase {
     ];
 
     $operation = 'edit';
-    // get organization webform and load values
+    // get webform and load values
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_person');
     $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
@@ -168,7 +168,7 @@ class LdbaseController extends ControllerBase {
     ];
 
     $operation = 'edit';
-    // get organization webform and load values
+    // get webform and load values
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_document');
     $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
