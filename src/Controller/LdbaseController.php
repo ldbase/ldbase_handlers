@@ -40,14 +40,8 @@ class LdbaseController extends ControllerBase {
     $nid = $node->id();
     $name = $node->getTitle();
     $description = $node->get('body')->value;
-    $websiteArray = $node->get('field_website')->getValue();
-    foreach ($websiteArray as $key => $value) {
-      $website[$key] = $value['uri'];
-    }
-    $locationArray = $node->get('field_location')->getValue();
-    foreach ($locationArray as $key=>$value) {
-      $location[$key] = $value;
-    }
+    $website = $node->get('field_website')->getValue();
+    $location = $node->get('field_location')->getValue();
     $image = $node->field_thumbnail->entity;
     $image_fid = !empty($image) ? $image->id() : NULL;
 
@@ -81,29 +75,17 @@ class LdbaseController extends ControllerBase {
     $nid = $node->id();
     $preferred_name = $node->getTitle();
     $description = $node->get('body')->value;
-    $locationArray = $node->get('field_location')->getValue();
-    foreach ($locationArray as $key=>$value) {
-      $location[$key] = $value;
-    }
-    $websiteArray = $node->get('field_website')->getValue();
-    foreach ($websiteArray as $key => $value) {
-      $website[$key] = $value['uri'];
-    }
-    $first_name = $node->get('field_first_name')->getValue()[0];
-    $middle_name = $node->get('field_middle_name')->getValue()[0];
-    $last_name = $node->get('field_last_name')->getValue()[0];
-    $emailArray = $node->get('field_email')->getValue();
-    foreach ($emailArray as $key => $value) {
-      $email[$key] = $value;
-    }
-    $orcid = $node->get('field_orcid')->getValue()[0];
+    $location = $node->get('field_location')->getValue();
+    $website = $node->get('field_website')->getValue();
+    $first_name = $node->get('field_first_name')->value;
+    $middle_name = $node->get('field_middle_name')->value;
+    $last_name = $node->get('field_last_name')->value;
+    $email = $node->get('field_email')->getValue();
+    $orcid = $node->get('field_orcid')->value;
     $web_presence = $node->get('field_web_presence')->getValue();
     $professional_titles = $node->get('field_professional_titles')->getValue();
-    $related_organizations_array = $node->get('field_related_organizations')->getValue();
-    foreach ($related_organizations_array as $key => $value) {
-      foreach ($value as $k2 => $v2) {
-        $related_organizations[$key] = $v2;
-      }
+    foreach ($node->get('field_related_organizations')->getValue() as $delta => $value) {
+      $related_organizations[$delta] = $value['target_id'];
     }
     $areas_of_expertise = $node->get('field_areas_of_expertise')->getValue();
 
@@ -149,49 +131,24 @@ class LdbaseController extends ControllerBase {
     $title = $node->getTitle();
     $description = $node->get('body')->value;
     $authors = $node->get('field_related_persons')->getValue();
-    $document_type_array = $node->get('field_document_type')->getValue();
-    foreach ($document_type_array as $key => $value) {
-     $document_type[$key] = $value['target_id'];
-    }
+    $document_type = $node->get('field_document_type')->target_id;
     $doi = $node->get('field_doi')->getValue();
-    $external_resource_array = $node->get('field_external_resource')->getValue();
-    foreach ($external_resource_array as $key => $value) {
-      $external_resource[$key] = $value['uri'];
-    }
-
-    foreach ($node->field_file as $key => $file_paragraph) {
+    $external_resource = $node->get('field_external_resource')->uri;
+    // file paragraph
+    foreach ($node->field_file as $delta => $file_paragraph) {
       $p = $file_paragraph->entity;
-
-      foreach ($p->field_file_format->getValue() as $delta_format) {
-        $file[$key]['file_format'] = $delta_format['target_id'];
-      }
-      foreach ($p->field_file_upload->getValue() as $delta_upload) {
-        $file[$key]['file_upload'] = $delta_upload['target_id'];
-      }
-      foreach ($p->field_file_version_description->getValue() as $delta_description)  {
-         $file[$key]['file_version_description'] = $delta_description['value'];
-      }
-      foreach ($p->field_format_version->getValue() as $delta_version)  {
-         $file[$key]['format_version'] = $delta_version['value'];
-      }
+      $file[$delta]['file_format'] = $p->field_file_format->target_id;
+      $file[$delta]['file_upload'] = $p->field_file_upload->entity->id();
+      $file[$delta]['file_version_description'] = $p->field_file_version_description->value;
+      $file[$delta]['format_version'] = $p->field_format_version->value;
     }
-
-    $license_array = $node->get('field_license')->getValue();
-    foreach ($license_array as $key => $value) {
-      $license[$key] = $value['target_id'];
-    }
-
-    foreach ($node->field_publication_info as $key => $pub_paragraph) {
+    $license = $node->get('field_license')->target_id;
+    // publication info paragraph
+    foreach ($node->field_publication_info as $delta => $pub_paragraph) {
       $p = $pub_paragraph->entity;
-
-      foreach ($p->field_publication_date->getValue() as $delta_date) {
-        $publication_info[$key]['publication_date'] = $delta_date['value'];
-      }
-      foreach ($p->field_publication_source->getValue() as $delta_source) {
-        $publication_info[$key]['publication_source'] = $delta_source['uri'];
-      }
+      $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
+      $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
     }
-
     $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
 
     $values = [
