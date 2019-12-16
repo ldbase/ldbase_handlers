@@ -1,5 +1,5 @@
 ldbase_handlers.edit_organization:
-  path: '/forms/ldbase-organization/{node}/edit'
+  path: '/forms/organization/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editOrganization'
     _title: 'Edit Organization'
@@ -10,7 +10,7 @@ ldbase_handlers.edit_organization:
       node:
         type: entity:node
 ldbase_handlers.edit_person:
-  path: '/forms/ldbase-person/{node}/edit'
+  path: '/forms/person/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editPerson'
     _title: 'Edit Person'
@@ -21,10 +21,21 @@ ldbase_handlers.edit_person:
       node:
         type: entity:node
 ldbase_handlers.edit_document:
-  path: '/forms/ldbase-document/{node}/edit'
+  path: '/forms/document/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editDocument'
     _title: 'Edit Document'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+ldbase_handlers.edit_code:
+  path: 'forms/code/{node}/edit'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editCode'
+    _title: 'Edit Code'
   requirements:
     _permission: 'access content'
   options:

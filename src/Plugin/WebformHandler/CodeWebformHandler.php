@@ -14,20 +14,20 @@ use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\Entity\WebformSubmission;
 
 /**
- * Create and edit Document nodes from a webform submission.
+ * Create and edit Code nodes from a webform submission.
  *
  * @WebformHandler(
- *   id = "document_from_webform",
- *   label = @Translation("LDbase Document"),
+ *   id = "code_from_webform",
+ *   label = @Translation("LDbase Code"),
  *   category = @Translation("Content"),
- *   description = @Translation("Creates and updates Document content nodes from Webform Submissions"),
+ *   description = @Translation("Creates and updates Code content nodes from Webform Submissions"),
  *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED,
  *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_IGNORED,
  *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
  * )
  */
 
- class DocumentWebformHandler extends WebformHandlerBase {
+ class CodeWebformHandler extends WebformHandlerBase {
 
   /**
    * {@inheritdoc}
@@ -38,15 +38,15 @@ use Drupal\webform\Entity\WebformSubmission;
     $submission_array = $webform_submission->getData();
     $nid = $submission_array['node_id'];
     $title = $submission_array['title'];
+    $field_affiliated_documents = $submission_array['affiliated_documents'];
     $field_related_persons = $submission_array['authors'];
+    $field_code_type = $submission_array['code_type'];
     $body = [
       'value' => $submission_array['description'],
       'format' => 'basic_html',
     ];
-    $field_document_type = $submission_array['document_type'];
     $field_doi = $submission_array['doi'];
     $field_external_resource = $submission_array['external_resource'];
-
     // file metadata paragraph
     $files_array = $submission_array['file'];
     foreach ($files_array as $key => $value) {
@@ -75,9 +75,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
       ];
     }
-
     $field_license = $submission_array['license'];
-
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
     foreach ($publications_array as $key => $value) {
@@ -93,35 +91,40 @@ use Drupal\webform\Entity\WebformSubmission;
         'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
       ];
     }
+    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
 
     if (!$nid) {
       // create node
       $node = Node::create([
-        'type' => 'document',
+        'type' => 'code',
         'status' => TRUE, // published
         'title' => $title,
+        'field_affiliated_documents' => $field_affiliated_documents,
         'field_related_persons' => $field_related_persons,
+        'field_code_type' => $field_code_type,
         'body' => $body,
-        'field_document_type' => $field_document_type,
         'field_doi' => $field_doi,
         'field_external_resource' => $field_external_resource,
         'field_file' => $field_file,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
+        'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
     }
     else {
       // update node
       $node = Node::load($nid);
       $node->set('title', $title);
+      $node->set('field_affiliated_documents', $field_affiliated_documents);
       $node->set('field_related_persons', $field_related_persons);
+      $node->set('field_code_type', $field_code_type);
       $node->set('body', $body);
-      $node->set('field_document_type', $field_document_type);
       $node->set('field_doi', $field_doi);
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_file', $field_file);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
+      $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
     }
 
     //save the node
