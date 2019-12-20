@@ -42,3 +42,14 @@ ldbase_handlers.edit_code:
     parameters:
       node:
         type: entity:node
+ldbase_handlers.edit_dataset:
+  path: 'forms/dataset/{node}/edit'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editDataset'
+    _title: 'Edit Dataset'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
