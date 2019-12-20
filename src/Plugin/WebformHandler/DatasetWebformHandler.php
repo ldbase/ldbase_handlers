@@ -83,9 +83,6 @@ use Drupal\webform\Entity\WebformSubmission;
     // file access restrictions paragraph
     $file_access_array = $submission_array['file_access_restrictions'];
     foreach ($file_access_array as $key => $value) {
-      $this->messenger()->addMessage('File embargoed: ' . $value['file_embargoed']);
-      $this->messenger()->addMessage('Expiry: ' . $value['embargo_expiry_date']);
-      $this->messenger()->addMessage('Allow requests: ' . $value['allow_file_requests']);
       $access_data[$key] = Paragraph::create([
         'type' => 'file_access_restrictions',
         'field_file_embargoed' => $value['file_embargoed'] == 'Yes' ? 1 : 0,
