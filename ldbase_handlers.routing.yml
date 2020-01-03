@@ -53,3 +53,14 @@ ldbase_handlers.edit_dataset:
     parameters:
       node:
         type: entity:node
+ldbase_handlers.edit_project:
+  path: 'forms/project/{node}/edit'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editProject'
+    _title: 'Edit Project'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
