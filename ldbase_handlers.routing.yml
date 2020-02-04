@@ -32,7 +32,7 @@ ldbase_handlers.edit_document:
       node:
         type: entity:node
 ldbase_handlers.edit_code:
-  path: 'forms/code/{node}/edit'
+  path: '/forms/code/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editCode'
     _title: 'Edit Code'
@@ -43,7 +43,7 @@ ldbase_handlers.edit_code:
       node:
         type: entity:node
 ldbase_handlers.edit_dataset:
-  path: 'forms/dataset/{node}/edit'
+  path: '/forms/dataset/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editDataset'
     _title: 'Edit Dataset'
@@ -54,7 +54,7 @@ ldbase_handlers.edit_dataset:
       node:
         type: entity:node
 ldbase_handlers.edit_project:
-  path: 'forms/project/{node}/edit'
+  path: '/forms/project/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editProject'
     _title: 'Edit Project'
