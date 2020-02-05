@@ -29,12 +29,16 @@ class ContentEditLink extends BlockBase {
     $nid = $node->id();
 
     $markup = '';
-    $route = 'ldbase_handlers.edit_' . $node_type;
-    $text = 'Edit';
+    if (!empty($nid)) {
+      $route = 'ldbase_handlers.edit_' . $node_type;
+      $text = 'Edit';
 
-    $url = Url::fromRoute($route, array('node' => $nid));
-    $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
-    $markup .= render($link) . ' ';
+      $url = Url::fromRoute($route, array('node' => $nid));
+      $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
+      $markup .= render($link) . ' ';
+    } else {
+      $markup = "Link Requires Node Id.";
+    }
 
     $block = [
       '#type' => 'markup',
