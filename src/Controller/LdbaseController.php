@@ -120,6 +120,46 @@ class LdbaseController extends ControllerBase {
   }
 
   /**
+   * Loads Document Webform and associates project id
+   *
+   * The Project passed in
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function addDocument(NodeInterface $node) {
+    $project_id = $node->id();
+
+    // checks if document type query param has been passed in (probably 'Codebook')
+    $doc_type = \Drupal::request()->query->get('document-type');
+    if ($doc_type) {
+      $tid = '';
+      $vocabulary = 'document_type';
+
+      $term = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties(['name' => $doc_type, 'vid' => $vocabulary]);
+      $term = reset($term);
+      $tid = $term->id();
+      $document_type = $tid;
+    }
+    else {
+      $document_type = NULL;
+    }
+
+    $values = [
+      'data' => [
+        'project_id' => $project_id,
+        'document_type' => $document_type,
+      ]
+    ];
+
+    $operation = 'add';
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_document');
+    $webform = $webform->getSubmissionForm($values, $operation);
+    return $webform;
+
+  }
+
+  /**
    * Loads Document node data into webform for editing
    *
    * @param \Drupal\Node\NodeInterface $node
@@ -228,6 +268,27 @@ class LdbaseController extends ControllerBase {
     // get webform and load values
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_code');
     $webform = $webform->getSubmissionForm($values,$operation);
+    return $webform;
+
+  }
+
+  /**
+   * Loads Dataset Webform and associates project id
+   *
+   * The Project passed in
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function addDataset(NodeInterface $node) {
+    $project_id = $node->id();
+    $values = [
+      'data' => [
+        'project_id' => $project_id,
+      ]
+    ];
+
+    $operation = 'add';
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_dataset');
+    $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
 
   }

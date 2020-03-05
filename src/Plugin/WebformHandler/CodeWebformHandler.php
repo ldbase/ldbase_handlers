@@ -47,50 +47,69 @@ use Drupal\webform\Entity\WebformSubmission;
     ];
     $field_doi = $submission_array['doi'];
     $field_external_resource = $submission_array['external_resource'];
+
     // file metadata paragraph
     $files_array = $submission_array['file'];
-    foreach ($files_array as $key => $value) {
-      $file_id = $files_array[$key]['file_upload'];
-      if (!empty($file_id)) {
-        $file = \Drupal\file\Entity\File::load($file_id);
-        $path = $file->getFileUri();
-        $data = file_get_contents($path);
-        $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-        $paragraph_file_id = $paragraph_file->id();
-      }
-      else {
-        $paragraph_file_id = NULL;
-      }
-      $paragraph_data[$key] = Paragraph::create([
-        'type' => 'file_metadata',
-        'field_file_format' => $files_array[$key]['file_format'],
-        'field_file_upload' => $paragraph_file_id,
-        'field_format_version' => $files_array[$key]['format_version'],
-        'field_file_version_description' => $files_array[$key]['file_version_description'],
-      ]);
-      $paragraph_data[$key]->save();
+    if (!empty($files_array)) {
+      foreach ($files_array as $key => $value) {
+        $file_id = $files_array[$key]['file_upload'];
+        if (!empty($file_id)) {
+          $file = \Drupal\file\Entity\File::load($file_id);
+          $path = $file->getFileUri();
+          $data = file_get_contents($path);
+          $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
+          $paragraph_file_id = $paragraph_file->id();
+        }
+        else {
+          $paragraph_file_id = NULL;
+        }
+        $paragraph_data[$key] = Paragraph::create([
+          'type' => 'file_metadata',
+          'field_file_format' => $files_array[$key]['file_format'],
+          'field_file_upload' => $paragraph_file_id,
+          'field_format_version' => $files_array[$key]['format_version'],
+          'field_file_version_description' => $files_array[$key]['file_version_description'],
+        ]);
+        $paragraph_data[$key]->save();
 
-      $field_file[$key] = [
-        'target_id' => $paragraph_data[$key]->id(),
-        'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-      ];
+        $field_file[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+        ];
+      }
     }
-    $field_license = $submission_array['license'];
+    else {
+      $field_file = [];
+    }
+
+    if (!empty($submission_array['license'])) {
+      $field_license = $submission_array['license'];
+    }
+    else {
+      $field_license = [];
+    }
+
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
-    foreach ($publications_array as $key => $value) {
-      $paragraph_data[$key] = Paragraph::create([
-        'type' => 'publication_metadata',
-        'field_publication_date' => $publications_array[$key]['publication_date'],
-        'field_publication_source' => $publications_array[$key]['publication_source'],
-      ]);
-      $paragraph_data[$key]->save();
+    if (!empty($publications_array)) {
+      foreach ($publications_array as $key => $value) {
+        $paragraph_data[$key] = Paragraph::create([
+          'type' => 'publication_metadata',
+          'field_publication_date' => $publications_array[$key]['publication_date'],
+          'field_publication_source' => $publications_array[$key]['publication_source'],
+        ]);
+        $paragraph_data[$key]->save();
 
-      $field_publication_info[$key] = [
-        'target_id' => $paragraph_data[$key]->id(),
-        'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-      ];
+        $field_publication_info[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+        ];
+      }
     }
+    else {
+      $field_publication_info = [];
+    }
+
     $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
 
     if (!$nid) {

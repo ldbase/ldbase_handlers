@@ -50,102 +50,140 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_time_points = $submission_array['time_points'];
 
     $data_collection_period = $submission_array['data_collection_period'];
-    foreach ($data_collection_period as $key => $value) {
+    if (!empty($data_collection_period)) {
+      foreach ($data_collection_period as $key => $value) {
         $field_data_collection_period[$key]['value'] = $value['start_date'];
         $field_data_collection_period[$key]['end_value'] = $value['end_date'];
+      }
     }
+    else {
+      $field_data_collection_period = [];
+    }
+
 
     $field_data_collection_locations = $submission_array['data_collection_locations'];
     $field_assessment_name = $submission_array['assessment_name'];
 
     // demographics paragraph
     $demographics_array = $submission_array['participants'];
-    foreach ($demographics_array as $key => $value) {
-      $field_age_range['from'] = $value['age_range_from'];
-      $field_age_range['to'] = $value['age_range_to'];
-      $demographic_data[$key] = Paragraph::create([
-        'type' => 'demographics',
-        'field_age_range' => $field_age_range,
-        'field_number_of_participants' => $value['number_of_participants'],
-        'field_participant_type' => $value['participant_type'],
-      ]);
-      $demographic_data[$key]->save();
-      $field_demographics_information[$key] = [
-        'target_id' => $demographic_data[$key]->id(),
-        'target_revision_id' => $demographic_data[$key]->getRevisionId(),
-      ];
+    if (!empty($demographics_array)) {
+      foreach ($demographics_array as $key => $value) {
+        $field_age_range['from'] = $value['age_range_from'];
+        $field_age_range['to'] = $value['age_range_to'];
+        $demographic_data[$key] = Paragraph::create([
+          'type' => 'demographics',
+          'field_age_range' => $field_age_range,
+          'field_number_of_participants' => $value['number_of_participants'],
+          'field_participant_type' => $value['participant_type'],
+        ]);
+        $demographic_data[$key]->save();
+        $field_demographics_information[$key] = [
+          'target_id' => $demographic_data[$key]->id(),
+          'target_revision_id' => $demographic_data[$key]->getRevisionId(),
+        ];
+      }
     }
+    else {
+      $field_demographics_information = [];
+    }
+
 
     $field_special_populations = $submission_array['special_populations'];
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
-    $field_license = $submission_array['license'];
+
+    if (!empty($submission_array['license'])) {
+      $field_license = $submission_array['license'];
+    }
+    else {
+      $field_license = [];
+    }
 
     // file access restrictions paragraph
     $file_access_array = $submission_array['file_access_restrictions'];
-    foreach ($file_access_array as $key => $value) {
-      $access_data[$key] = Paragraph::create([
-        'type' => 'file_access_restrictions',
-        'field_file_embargoed' => $value['file_embargoed'] == 'Yes' ? 1 : 0,
-        'field_embaro_expiry_date' => date($value['embargo_expiry_date']),
-        'field_allow_file_requests' => $value['allow_file_requests'] == 'Yes' ? 1 : 0,
-      ]);
-      $access_data[$key]->save();
-      $field_file_access_restrictions[$key] = [
-        'target_id' => $access_data[$key]->id(),
-        'target_revision_id' => $access_data[$key]->getRevisionId(),
-      ];
+    if (!empty($file_access_array)) {
+      foreach ($file_access_array as $key => $value) {
+        $access_data[$key] = Paragraph::create([
+          'type' => 'file_access_restrictions',
+          'field_file_embargoed' => $value['file_embargoed'] == 'Yes' ? 1 : 0,
+          'field_embaro_expiry_date' => date($value['embargo_expiry_date']),
+          'field_allow_file_requests' => $value['allow_file_requests'] == 'Yes' ? 1 : 0,
+        ]);
+        $access_data[$key]->save();
+        $field_file_access_restrictions[$key] = [
+          'target_id' => $access_data[$key]->id(),
+          'target_revision_id' => $access_data[$key]->getRevisionId(),
+        ];
+      }
     }
+    else {
+       $field_file_access_restrictions = [];
+    }
+
 
     $field_external_resource = $submission_array['external_resource'];
 
     // file metadata paragraph
     $files_array = $submission_array['file'];
-    foreach ($files_array as $key => $value) {
-      $file_id = $files_array[$key]['file_upload'];
-      if (!empty($file_id)) {
-        $file = \Drupal\file\Entity\File::load($file_id);
-        $path = $file->getFileUri();
-        $data = file_get_contents($path);
-        $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-        $paragraph_file_id = $paragraph_file->id();
+    if (!empty($files_array)) {
+      foreach ($files_array as $key => $value) {
+        $file_id = $files_array[$key]['file_upload'];
+        if (!empty($file_id)) {
+          $file = \Drupal\file\Entity\File::load($file_id);
+          $path = $file->getFileUri();
+          $data = file_get_contents($path);
+          $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
+          $paragraph_file_id = $paragraph_file->id();
+        }
+        else {
+          $paragraph_file_id = NULL;
+        }
+        $paragraph_data[$key] = Paragraph::create([
+          'type' => 'file_metadata',
+          'field_file_format' => $value['file_format'],
+          'field_file_upload' => $paragraph_file_id,
+          'field_format_version' => $value['format_version'],
+          'field_file_version_description' => $value['file_version_description'],
+        ]);
+        $paragraph_data[$key]->save();
+        $field_file[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+        ];
       }
-      else {
-        $paragraph_file_id = NULL;
-      }
-      $paragraph_data[$key] = Paragraph::create([
-        'type' => 'file_metadata',
-        'field_file_format' => $value['file_format'],
-        'field_file_upload' => $paragraph_file_id,
-        'field_format_version' => $value['format_version'],
-        'field_file_version_description' => $value['file_version_description'],
-      ]);
-      $paragraph_data[$key]->save();
-      $field_file[$key] = [
-        'target_id' => $paragraph_data[$key]->id(),
-        'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-      ];
+    }
+    else {
+      $field_file = [];
     }
 
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
-    foreach ($publications_array as $key => $value) {
-      $paragraph_data[$key] = Paragraph::create([
-        'type' => 'publication_metadata',
-        'field_publication_date' => $value['publication_date'],
-        'field_publication_source' => $value['publication_source'],
-      ]);
-      $paragraph_data[$key]->save();
-      $field_publication_info[$key] = [
-        'target_id' => $paragraph_data[$key]->id(),
-        'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-      ];
+    if (!empty($publications_array)) {
+      foreach ($publications_array as $key => $value) {
+        $paragraph_data[$key] = Paragraph::create([
+          'type' => 'publication_metadata',
+          'field_publication_date' => $value['publication_date'],
+          'field_publication_source' => $value['publication_source'],
+        ]);
+        $paragraph_data[$key]->save();
+        $field_publication_info[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+        ];
+      }
+    }
+    else {
+      $field_publication_info = [];
     }
 
-     $field_affiliated_code = $submission_array['affiliated_code'];
-     $field_affiliated_documents = $submission_array['affiliated_documents'];
-     $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
 
-     if (!$nid) {
+    $field_affiliated_code = $submission_array['affiliated_code'];
+    $field_affiliated_documents = $submission_array['affiliated_documents'];
+    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
+
+    // hidden project_id field
+    $hidden_project_id = $submission_array['project_id'];
+
+    if (!$nid) {
       // create node
       $node = Node::create([
         'type' => 'dataset',
@@ -203,6 +241,18 @@ use Drupal\webform\Entity\WebformSubmission;
 
     //save the node
     $node->save();
+
+    // this is the new/updated node id
+    $dataset_id = $node->id();
+
+    // add dataset to project
+    if ($hidden_project_id) {
+      $project_node = Node::load($hidden_project_id);
+      $project_datasets = $project_node->get('field_affiliated_datasets')->getValue();
+      array_push($project_datasets, $dataset_id);
+      $project_node->set('field_affiliated_datasets', $project_datasets);
+      $project_node->save();
+    }
 
   }
 

@@ -49,34 +49,44 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // file metadata paragraph
     $files_array = $submission_array['file'];
-    foreach ($files_array as $key => $value) {
-      $file_id = $files_array[$key]['file_upload'];
-      if (!empty($file_id)) {
-        $file = \Drupal\file\Entity\File::load($file_id);
-        $path = $file->getFileUri();
-        $data = file_get_contents($path);
-        $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-        $paragraph_file_id = $paragraph_file->id();
-      }
-      else {
-        $paragraph_file_id = NULL;
-      }
-      $paragraph_data[$key] = Paragraph::create([
-        'type' => 'file_metadata',
-        'field_file_format' => $files_array[$key]['file_format'],
-        'field_file_upload' => $paragraph_file_id,
-        'field_format_version' => $files_array[$key]['format_version'],
-        'field_file_version_description' => $files_array[$key]['file_version_description'],
-      ]);
-      $paragraph_data[$key]->save();
+    if (!empty($files_array)) {
+      foreach ($files_array as $key => $value) {
+        $file_id = $files_array[$key]['file_upload'];
+        if (!empty($file_id)) {
+          $file = \Drupal\file\Entity\File::load($file_id);
+          $path = $file->getFileUri();
+          $data = file_get_contents($path);
+          $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
+          $paragraph_file_id = $paragraph_file->id();
+        }
+        else {
+          $paragraph_file_id = NULL;
+        }
+        $paragraph_data[$key] = Paragraph::create([
+          'type' => 'file_metadata',
+          'field_file_format' => $files_array[$key]['file_format'],
+          'field_file_upload' => $paragraph_file_id,
+          'field_format_version' => $files_array[$key]['format_version'],
+          'field_file_version_description' => $files_array[$key]['file_version_description'],
+        ]);
+        $paragraph_data[$key]->save();
 
-      $field_file[$key] = [
-        'target_id' => $paragraph_data[$key]->id(),
-        'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-      ];
+        $field_file[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+        ];
+      }
+    }
+    else {
+      $field_file = [];
     }
 
-    $field_license = $submission_array['license'];
+    if (!empty($submission_array['license'])) {
+      $field_license = $submission_array['license'];
+    }
+    else {
+      $field_license = [];
+    }
 
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
@@ -93,6 +103,9 @@ use Drupal\webform\Entity\WebformSubmission;
         'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
       ];
     }
+
+    // hidden project_id field
+    $hidden_project_id = $submission_array['project_id'];
 
     if (!$nid) {
       // create node
@@ -126,6 +139,18 @@ use Drupal\webform\Entity\WebformSubmission;
 
     //save the node
     $node->save();
+
+    // this is the new/updated node id
+    $document_id = $node->id();
+
+    // add dataset to project
+    if ($hidden_project_id) {
+      $project_node = Node::load($hidden_project_id);
+      $project_documents = $project_node->get('field_affiliated_documents')->getValue();
+      array_push($project_documents, $document_id);
+      $project_node->set('field_affiliated_documents', $project_documents);
+      $project_node->save();
+    }
 
   }
 
