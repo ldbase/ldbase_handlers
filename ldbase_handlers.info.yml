@@ -1,5 +1,5 @@
 name: LDbase Webform Handlers
 description: Webform handlers to create and update LDbase content nodes.
-package: LDBase
+package: LDbase
 type: module
 core: 8.x
