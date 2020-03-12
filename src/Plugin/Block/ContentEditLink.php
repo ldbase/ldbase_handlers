@@ -9,8 +9,8 @@ use Drupal\Core\Url;
 /**
  * @Block(
  *   id = "content_edit_link",
- *   admin_label = @Translation("LDBase Content Edit Link"),
- *   category = @Translation("LDBase Menu"),
+ *   admin_label = @Translation("LDbase Content Edit Link"),
+ *   category = @Translation("LDbase Menu"),
  *   context = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
