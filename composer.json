@@ -1,0 +1,25 @@
+{
+  "name": "ldbase/ldbase_handlers",
+  "description": "Webform handlers for the LDbase project",
+  "type": "drupal-custom-module",
+  "keywords": ["Drupal", "LDbase"],
+  "homepage": "https://github.com/ldbase/ldbase_handlers",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Brian Arsenault",
+      "email": "barsenault@fsu.edu",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Bryan J. Brown",
+      "email": "bjbrown@fsu.edu",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Favenzio Calvo",
+      "email": "fcalvo@fsu.edu",
+      "role": "Maintainer"
+    }
+  ]
+}
