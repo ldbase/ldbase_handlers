@@ -1,7 +1,7 @@
 {
   "name": "ldbase/ldbase_handlers",
   "description": "Webform handlers for the LDbase project",
-  "type": "drupal-module",
+  "type": "drupal-module-custom",
   "keywords": ["Drupal", "LDbase"],
   "homepage": "https://github.com/ldbase/ldbase_handlers",
   "license": "GPL-2.0+",
