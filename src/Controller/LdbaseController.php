@@ -125,30 +125,28 @@ class LdbaseController extends ControllerBase {
    * The Project passed in
    * @param \Drupal\Node\NodeInterface $node
    */
-  public function addDocument(NodeInterface $node) {
+  public function addDocument(NodeInterface $node, $document_type = NULL) {
     $project_id = $node->id();
 
-    // checks if document type query param has been passed in (probably 'Codebook')
-    $doc_type = \Drupal::request()->query->get('document-type');
-    if ($doc_type) {
+    if ($document_type) {
       $tid = '';
       $vocabulary = 'document_type';
 
       $term = \Drupal::entityTypeManager()
         ->getStorage('taxonomy_term')
-        ->loadByProperties(['name' => $doc_type, 'vid' => $vocabulary]);
+        ->loadByProperties(['name' => $document_type, 'vid' => $vocabulary]);
       $term = reset($term);
       $tid = $term->id();
-      $document_type = $tid;
+      $doc_type = $tid;
     }
     else {
-      $document_type = NULL;
+      $doc_type = NULL;
     }
 
     $values = [
       'data' => [
         'project_id' => $project_id,
-        'document_type' => $document_type,
+        'document_type' => $doc_type,
       ]
     ];
 
