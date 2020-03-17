@@ -25,7 +25,7 @@ class ProjectTasks extends MenuLinkDefault {
       return ['node' => $node->id()];
     }
     else {
-      return ['node' => 999];
+      return ['node' => 'not_a_node'];
     }
 
   }
