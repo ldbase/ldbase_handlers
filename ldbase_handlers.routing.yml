@@ -35,7 +35,7 @@ ldbase_handlers.edit_document:
         type: entity:node
 
 ldbase_handlers.add_document_to_project:
-  path: '/forms/document/{node}/{document_type}'
+  path: '/forms/document/{node}'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::addDocument'
     _title: 'Add Document'
