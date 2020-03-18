@@ -244,6 +244,9 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // this is the new/updated node id
     $dataset_id = $node->id();
+    // add document and project ids to form_state to be used later for redirection
+    $form_state->set('dataset_nid', $dataset_id);
+    $form_state->set('project_nid', $hidden_project_id);
 
     // add dataset to project
     if ($hidden_project_id) {
@@ -253,7 +256,24 @@ use Drupal\webform\Entity\WebformSubmission;
       $project_node->set('field_affiliated_datasets', $project_datasets);
       $project_node->save();
     }
+  }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    // redirect to node view
+    $route_name = 'entity.node.canonical';
+    // if coming from project, redirect to it
+    if ($parent_project = $form_state->get('project_nid')) {
+      $route_parameters = ['node' => $parent_project];
+    }
+    else {
+      // redirect to created/edited dataset
+      $route_parameters = ['node' => $form_state->get('dataset_nid')];
+    }
+
+    $form_state->setRedirect($route_name, $route_parameters);
   }
 
  }

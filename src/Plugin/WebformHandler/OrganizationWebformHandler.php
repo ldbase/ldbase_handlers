@@ -85,5 +85,19 @@ use Drupal\webform\Entity\WebformSubmission;
 
     //save the node
     $node->save();
+    // add node id to form_state to be used for redirection
+    $form_state->set('node_redirect', $node->id());
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    // redirect to node view
+    $route_name = 'entity.node.canonical';
+    $route_parameters = ['node' => $form_state->get('node_redirect')];
+
+    $form_state->setRedirect($route_name, $route_parameters);
+  }
+
  }
