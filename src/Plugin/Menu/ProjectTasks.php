@@ -6,7 +6,8 @@ use Drupal\Core\Menu\MenuLinkDefault;
 use Drupal\Core\Cache\Cache;
 
 /**
- * menulink test
+ * Gets the nid for the currently viewed Project and assigns it to a
+ * route parameter.
  */
 class ProjectTasks extends MenuLinkDefault {
 
@@ -25,6 +26,7 @@ class ProjectTasks extends MenuLinkDefault {
       return ['node' => $node->id()];
     }
     else {
+      // if no nid, pass some text to keep Structure > Menus > Edit Menu from breaking
       return ['node' => 'not_a_node'];
     }
 
