@@ -129,6 +129,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_publication_info' => $field_publication_info,
         'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
+      $form_state->set('redirect_message', $title . ' was created successfully');
     }
     else {
       // update node
@@ -144,6 +145,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
       $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
+      $form_state->set('redirect_message', $title . ' was updated successfully');
     }
 
     //save the node
@@ -159,6 +161,7 @@ use Drupal\webform\Entity\WebformSubmission;
     // redirect to node view
     $route_name = 'entity.node.canonical';
     $route_parameters = ['node' => $form_state->get('node_redirect')];
+    $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
   }

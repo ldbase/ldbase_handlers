@@ -60,7 +60,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_data_collection_period = [];
     }
 
-
     $field_data_collection_locations = $submission_array['data_collection_locations'];
     $field_assessment_name = $submission_array['assessment_name'];
 
@@ -86,7 +85,6 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_demographics_information = [];
     }
-
 
     $field_special_populations = $submission_array['special_populations'];
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
@@ -118,7 +116,6 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
        $field_file_access_restrictions = [];
     }
-
 
     $field_external_resource = $submission_array['external_resource'];
 
@@ -175,7 +172,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_publication_info = [];
     }
 
-
     $field_affiliated_code = $submission_array['affiliated_code'];
     $field_affiliated_documents = $submission_array['affiliated_documents'];
     $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
@@ -211,6 +207,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_affiliated_documents' => $field_affiliated_documents,
         'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
+      $form_state->set('redirect_message', $title . ' was created successfully.');
     }
     else {
       // update node
@@ -237,16 +234,13 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_affiliated_code', $field_affiliated_code);
       $node->set('field_affiliated_documents', $field_affiliated_documents);
       $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
+      $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
 
     //save the node
     $node->save();
-
-    // this is the new/updated node id
-    $dataset_id = $node->id();
-    // add document and project ids to form_state to be used later for redirection
-    $form_state->set('dataset_nid', $dataset_id);
-    $form_state->set('project_nid', $hidden_project_id);
+    // add node id to form_state to be used for redirection
+    $form_state->set('node_redirect', $node->id());
 
     // add dataset to project
     if ($hidden_project_id) {
@@ -264,14 +258,8 @@ use Drupal\webform\Entity\WebformSubmission;
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // redirect to node view
     $route_name = 'entity.node.canonical';
-    // if coming from project, redirect to it
-    if ($parent_project = $form_state->get('project_nid')) {
-      $route_parameters = ['node' => $parent_project];
-    }
-    else {
-      // redirect to created/edited dataset
-      $route_parameters = ['node' => $form_state->get('dataset_nid')];
-    }
+    $route_parameters = ['node' => $form_state->get('node_redirect')];
+    $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
   }

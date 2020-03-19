@@ -72,6 +72,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_location' => $field_location,
         'field_thumbnail' => $field_thumbnail,
       ]);
+      $form_state->set('redirect_message', $title . ' was created successfully.');
     }
     else {
       // update node
@@ -81,6 +82,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_website', $field_website);
       $node->set('field_location', $field_location);
       $node->set('field_thumbnail', $field_thumbnail);
+      $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
 
     //save the node
@@ -96,6 +98,7 @@ use Drupal\webform\Entity\WebformSubmission;
     // redirect to node view
     $route_name = 'entity.node.canonical';
     $route_parameters = ['node' => $form_state->get('node_redirect')];
+    $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
   }

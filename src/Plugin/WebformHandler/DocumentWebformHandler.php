@@ -122,6 +122,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
       ]);
+      $form_state->set('redirect_message', $title . ' was created successfully.');
     }
     else {
       // update node
@@ -135,16 +136,13 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_file', $field_file);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
+      $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
 
     //save the node
     $node->save();
-
-    // this is the new/updated node id
-    $document_id = $node->id();
-    // add document and project ids to form_state to be used later for redirection
-    $form_state->set('document_nid', $document_id);
-    $form_state->set('project_nid', $hidden_project_id);
+    // add node id to form_state to be used for redirection
+    $form_state->set('node_redirect', $node->id());
 
     // add dataset to project
     if ($hidden_project_id) {
@@ -162,14 +160,8 @@ use Drupal\webform\Entity\WebformSubmission;
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // redirect to node view
     $route_name = 'entity.node.canonical';
-    // if coming from project, redirect to it
-    if ($parent_project = $form_state->get('project_nid')) {
-      $route_parameters = ['node' => $parent_project];
-    }
-    else {
-      // redirect to created/edited document
-      $route_parameters = ['node' => $form_state->get('document_nid')];
-    }
+    $route_parameters = ['node' => $form_state->get('node_redirect')];
+    $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
   }
