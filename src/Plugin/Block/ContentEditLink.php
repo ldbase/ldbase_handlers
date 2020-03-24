@@ -32,9 +32,11 @@ class ContentEditLink extends BlockBase {
     if (!empty($nid)) {
       $route = 'ldbase_handlers.edit_' . $node_type;
       $text = 'Edit';
+      $class[] = 'ldbase-button';
 
       $url = Url::fromRoute($route, array('node' => $nid));
       $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
+      $link['#attributes'] = ['class' => $class];
       $markup .= render($link) . ' ';
     } else {
       $markup = "Link Requires Node Id.";
