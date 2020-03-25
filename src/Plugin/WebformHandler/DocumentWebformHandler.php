@@ -142,7 +142,8 @@ use Drupal\webform\Entity\WebformSubmission;
     //save the node
     $node->save();
     // add node id to form_state to be used for redirection
-    $form_state->set('node_redirect', $node->id());
+    $document_id = $node->id();
+    $form_state->set('node_redirect', $document_id);
 
     // add dataset to project
     if ($hidden_project_id) {
