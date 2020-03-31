@@ -90,6 +90,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
+    $field_publication_info = [];
     foreach ($publications_array as $key => $value) {
       $paragraph_data[$key] = Paragraph::create([
         'type' => 'publication_metadata',
@@ -103,9 +104,11 @@ use Drupal\webform\Entity\WebformSubmission;
         'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
       ];
     }
+    $field_affiliated_documents = $submission_array['affiliated_documents'];
+    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
 
-    // hidden project_id field
-    $hidden_project_id = $submission_array['project_id'];
+    // hidden passed_id field
+    $passed_id = $submission_array['passed_id'];
 
     if (!$nid) {
       // create node
@@ -121,6 +124,8 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_file' => $field_file,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
+        'field_affiliated_documents' => $field_affiliated_documents,
+        'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
     }
@@ -136,6 +141,8 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_file', $field_file);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
+      $node->set('field_affiliated_documents', $field_affiliated_documents);
+      $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
 
@@ -145,13 +152,13 @@ use Drupal\webform\Entity\WebformSubmission;
     $document_id = $node->id();
     $form_state->set('node_redirect', $document_id);
 
-    // add dataset to project
-    if ($hidden_project_id) {
-      $project_node = Node::load($hidden_project_id);
-      $project_documents = $project_node->get('field_affiliated_documents')->getValue();
-      array_push($project_documents, $document_id);
-      $project_node->set('field_affiliated_documents', $project_documents);
-      $project_node->save();
+    // add document to project, dataset, or code
+    if ($passed_id) {
+      $associated_node = Node::load($passed_id);
+      $affiliated_documents = $associated_node->get('field_affiliated_documents')->getValue();
+      array_push($affiliated_documents, $document_id);
+      $associated_node->set('field_affiliated_documents', $affiliated_documents);
+      $associated_node->save();
     }
   }
 

@@ -1,7 +1,8 @@
+# Organizations
 ldbase_handlers.edit_organization:
   path: '/forms/organization/{node}/edit'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editOrganization'
+    _controller: '\Drupal\ldbase_handlers\Controller\OrganizationController::editOrganization'
     _title: 'Edit Organization'
   requirements:
     _permission: 'access content'
@@ -10,10 +11,11 @@ ldbase_handlers.edit_organization:
       node:
         type: entity:node
 
+# Person
 ldbase_handlers.edit_person:
   path: '/forms/person/{node}/edit'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editPerson'
+    _controller: '\Drupal\ldbase_handlers\Controller\PersonController::editPerson'
     _title: 'Edit Person'
   requirements:
     _permission: 'access content'
@@ -22,10 +24,11 @@ ldbase_handlers.edit_person:
       node:
         type: entity:node
 
+# Document
 ldbase_handlers.edit_document:
   path: '/forms/document/{node}/edit'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editDocument'
+    _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::editDocument'
     _title: 'Edit Document'
   requirements:
     _permission: 'access content'
@@ -37,7 +40,7 @@ ldbase_handlers.edit_document:
 ldbase_handlers.add_document_to_project:
   path: '/forms/document/{node}'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::addDocument'
+    _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
     _title: 'Add Document'
     document_type: ''
   requirements:
@@ -47,10 +50,50 @@ ldbase_handlers.add_document_to_project:
       node:
         type: entity:node
 
+ldbase_handlers.add_document_to_dataset:
+  path: '/forms/document/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
+    _title: 'Add Document'
+    document_type: ''
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+ldbase_handlers.add_document_to_code:
+  path: '/forms/document/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
+    _title: 'Add Document'
+    document_type: ''
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+ldbase_handlers.add_document_to_document:
+  path: '/forms/document/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
+    _title: 'Add Document'
+    document_type: ''
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+# Codebook
 ldbase_handlers.add_codebook_to_project:
   path: '/forms/document/{node}/codebook'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::addDocument'
+    _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
     _title: 'Add Codebook'
     document_type: 'Codebook'
   requirements:
@@ -60,10 +103,11 @@ ldbase_handlers.add_codebook_to_project:
       node:
         type: entity:node
 
+# Code
 ldbase_handlers.edit_code:
   path: '/forms/code/{node}/edit'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editCode'
+    _controller: '\Drupal\ldbase_handlers\Controller\CodeController::editCode'
     _title: 'Edit Code'
   requirements:
     _permission: 'access content'
@@ -72,10 +116,35 @@ ldbase_handlers.edit_code:
       node:
         type: entity:node
 
+ldbase_handlers.add_code_to_dataset:
+  path: '/forms/code/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
+    _title: 'Add Code'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+ldbase_handlers.add_code_to_code:
+  path: '/forms/code/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
+    _title: 'Add Code'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+# Dataset
 ldbase_handlers.edit_dataset:
   path: '/forms/dataset/{node}/edit'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editDataset'
+    _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::editDataset'
     _title: 'Edit Dataset'
   requirements:
     _permission: 'access content'
@@ -87,7 +156,7 @@ ldbase_handlers.edit_dataset:
 ldbase_handlers.add_dataset_to_project:
   path: '/forms/dataset/{node}'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::addDataset'
+    _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::addDataset'
     _title: 'Add Dataset'
   requirements:
     _permission: 'access content'
@@ -96,10 +165,23 @@ ldbase_handlers.add_dataset_to_project:
       node:
         type: entity:node
 
+ldbase_handlers.add_dataset_to_dataset:
+  path: '/forms/dataset/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::addDataset'
+    _title: 'Add Dataset'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+# Project
 ldbase_handlers.edit_project:
   path: '/forms/project/{node}/edit'
   defaults:
-    _controller: '\Drupal\ldbase_handlers\Controller\LdbaseController::editProject'
+    _controller: '\Drupal\ldbase_handlers\Controller\ProjectController::editProject'
     _title: 'Edit Project'
   requirements:
     _permission: 'access content'

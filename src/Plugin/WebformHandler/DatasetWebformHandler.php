@@ -173,11 +173,12 @@ use Drupal\webform\Entity\WebformSubmission;
     }
 
     $field_affiliated_code = $submission_array['affiliated_code'];
+    $field_affiliated_datasets = $submission_array['affiliated_datasets'];
     $field_affiliated_documents = $submission_array['affiliated_documents'];
     $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
 
-    // hidden project_id field
-    $hidden_project_id = $submission_array['project_id'];
+    // hidden passed_id field
+    $passed_id = $submission_array['passed_id'];
 
     if (!$nid) {
       // create node
@@ -204,6 +205,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_file' => $field_file,
         'field_publication_info' => $field_publication_info,
         'field_affiliated_code' => $field_affiliated_code,
+        'field_affiliated_datasets' => $field_affiliated_datasets,
         'field_affiliated_documents' => $field_affiliated_documents,
         'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
@@ -232,6 +234,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_file', $field_file);
       $node->set('field_publication_info', $field_publication_info);
       $node->set('field_affiliated_code', $field_affiliated_code);
+      $node->set('field_affiliated_datasets', $field_affiliated_datasets);
       $node->set('field_affiliated_documents', $field_affiliated_documents);
       $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
@@ -244,12 +247,12 @@ use Drupal\webform\Entity\WebformSubmission;
     $form_state->set('node_redirect', $dataset_id);
 
     // add dataset to project
-    if ($hidden_project_id) {
-      $project_node = Node::load($hidden_project_id);
-      $project_datasets = $project_node->get('field_affiliated_datasets')->getValue();
-      array_push($project_datasets, $dataset_id);
-      $project_node->set('field_affiliated_datasets', $project_datasets);
-      $project_node->save();
+    if ($passed_id) {
+      $associated_node = Node::load($passed_id);
+      $affiliated_datasets = $associated_node->get('field_affiliated_datasets')->getValue();
+      array_push($affiliated_datasets, $dataset_id);
+      $associated_node->set('field_affiliated_datasets', $affiliated_datasets);
+      $associated_node->save();
     }
   }
 

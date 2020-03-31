@@ -40,7 +40,12 @@ use Drupal\webform\Entity\WebformSubmission;
     $title = $submission_array['title'];
     $field_affiliated_documents = $submission_array['affiliated_documents'];
     $field_related_persons = $submission_array['authors'];
-    $field_code_type = $submission_array['code_type'];
+    if (!empty($submission_array['code_type'])) {
+      $field_code_type = $submission_array['code_type'];
+    }
+    else {
+      $field_code_type = [];
+    }
     $body = [
       'value' => $submission_array['description'],
       'format' => 'basic_html',
@@ -109,8 +114,11 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_publication_info = [];
     }
-
+    $field_affiliated_code = $submission_array['affiliated_code'];
     $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
+
+    // hidden passed_id field
+    $passed_id = $submission_array['passed_id'];
 
     if (!$nid) {
       // create node
@@ -127,6 +135,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_file' => $field_file,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
+        'field_affiliated_code' => $field_affiliated_code,
         'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully');
@@ -144,6 +153,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_file', $field_file);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
+      $node->set('field_affiliated_code', $field_affiliated_code);
       $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $form_state->set('redirect_message', $title . ' was updated successfully');
     }
@@ -151,7 +161,17 @@ use Drupal\webform\Entity\WebformSubmission;
     //save the node
     $node->save();
     // add node id to form_state to be used for redirection
-    $form_state->set('node_redirect', $node->id());
+    $code_id = $node->id();
+    $form_state->set('node_redirect', $code_id);
+
+    // add code to dataset
+    if ($passed_id) {
+      $associated_node = Node::load($passed_id);
+      $affiliated_code = $associated_node->get('field_affiliated_code')->getValue();
+      array_push($affiliated_code, $code_id);
+      $associated_node->set('field_affiliated_code', $affiliated_code);
+      $associated_node->save();
+    }
   }
 
   /**
