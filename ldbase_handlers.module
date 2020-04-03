@@ -11,22 +11,31 @@ use Drupal\Core\Form\FormStateInterface;
  */
 function ldbase_handlers_webform_element_alter(array &$element, FormStateInterface $form_state, array $context) {
   if (isset($element['#webform_id'])) {
+    // change validation for these fields to Person auto-created stub records
     $author_webform_ids = array(
       'create_update_dataset--contributors',
       'create_update_document--authors',
       'create_update_project--related_persons',
       'create_update_code--authors'
     );
+    // change validation for these fields to Organization auto-created stub records
+    $organization_webform_ids = array(
+      'create_update_project--related_organizations',
+      'create_update_dataset--host_organizations',
+      'create_update_person--related_organizations'
+    );
+    $modify_validations = array_merge($author_webform_ids, $organization_webform_ids);
 
-    if (in_array($element['#webform_id'], $author_webform_ids)) {
-      $author_validation = array(
+    if (in_array($element['#webform_id'], $modify_validations)) {
+      $use_validation = array(
         'Drupal\Core\Entity\Element\EntityAutocomplete',
         'validateEntityAutocomplete',
       );
       // clear validation and add core validation back
       $element['#element']['#element_validate'] = array();
-      array_push($element['#element']['#element_validate'], $author_validation);
+      array_push($element['#element']['#element_validate'], $use_validation);
     }
+
   }
 
 }
