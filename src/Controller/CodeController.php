@@ -65,6 +65,9 @@ class CodeController extends ControllerBase {
     $affiliated_code = $node->get('field_affiliated_code')->getValue();
     $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
 
+    $affiliated_parents = $node->get('field_affiliated_parents')->getValue();
+    $unaffiliated_parents = $node->get('field_unaffiliated_parents')->getValue();
+
     $values = [
       'data' => [
         'node_id' => $nid,
@@ -80,6 +83,8 @@ class CodeController extends ControllerBase {
         'publication_info' => $publication_info,
         'affiliated_code' => $affiliated_code,
         'unaffiliated_citation' => $unaffiliated_citation,
+        'affiliated_parents' => $affiliated_parents,
+        'unaffiliated_parents' => $unaffiliated_parents,
       ]
     ];
 

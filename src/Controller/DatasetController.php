@@ -64,17 +64,21 @@ class DatasetController extends ControllerBase {
     $contributors = $node->get('field_related_persons')->getValue();
     $host_organizations = $node->get('field_related_organizations')->getValue();
     $location = $node->get('field_location')->getValue();
+    $constructs = [];
     foreach ($node->get('field_component_skills')->getValue() as $delta => $value) {
       $constructs[$delta] = $value['target_id'];
     }
     $time_points = $node->get('field_time_points')->value;
+    $data_collection_period = [];
     foreach ($node->get('field_data_collection_period')->getValue() as $delta => $value) {
       $data_collection_period[$delta]['start_date'] = $value['value'];
       $data_collection_period[$delta]['end_date'] = $value['end_value'];
     }
+    $data_collection_locations = [];
     foreach ($node->get('field_data_collection_locations')->getValue() as $delta => $value) {
        $data_collection_locations[$delta] = $value['target_id'];
     }
+    $assessment_name = [];
     foreach($node->get('field_assessment_name')->getValue() as $delta => $value) {
       $assessment_name[$delta] = $value['target_id'];
     }
@@ -126,6 +130,9 @@ class DatasetController extends ControllerBase {
     $affiliated_documents = $node->get('field_affiliated_documents')->getValue();
     $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
 
+    $affiliated_parents = $node->get('field_affiliated_parents')->getValue();
+    $unaffiliated_parents = $node->get('field_unaffiliated_parents')->getValue();
+
     $values = [
       'data' => [
         'node_id' => $node_id,
@@ -152,6 +159,8 @@ class DatasetController extends ControllerBase {
         'affiliated_datasets' => $affiliated_datasets,
         'affiliated_documents' => $affiliated_documents,
         'unaffiliated_citation' => $unaffiliated_citation,
+        'affiliated_parents' => $affiliated_parents,
+        'unaffiliated_parents' => $unaffiliated_parents,
       ]
     ];
 

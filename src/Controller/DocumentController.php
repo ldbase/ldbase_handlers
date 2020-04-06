@@ -103,6 +103,9 @@ class DocumentController extends ControllerBase {
     $affiliated_documents = $node->get('field_affiliated_documents')->getValue();
     $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
 
+    $affiliated_parents = $node->get('field_affiliated_parents')->getValue();
+    $unaffiliated_parents = $node->get('field_unaffiliated_parents')->getValue();
+
     $values = [
       'data' => [
         'node_id' => $nid,
@@ -117,6 +120,8 @@ class DocumentController extends ControllerBase {
         'publication_info' => $publication_info,
         'affiliated_documents' => $affiliated_documents,
         'unaffiliated_citation' => $unaffiliated_citation,
+        'affiliated_parents' => $affiliated_parents,
+        'unaffiliated_parents' => $unaffiliated_parents,
       ]
     ];
 
