@@ -35,7 +35,6 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
       $element['#element']['#element_validate'] = array();
       array_push($element['#element']['#element_validate'], $use_validation);
     }
-
   }
-
 }
+

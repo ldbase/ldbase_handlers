@@ -104,9 +104,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
       ];
     }
-    $field_affiliated_documents = $submission_array['affiliated_documents'];
-    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
-
     $field_affiliated_parents = $submission_array['affiliated_parents'];
 
     // hidden passed_id field
@@ -131,8 +128,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_file' => $field_file,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
-        'field_affiliated_documents' => $field_affiliated_documents,
-        'field_unaffiliated_citation' => $field_unaffiliated_citation,
         'field_affiliated_parents' => $field_affiliated_parents,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
@@ -149,8 +144,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_file', $field_file);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
-      $node->set('field_affiliated_documents', $field_affiliated_documents);
-      $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $node->set('field_affiliated_parents', $field_affiliated_parents);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
@@ -160,15 +153,6 @@ use Drupal\webform\Entity\WebformSubmission;
     // add node id to form_state to be used for redirection
     $document_id = $node->id();
     $form_state->set('node_redirect', $document_id);
-
-    // add document to project, dataset, or code -- leave for now until affiliated parents is completed
-    if ($passed_id) {
-      $associated_node = Node::load($passed_id);
-      $affiliated_documents = $associated_node->get('field_affiliated_documents')->getValue();
-      array_push($affiliated_documents, $document_id);
-      $associated_node->set('field_affiliated_documents', $affiliated_documents);
-      $associated_node->save();
-    }
   }
 
   /**

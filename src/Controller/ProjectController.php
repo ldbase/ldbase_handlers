@@ -43,32 +43,35 @@ class ProjectController extends ControllerBase {
     $related_persons = $node->get('field_related_persons')->getValue();
     $related_organizations = $node->get('field_related_organizations')->getValue();
     $doi = $node->get('field_doi')->getValue();
+    $activity_range = [];
     foreach ($node->get('field_activity_range')->getValue() as $delta => $value) {
       $activity_range[$delta]['start_date'] = $value['value'];
       $activity_range[$delta]['end_date'] = $value['end_value'];
     }
     $website = $node->get('field_website')->getValue();
     //grant information paragraph
+    $grant_information = [];
     foreach ($node->field_grant_information as $delta => $grant_paragraph) {
       $p = $grant_paragraph->entity;
       $grant_information[$delta]['funding_agency'] = $p->field_funding_agency->target_id;
       $grant_information[$delta]['grant_number'] = $p->field_grant_number->value;
     }
+    $project_type = [];
     foreach ($node->get('field_project_type')->getValue() as $delta => $value) {
       $project_type[$delta] = $value['target_id'];
     }
+    $schooling = [];
     foreach ($node->get('field_schooling')->getValue() as $delta => $value) {
       $schooling[$delta] = $value['target_id'];
     }
+    $curricula = [];
     foreach ($node->get('field_curricula')->getValue() as $delta => $value) {
       $curricula[$delta] = $value['target_id'];
     }
+    $time_method = [];
     foreach ($node->get('field_time_method')->getValue() as $delta => $value) {
       $time_method[$delta] = $value['target_id'];
     }
-    $affiliated_datasets = $node->get('field_affiliated_datasets')->getValue();
-    $affiliated_documents = $node->get('field_affiliated_documents')->getValue();
-    $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
 
     $values = [
       'data' => [
@@ -85,9 +88,6 @@ class ProjectController extends ControllerBase {
         'schooling' => $schooling,
         'curricula' => $curricula,
         'time_method' => $time_method,
-        'affiliated_datasets' => $affiliated_datasets,
-        'affiliated_documents' => $affiliated_documents,
-        'unaffiliated_citation' => $unaffiliated_citation,
       ]
     ];
 

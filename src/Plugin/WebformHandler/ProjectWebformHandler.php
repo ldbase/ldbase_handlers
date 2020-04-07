@@ -45,12 +45,14 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_related_organizations = $submission_array['related_organizations'];
     $field_doi = $submission_array['doi'];
     $activity_range = $submission_array['activity_range'];
+    $field_activity_range = [];
     foreach ($activity_range as $key => $value) {
       $field_activity_range[$key]['value'] = $value['start_date'];
       $field_activity_range[$key]['end_value'] = $value['end_date'];
     }
     $field_website = $submission_array['website'];
     // grant information paragraph
+    $field_grant_information = [];
     foreach ($submission_array['grant_information'] as $key => $value) {
       $grant_data[$key] = Paragraph::create([
         'type' => 'grant_information',
@@ -67,9 +69,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_schooling = $submission_array['schooling'];
     $field_curricula = $submission_array['curricula'];
     $field_time_method = $submission_array['time_method'];
-    $field_affiliated_datasets = $submission_array['affiliated_datasets'];
-    $field_affiliated_documents = $submission_array['affiliated_documents'];
-    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
 
     if (!$nid) {
       //create node
@@ -88,9 +87,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_schooling' => $field_schooling,
         'field_curricula' => $field_curricula,
         'field_time_method' => $field_time_method,
-        'field_affiliated_datasets' => $field_affiliated_datasets,
-        'field_affiliated_documents' => $field_affiliated_documents,
-        'field_unaffiliated_citation' => $field_unaffiliated_citation,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
     }
@@ -109,9 +105,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_schooling', $field_schooling);
       $node->set('field_curricula', $field_curricula);
       $node->set('field_time_method', $field_time_method);
-      $node->set('field_affiliated_datasets', $field_affiliated_datasets);
-      $node->set('field_affiliated_documents', $field_affiliated_documents);
-      $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
 

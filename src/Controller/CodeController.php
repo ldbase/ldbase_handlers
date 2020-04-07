@@ -40,7 +40,6 @@ class CodeController extends ControllerBase {
     $nid = $node->id();
     $title = $node->getTitle();
     $description = $node->get('body')->value;
-    $affiliated_documents = $node->get('field_affiliated_documents')->getValue();
     $authors = $node->get('field_related_persons')->getValue();
     $code_type = $node->get('field_code_type')->target_id;
     $doi = $node->get('field_doi')->getValue();
@@ -62,9 +61,6 @@ class CodeController extends ControllerBase {
       $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
     }
-    $affiliated_code = $node->get('field_affiliated_code')->getValue();
-    $unaffiliated_citation = $node->get('field_unaffiliated_citation')->getValue();
-
     $affiliated_parents = $node->get('field_affiliated_parents')->getValue();
     $unaffiliated_parents = $node->get('field_unaffiliated_parents')->getValue();
 
@@ -73,7 +69,6 @@ class CodeController extends ControllerBase {
         'node_id' => $nid,
         'title' => $title,
         'description' => $description,
-        'affiliated_documents' => $affiliated_documents,
         'authors' => $authors,
         'code_type' => $code_type,
         'doi' => $doi,
@@ -81,8 +76,6 @@ class CodeController extends ControllerBase {
         'file' => $file,
         'license' => $license,
         'publication_info' => $publication_info,
-        'affiliated_code' => $affiliated_code,
-        'unaffiliated_citation' => $unaffiliated_citation,
         'affiliated_parents' => $affiliated_parents,
         'unaffiliated_parents' => $unaffiliated_parents,
       ]
@@ -93,7 +86,6 @@ class CodeController extends ControllerBase {
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_code');
     $webform = $webform->getSubmissionForm($values,$operation);
     return $webform;
-
   }
 
   /**

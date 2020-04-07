@@ -48,7 +48,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_location = $submission_array['location'];
     $field_component_skills = $submission_array['constructs'];
     $field_time_points = $submission_array['time_points'];
-
     $data_collection_period = $submission_array['data_collection_period'];
     if (!empty($data_collection_period)) {
       foreach ($data_collection_period as $key => $value) {
@@ -59,10 +58,8 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_data_collection_period = [];
     }
-
     $field_data_collection_locations = $submission_array['data_collection_locations'];
     $field_assessment_name = $submission_array['assessment_name'];
-
     // demographics paragraph
     $demographics_array = $submission_array['participants'];
     if (!empty($demographics_array)) {
@@ -85,17 +82,14 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_demographics_information = [];
     }
-
     $field_special_populations = $submission_array['special_populations'];
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
-
     if (!empty($submission_array['license'])) {
       $field_license = $submission_array['license'];
     }
     else {
       $field_license = [];
     }
-
     // file access restrictions paragraph
     $file_access_array = $submission_array['file_access_restrictions'];
     if (!empty($file_access_array)) {
@@ -116,9 +110,7 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
        $field_file_access_restrictions = [];
     }
-
     $field_external_resource = $submission_array['external_resource'];
-
     // file metadata paragraph
     $files_array = $submission_array['file'];
     if (!empty($files_array)) {
@@ -151,7 +143,6 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_file = [];
     }
-
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
     if (!empty($publications_array)) {
@@ -171,12 +162,6 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_publication_info = [];
     }
-
-    $field_affiliated_code = $submission_array['affiliated_code'];
-    $field_affiliated_datasets = $submission_array['affiliated_datasets'];
-    $field_affiliated_documents = $submission_array['affiliated_documents'];
-    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
-
     $field_affiliated_parents = $submission_array['affiliated_parents'];
 
     // hidden passed_id field
@@ -211,10 +196,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_external_resource' => $field_external_resource,
         'field_file' => $field_file,
         'field_publication_info' => $field_publication_info,
-        'field_affiliated_code' => $field_affiliated_code,
-        'field_affiliated_datasets' => $field_affiliated_datasets,
-        'field_affiliated_documents' => $field_affiliated_documents,
-        'field_unaffiliated_citation' => $field_unaffiliated_citation,
         'field_affiliated_parents' => $field_affiliated_parents,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
@@ -241,10 +222,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_file', $field_file);
       $node->set('field_publication_info', $field_publication_info);
-      $node->set('field_affiliated_code', $field_affiliated_code);
-      $node->set('field_affiliated_datasets', $field_affiliated_datasets);
-      $node->set('field_affiliated_documents', $field_affiliated_documents);
-      $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $node->set('field_affiliated_parents', $field_affiliated_parents);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
@@ -254,15 +231,6 @@ use Drupal\webform\Entity\WebformSubmission;
     // add node id to form_state to be used for redirection
     $dataset_id = $node->id();
     $form_state->set('node_redirect', $dataset_id);
-
-    // add dataset to project - for now, until affiliated parents is completed
-    if ($passed_id) {
-      $associated_node = Node::load($passed_id);
-      $affiliated_datasets = $associated_node->get('field_affiliated_datasets')->getValue();
-      array_push($affiliated_datasets, $dataset_id);
-      $associated_node->set('field_affiliated_datasets', $affiliated_datasets);
-      $associated_node->save();
-    }
   }
 
   /**

@@ -38,7 +38,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $submission_array = $webform_submission->getData();
     $nid = $submission_array['node_id'];
     $title = $submission_array['title'];
-    $field_affiliated_documents = $submission_array['affiliated_documents'];
     $field_related_persons = $submission_array['authors'];
     if (!empty($submission_array['code_type'])) {
       $field_code_type = $submission_array['code_type'];
@@ -52,7 +51,6 @@ use Drupal\webform\Entity\WebformSubmission;
     ];
     $field_doi = $submission_array['doi'];
     $field_external_resource = $submission_array['external_resource'];
-
     // file metadata paragraph
     $files_array = $submission_array['file'];
     if (!empty($files_array)) {
@@ -86,14 +84,12 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_file = [];
     }
-
     if (!empty($submission_array['license'])) {
       $field_license = $submission_array['license'];
     }
     else {
       $field_license = [];
     }
-
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
     if (!empty($publications_array)) {
@@ -114,10 +110,8 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_publication_info = [];
     }
-    $field_affiliated_code = $submission_array['affiliated_code'];
-    $field_unaffiliated_citation = $submission_array['unaffiliated_citation'];
-
     $field_affiliated_parents = $submission_array['affiliated_parents'];
+    $field_unaffiliated_parents = $submission_array['unaffiliated_parents'];
 
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
@@ -133,7 +127,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'type' => 'code',
         'status' => TRUE, // published
         'title' => $title,
-        'field_affiliated_documents' => $field_affiliated_documents,
         'field_related_persons' => $field_related_persons,
         'field_code_type' => $field_code_type,
         'body' => $body,
@@ -142,8 +135,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_file' => $field_file,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
-        'field_affiliated_code' => $field_affiliated_code,
-        'field_unaffiliated_citation' => $field_unaffiliated_citation,
         'field_affiliated_parents' => $field_affiliated_parents,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully');
@@ -152,7 +143,6 @@ use Drupal\webform\Entity\WebformSubmission;
       // update node
       $node = Node::load($nid);
       $node->set('title', $title);
-      $node->set('field_affiliated_documents', $field_affiliated_documents);
       $node->set('field_related_persons', $field_related_persons);
       $node->set('field_code_type', $field_code_type);
       $node->set('body', $body);
@@ -161,8 +151,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_file', $field_file);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
-      $node->set('field_affiliated_code', $field_affiliated_code);
-      $node->set('field_unaffiliated_citation', $field_unaffiliated_citation);
       $node->set('field_affiliated_parents', $field_affiliated_parents);
       $form_state->set('redirect_message', $title . ' was updated successfully');
     }
@@ -172,15 +160,6 @@ use Drupal\webform\Entity\WebformSubmission;
     // add node id to form_state to be used for redirection
     $code_id = $node->id();
     $form_state->set('node_redirect', $code_id);
-
-    // add code to dataset - for now, until affiliated parents is completed
-    if ($passed_id) {
-      $associated_node = Node::load($passed_id);
-      $affiliated_code = $associated_node->get('field_affiliated_code')->getValue();
-      array_push($affiliated_code, $code_id);
-      $associated_node->set('field_affiliated_code', $affiliated_code);
-      $associated_node->save();
-    }
   }
 
   /**
