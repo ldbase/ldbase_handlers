@@ -61,8 +61,6 @@ class CodeController extends ControllerBase {
       $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
     }
-    $affiliated_parents = $node->get('field_affiliated_parents')->getValue();
-    $unaffiliated_parents = $node->get('field_unaffiliated_parents')->getValue();
 
     $values = [
       'data' => [
@@ -76,8 +74,6 @@ class CodeController extends ControllerBase {
         'file' => $file,
         'license' => $license,
         'publication_info' => $publication_info,
-        'affiliated_parents' => $affiliated_parents,
-        'unaffiliated_parents' => $unaffiliated_parents,
       ]
     ];
 

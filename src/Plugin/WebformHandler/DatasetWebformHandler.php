@@ -162,15 +162,9 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_publication_info = [];
     }
-    $field_affiliated_parents = $submission_array['affiliated_parents'];
 
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
-    if (!empty($passed_id)) {
-      array_push($field_affiliated_parents, $passed_id);
-    }
-
-    // do nothing yet with unaffiliated parents
 
     if (!$nid) {
       // create node
@@ -196,7 +190,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_external_resource' => $field_external_resource,
         'field_file' => $field_file,
         'field_publication_info' => $field_publication_info,
-        'field_affiliated_parents' => $field_affiliated_parents,
+        'field_affiliated_parents' => $passed_id,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
     }
@@ -222,7 +216,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_file', $field_file);
       $node->set('field_publication_info', $field_publication_info);
-      $node->set('field_affiliated_parents', $field_affiliated_parents);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
     }
 
