@@ -117,6 +117,14 @@ use Drupal\webform\Entity\WebformSubmission;
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    // project end date cannot come before start date
+    $this->validateActivityRange($form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // redirect to node view
     $route_name = 'entity.node.canonical';
@@ -124,6 +132,25 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  /**
+   * Validate Activity Range field
+   * End date cannot come before start date
+   */
+  private function validateActivityRange(FormStateInterface $form_state) {
+    $activity_ranges = $form_state->getValue('activity_range');
+    if (empty($activity_ranges)) {
+      return;
+    }
+    else {
+      foreach ($activity_ranges as $delta => $row_array) {
+        if (strtotime($row_array['end_date']) <= strtotime($row_array['start_date'])) {
+          $message = 'The project end date must be after the start date.';
+          $form_state->setErrorByName('activity_range][items]['.$delta, $message);
+        }
+      }
+    }
   }
 
  }

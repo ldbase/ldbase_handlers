@@ -229,6 +229,16 @@ use Drupal\webform\Entity\WebformSubmission;
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    // data collection end date cannot come before start date
+    $this->validateDataCollectionDates($form_state);
+    // validate participants
+    $this->validateParticipants($form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // redirect to node view
     $route_name = 'entity.node.canonical';
@@ -236,6 +246,54 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  /**
+   * Validate Data Collection field
+   * End date cannot come before start date
+   */
+  private function validateDataCollectionDates(FormStateInterface $form_state) {
+    $data_collection_period = $form_state->getValue('data_collection_period');
+    if (empty($data_collection_period)) {
+      return;
+    }
+    else {
+      foreach ($data_collection_period as $delta => $row_array) {
+        if (strtotime($row_array['end_date']) <= strtotime($row_array['start_date'])) {
+          $message = 'The data collection end date must be after the start date.';
+          $form_state->setErrorByName('data_collection_period][items]['.$delta, $message);
+        }
+      }
+    }
+  }
+
+  /**
+   * Validate Participants Custom Composite
+   * Age range "to" must be greater than "from"
+   */
+  private function validateParticipants(FormStateInterface $form_state) {
+    $participants = $form_state->getValue('participants');
+    if (empty($participants)) {
+      return;
+    }
+    else {
+      foreach ($participants as $delta => $row_array) {
+        // if there is a row, make sure there is a number of participants
+        if (empty($row_array['number_of_participants'])) {
+          $participants_message = "You must enter the number of participants.";
+          $form_state->setErrorByName('participants][items]['.$delta.'][number_of_participants', $participants_message);
+        }
+        // age range "to" must be greater than "from"
+        if (intval($row_array['age_range_to']) < intval($row_array['age_range_from'])
+          || empty($row_array['age_range_from'])
+          || empty($row_array['age_range_to'])
+        ) {
+          $age_range_message = "The participant Age Range To must be greater than the Age Range From.";
+          $form_state->setErrorByName('participants][items]['.$delta.'][age_range_from', $age_range_message);
+          $form_state->setErrorByName('participants][items]['.$delta.'][age_range_to');
+        }
+      }
+    }
   }
 
  }
