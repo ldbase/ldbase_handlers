@@ -30,6 +30,14 @@ class ContentEditLink extends BlockBase {
 
     $markup = '';
     if (!empty($nid)) {
+      if ($node_type == 'document') {
+        $document_type = $node->get('field_document_type')->target_id;
+        $document_type_term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($document_type)->getName();
+        if ($document_type_term == 'Codebook') {
+          $node_type = 'codebook';
+        }
+      }
+
       $route = 'ldbase_handlers.edit_' . $node_type;
       $text = 'Edit';
       $class[] = 'ldbase-button';

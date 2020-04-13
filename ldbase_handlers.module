@@ -15,6 +15,7 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
     $author_webform_ids = array(
       'create_update_dataset--contributors',
       'create_update_document--authors',
+      'create_update_codebook--authors',
       'create_update_project--related_persons',
       'create_update_code--authors'
     );

@@ -43,7 +43,17 @@ use Drupal\webform\Entity\WebformSubmission;
       'value' => $submission_array['description'],
       'format' => 'basic_html',
     ];
-    $field_document_type = $submission_array['document_type'];
+    // codebook will not pass a document type which is a required field
+    if (empty($submission_array['document_type'])) {
+      $term = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties(['name' => 'Codebook', 'vid' => 'document_type']);
+      $term = reset($term);
+      $field_document_type = $term->id();
+    }
+    else {
+      $field_document_type = $submission_array['document_type'];
+    }
     $field_doi = $submission_array['doi'];
     $field_external_resource = $submission_array['external_resource'];
 

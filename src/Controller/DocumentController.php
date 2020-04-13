@@ -60,10 +60,15 @@ class DocumentController extends ControllerBase {
         'document_type' => $doc_type,
       ]
     ];
-
+    if ($document_type === 'Codebook') {
+      $use_webform = 'create_update_codebook';
+    }
+    else {
+      $use_webform = 'create_update_document';
+    }
     $operation = 'add';
     // get webform and load values
-    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_document');
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load($use_webform);
     $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
   }
@@ -115,10 +120,16 @@ class DocumentController extends ControllerBase {
         'publication_info' => $publication_info,
       ]
     ];
-
+    $document_type_term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($document_type)->getName();
+    if ($document_type_term === 'Codebook') {
+      $use_webform = 'create_update_codebook';
+    }
+    else {
+      $use_webform = 'create_update_document';
+    }
     $operation = 'edit';
     // get webform and load values
-    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_document');
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load($use_webform);
     $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
   }
