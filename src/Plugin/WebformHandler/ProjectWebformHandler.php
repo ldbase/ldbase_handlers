@@ -145,9 +145,15 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     else {
       foreach ($activity_ranges as $delta => $row_array) {
-        if (strtotime($row_array['end_date']) <= strtotime($row_array['start_date'])) {
-          $message = 'The project end date must be after the start date.';
-          $form_state->setErrorByName('activity_range][items]['.$delta, $message);
+        if (!empty($row_array['end_date'])) {
+          if (empty($row_array['start_date'])) {
+            $message = 'If you have a project end date, then you must enter a project start date.';
+            $form_state->setErrorByName('activity_range][items]['.$delta.'][start_date', $message);
+          }
+          elseif (strtotime($row_array['end_date']) <= strtotime($row_array['start_date'])) {
+            $message = 'The project end date must be after the start date.';
+            $form_state->setErrorByName('activity_range][items]['.$delta, $message);
+          }
         }
       }
     }
