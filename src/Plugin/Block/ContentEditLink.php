@@ -39,7 +39,7 @@ class ContentEditLink extends BlockBase {
       }
 
       $route = 'ldbase_handlers.edit_' . $node_type;
-      $text = 'Edit';
+      $text = 'Edit this ' . ucfirst($node_type);
       $class[] = 'ldbase-button';
 
       $url = Url::fromRoute($route, array('node' => $nid));

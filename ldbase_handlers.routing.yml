@@ -102,6 +102,7 @@ ldbase_handlers.add_codebook_to_project:
     parameters:
       node:
         type: entity:node
+
 ldbase_handlers.edit_codebook:
   path: '/forms/document/{node}/codebook/edit'
   defaults:
@@ -114,6 +115,7 @@ ldbase_handlers.edit_codebook:
     parameters:
       node:
         type: entity:node
+
 # Code
 ldbase_handlers.edit_code:
   path: '/forms/code/{node}/edit'
