@@ -5,6 +5,7 @@ namespace Drupal\ldbase_handlers\Plugin\WebformHandler;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\group\Entity\Group;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
@@ -89,6 +90,15 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_time_method' => $field_time_method,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
+      //save the node
+      $node->save();
+      // Create new project_group from Project
+      $new_group_name = $title;
+      $new_group = Group::create(['label' => $new_group_name, 'type' => 'project_group']);
+      $new_group->save();
+      // Add project to new group
+      $plugin_id = 'group_node:' . $node->getType();
+      $new_group->addContent($node, $plugin_id);
     }
     else {
       //update node
@@ -106,10 +116,10 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_curricula', $field_curricula);
       $node->set('field_time_method', $field_time_method);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
+      //save the node
+      $node->save();
     }
 
-    //save the node
-    $node->save();
     // add node id to form_state to be used for redirection
     $form_state->set('node_redirect', $node->id());
   }

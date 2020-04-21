@@ -5,6 +5,8 @@ namespace Drupal\ldbase_handlers\Plugin\WebformHandler;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\group\Entity\Group;
+use Drupal\group\Entity\GroupContent;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
@@ -131,6 +133,17 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_affiliated_parents' => $passed_id,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully');
+      //save the node
+      $node->save();
+      // get groupId of parent that was passed in - assumes Group Cardinality = 1
+      $parent_node = Node::load($passed_id);
+      $group_contents = GroupContent::loadByEntity($parent_node);
+      foreach ($group_contents as $group_content) {
+        $group = $group_content->getGroup();
+      }
+      // add this dataset to the parent's group
+      $plugin_id = 'group_node:' . $node->getType();
+      $group->addContent($node, $plugin_id);
     }
     else {
       // update node
@@ -145,13 +158,12 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
       $form_state->set('redirect_message', $title . ' was updated successfully');
+      //save the node
+      $node->save();
     }
 
-    //save the node
-    $node->save();
     // add node id to form_state to be used for redirection
-    $code_id = $node->id();
-    $form_state->set('node_redirect', $code_id);
+    $form_state->set('node_redirect', $node->id());
   }
 
   /**
