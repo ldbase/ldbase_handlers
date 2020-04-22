@@ -290,15 +290,19 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     else {
       foreach ($participants as $delta => $row_array) {
+        // if there is a row, make sure the type is selected
+        if (empty($row_array['participant_type'])) {
+          $type_message = "You must select a Participant Type.";
+          $form_state->setErrorByName('participants][items]['.$delta.'][participant_type', $type_message);
+        }
         // if there is a row, make sure there is a number of participants
         if (empty($row_array['number_of_participants'])) {
           $participants_message = "You must enter the number of participants.";
           $form_state->setErrorByName('participants][items]['.$delta.'][number_of_participants', $participants_message);
         }
         // age range "to" must be greater than "from"
-        if (intval($row_array['age_range_to']) < intval($row_array['age_range_from'])
-          || empty($row_array['age_range_from'])
-          || empty($row_array['age_range_to'])
+        if (!empty($row_array['age_range_from'])
+          && (empty($row_array['age_range_to']) || intval($row_array['age_range_to']) < intval($row_array['age_range_from']))
         ) {
           $age_range_message = "The participant Age Range To must be greater than the Age Range From.";
           $form_state->setErrorByName('participants][items]['.$delta.'][age_range_from', $age_range_message);
