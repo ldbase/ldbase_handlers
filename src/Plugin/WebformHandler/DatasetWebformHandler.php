@@ -252,8 +252,15 @@ use Drupal\webform\Entity\WebformSubmission;
    * {@inheritdoc}
    */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    // redirect to node view
-    $route_name = 'entity.node.canonical';
+    $submission_array = $webform_submission->getData();
+    // if no DOI redirect to DOI creation confirmation
+    if (empty($submission_array['doi'])) {
+      $route_name = 'ldbase_handlers.confirm_doi_creation';
+    }
+    else {
+      // redirect to node view
+      $route_name = 'entity.node.canonical';
+    }
     $route_parameters = ['node' => $form_state->get('node_redirect')];
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 

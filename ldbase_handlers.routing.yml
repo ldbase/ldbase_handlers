@@ -202,3 +202,16 @@ ldbase_handlers.edit_project:
     parameters:
       node:
         type: entity:node
+
+# confirm DOI creation
+ldbase_handlers.confirm_doi_creation:
+  path: '/forms/doi/{node}/confirm'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DoiController::confirmCreation'
+    _title: "Register DOI?"
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
