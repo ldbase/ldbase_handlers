@@ -133,7 +133,6 @@ use Drupal\webform\Entity\WebformSubmission;
           'type' => 'file_metadata',
           'field_file_format' => $value['file_format'],
           'field_file_upload' => $paragraph_file_id,
-          'field_format_version' => $value['format_version'],
           'field_file_version_description' => $value['file_version_description'],
         ]);
         $paragraph_data[$key]->save();

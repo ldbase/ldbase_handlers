@@ -120,7 +120,6 @@ class DatasetController extends ControllerBase {
       $file[$delta]['file_format'] = $p->field_file_format->target_id;
       $file[$delta]['file_upload'] = $p->field_file_upload->entity->id();
       $file[$delta]['file_version_description'] = $p->field_file_version_description->value;
-      $file[$delta]['format_version'] = $p->field_format_version->value;
     }
 
     // publication info paragraph

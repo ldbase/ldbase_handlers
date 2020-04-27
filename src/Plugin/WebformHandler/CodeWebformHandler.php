@@ -72,7 +72,6 @@ use Drupal\webform\Entity\WebformSubmission;
           'type' => 'file_metadata',
           'field_file_format' => $files_array[$key]['file_format'],
           'field_file_upload' => $paragraph_file_id,
-          'field_format_version' => $files_array[$key]['format_version'],
           'field_file_version_description' => $files_array[$key]['file_version_description'],
         ]);
         $paragraph_data[$key]->save();
