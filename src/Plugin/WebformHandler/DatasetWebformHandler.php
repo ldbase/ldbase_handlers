@@ -92,6 +92,7 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_license = [];
     }
+    $field_dataset_upload_or_external = $submission_array['dataset_upload_or_external'];
     // file access restrictions paragraph
     $file_access_array = $submission_array['file_access_restrictions'];
     if (!empty($file_access_array)) {
@@ -188,6 +189,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_special_populations' => $field_special_populations,
         'field_variable_types_in_dataset' => $field_variable_types_in_dataset,
         'field_license' => $field_license,
+        'field_dataset_upload_or_external' => $field_dataset_upload_or_external,
         'field_file_access_restrictions' => $field_file_access_restrictions,
         'field_external_resource' => $field_external_resource,
         'field_file' => $field_file,
@@ -225,6 +227,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_special_populations', $field_special_populations);
       $node->set('field_variable_types_in_dataset', $field_variable_types_in_dataset);
       $node->set('field_license', $field_license);
+      $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_file', $field_file);

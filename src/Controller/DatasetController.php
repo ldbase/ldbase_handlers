@@ -100,6 +100,9 @@ class DatasetController extends ControllerBase {
       $variable_types_in_dataset[$delta] = $value['target_id'];
     }
     $license = $node->get('field_license')->target_id;
+
+    $dataset_upload_or_external = $node->get('field_dataset_upload_or_external')->value;
+
     // file access paragraph
     $file_access_restrictions = [];
     foreach ($node->field_file_access_restrictions as $delta => $access_paragraph) {
@@ -109,6 +112,7 @@ class DatasetController extends ControllerBase {
       $file_access_restrictions[$delta]['allow_file_requests'] = $p->field_allow_file_requests->value == 1 ? 'Yes' : 'No';
     }
     $external_resource = $node->get('field_external_resource')->uri;
+
     // file paragraph
     $file = [];
     foreach ($node->field_file as $delta => $file_paragraph) {
@@ -118,6 +122,7 @@ class DatasetController extends ControllerBase {
       $file[$delta]['file_version_description'] = $p->field_file_version_description->value;
       $file[$delta]['format_version'] = $p->field_format_version->value;
     }
+
     // publication info paragraph
     $publication_info = [];
     foreach ($node->field_publication_info as $delta => $pub_paragraph) {
@@ -144,6 +149,7 @@ class DatasetController extends ControllerBase {
         'special_populations' => $special_populations,
         'variable_types_in_dataset' => $variable_types_in_dataset,
         'license' => $license,
+        'dataset_upload_or_external' => $dataset_upload_or_external,
         'file_access_restrictions' => $file_access_restrictions,
         'external_resource' => $external_resource,
         'file' => $file,
