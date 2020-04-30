@@ -59,38 +59,38 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_doi = $submission_array['doi'];
     $field_external_resource = $submission_array['external_resource'];
 
-    // file metadata paragraph
-    $files_array = $submission_array['file'];
-    if (!empty($files_array)) {
-      foreach ($files_array as $key => $value) {
-        $file_id = $files_array[$key]['file_upload'];
-        if (!empty($file_id)) {
-          $file = \Drupal\file\Entity\File::load($file_id);
-          $path = $file->getFileUri();
-          $data = file_get_contents($path);
-          $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-          $paragraph_file_id = $paragraph_file->id();
-        }
-        else {
-          $paragraph_file_id = NULL;
-        }
-        $paragraph_data[$key] = Paragraph::create([
-          'type' => 'file_metadata',
-          'field_file_format' => $files_array[$key]['file_format'],
-          'field_file_upload' => $paragraph_file_id,
-          'field_format_version' => $files_array[$key]['format_version'],
-          'field_file_version_description' => $files_array[$key]['file_version_description'],
-        ]);
-        $paragraph_data[$key]->save();
+    // document file
+    $document_fid = $submission_array['document_file'];
+    if (!empty($document_fid)) {
+      $file = \Drupal\file\Entity\File::load($document_fid);
+      $path = $file->getFileUri();
+      $data = file_get_contents($path);
+      $node_document_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
+      $field_document_file = $node_document_file->id();
+    }
+    else {
+      $field_document_file = NULL;
+    }
 
-        $field_file[$key] = [
-          'target_id' => $paragraph_data[$key]->id(),
-          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+    // file access restrictions paragraph
+    $file_access_array = $submission_array['file_access_restrictions'];
+    if (!empty($file_access_array)) {
+      foreach ($file_access_array as $key => $value) {
+        $access_data[$key] = Paragraph::create([
+          'type' => 'file_access_restrictions',
+          'field_file_embargoed' => $value['file_embargoed'] == 'Yes' ? 1 : 0,
+          'field_embaro_expiry_date' => date($value['embargo_expiry_date']),
+          'field_allow_file_requests' => $value['allow_file_requests'] == 'Yes' ? 1 : 0,
+        ]);
+        $access_data[$key]->save();
+        $field_file_access_restrictions[$key] = [
+          'target_id' => $access_data[$key]->id(),
+          'target_revision_id' => $access_data[$key]->getRevisionId(),
         ];
       }
     }
     else {
-      $field_file = [];
+       $field_file_access_restrictions = [];
     }
 
     if (!empty($submission_array['license'])) {
@@ -131,7 +131,8 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_document_type' => $field_document_type,
         'field_doi' => $field_doi,
         'field_external_resource' => $field_external_resource,
-        'field_file' => $field_file,
+        'field_document_file' => $field_document_file,
+        'field_file_access_restrictions' => $field_file_access_restrictions,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
         'field_affiliated_parents' => $passed_id,
@@ -158,7 +159,8 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_document_type', $field_document_type);
       $node->set('field_doi', $field_doi);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_file', $field_file);
+      $node->set('field_document_file', $field_document_file);
+      $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
