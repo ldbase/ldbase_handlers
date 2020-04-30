@@ -44,14 +44,19 @@ class CodeController extends ControllerBase {
     $code_type = $node->get('field_code_type')->target_id;
     $doi = $node->get('field_doi')->getValue();
     $external_resource = $node->get('field_external_resource')->uri;
-    // file paragraph
-    $file = [];
-    foreach ($node->field_file as $delta => $file_paragraph) {
-      $p = $file_paragraph->entity;
-      $file[$delta]['file_format'] = $p->field_file_format->target_id;
-      $file[$delta]['file_upload'] = $p->field_file_upload->entity->id();
-      $file[$delta]['file_version_description'] = $p->field_file_version_description->value;
+
+    $document_file = $node->field_document_file->entity;
+    $document_file_id = !empty($document_file) ? $document_file->id() : NULL;
+
+    // file access paragraph
+    $file_access_restrictions = [];
+    foreach ($node->field_file_access_restrictions as $delta => $access_paragraph) {
+      $p = $access_paragraph->entity;
+      $file_access_restrictions[$delta]['file_embargoed'] = $p->field_file_embargoed->value == 1 ? 'Yes' : 'No';
+      $file_access_restrictions[$delta]['embargo_expiry_date'] = $p->field_embaro_expiry_date->value;
+      $file_access_restrictions[$delta]['allow_file_requests'] = $p->field_allow_file_requests->value == 1 ? 'Yes' : 'No';
     }
+
     $license = $node->get('field_license')->target_id;
     // publication info paragraph
     $publication_info = [];
@@ -70,7 +75,8 @@ class CodeController extends ControllerBase {
         'code_type' => $code_type,
         'doi' => $doi,
         'external_resource' => $external_resource,
-        'file' => $file,
+        'document_file' => $document_file_id,
+        'file_access_restrictions' => $file_access_restrictions,
         'license' => $license,
         'publication_info' => $publication_info,
       ]
