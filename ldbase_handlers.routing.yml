@@ -31,7 +31,7 @@ ldbase_handlers.edit_document:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::editDocument'
     _title: 'Edit Document'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -97,7 +97,7 @@ ldbase_handlers.edit_codebook:
     _title: 'Edit Codebook'
     document_type: 'Codebook'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -123,7 +123,7 @@ ldbase_handlers.edit_code:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::editCode'
     _title: 'Edit Code'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -160,7 +160,7 @@ ldbase_handlers.edit_dataset:
     _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::editDataset'
     _title: 'Edit Dataset'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -197,7 +197,7 @@ ldbase_handlers.edit_project:
     _controller: '\Drupal\ldbase_handlers\Controller\ProjectController::editProject'
     _title: 'Edit Project'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:

@@ -1,0 +1,6 @@
+services:
+  group_content.update_access_checker:
+    class: \Drupal\ldbase_handlers\Access\GroupUpdateNodeAccess
+    arguments: ['@entity_type.manager']
+    tags:
+    - { name: access_check, applies_to: _group_update_node_access_check }
