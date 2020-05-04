@@ -43,6 +43,9 @@ class CodeController extends ControllerBase {
     $authors = $node->get('field_related_persons')->getValue();
     $code_type = $node->get('field_code_type')->target_id;
     $doi = $node->get('field_doi')->getValue();
+
+    $code_upload_or_external = $node->get('field_code_upload_or_external')->value;
+
     $external_resource = $node->get('field_external_resource')->uri;
 
     $document_file = $node->field_document_file->entity;
@@ -74,6 +77,7 @@ class CodeController extends ControllerBase {
         'authors' => $authors,
         'code_type' => $code_type,
         'doi' => $doi,
+        'code_upload_or_external' => $code_upload_or_external,
         'external_resource' => $external_resource,
         'document_file' => $document_file_id,
         'file_access_restrictions' => $file_access_restrictions,

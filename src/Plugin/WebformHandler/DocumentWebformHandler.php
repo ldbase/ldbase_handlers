@@ -57,6 +57,9 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_document_type = $submission_array['document_type'];
     }
     $field_doi = $submission_array['doi'];
+
+    $field_document_upload_or_external = $submission_array['document_uploaded_or_externally_linked'];
+
     $field_external_resource = $submission_array['external_resource'];
 
     // document file
@@ -130,6 +133,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'body' => $body,
         'field_document_type' => $field_document_type,
         'field_doi' => $field_doi,
+        'field_doc_upload_or_external' => $field_document_upload_or_external,
         'field_external_resource' => $field_external_resource,
         'field_document_file' => $field_document_file,
         'field_file_access_restrictions' => $field_file_access_restrictions,
@@ -158,6 +162,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('body', $body);
       $node->set('field_document_type', $field_document_type);
       $node->set('field_doi', $field_doi);
+      $node->set('field_doc_upload_or_external', $field_document_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_document_file', $field_document_file);
       $node->set('field_file_access_restrictions', $field_file_access_restrictions);

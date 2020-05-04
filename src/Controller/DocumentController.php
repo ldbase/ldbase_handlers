@@ -87,6 +87,9 @@ class DocumentController extends ControllerBase {
     $authors = $node->get('field_related_persons')->getValue();
     $document_type = $node->get('field_document_type')->target_id;
     $doi = $node->get('field_doi')->getValue();
+
+    $document_upload_or_external = $node->get('field_doc_upload_or_external')->value;
+
     $external_resource = $node->get('field_external_resource')->uri;
 
     $document_file = $node->field_document_file->entity;
@@ -118,6 +121,8 @@ class DocumentController extends ControllerBase {
         'authors' => $authors,
         'document_type' => $document_type,
         'doi' => $doi,
+        'document_uploaded_or_externally_linked' => $document_upload_or_external,
+        'codebook_uploaded_or_externally_linked' => $document_upload_or_external,
         'external_resource' => $external_resource,
         'document_file' => $document_file_id,
         'file_access_restrictions' => $file_access_restrictions,
