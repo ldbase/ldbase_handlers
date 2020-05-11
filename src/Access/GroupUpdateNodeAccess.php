@@ -24,11 +24,27 @@ use Symfony\Component\Routing\Route;
   }
 
   public function access(AccountInterface $account, Node $node) {
+    // get node's group
     $group_contents = GroupContent::loadByEntity($node);
     $node_group = array_pop($group_contents)->getGroup();
-    $node_type = $node->getType();
-    return $node_group->hasPermission('update any group_node:' . $node_type . ' content', $account)
-      ? AccessResult::allowed() : AccessResult::forbidden();
+    // get user's membership and roles in group
+    $group_member = $node_group->getMember($account);
+    if ($group_member) {
+      $group_member_roles = $group_member->getRoles();
+      //dd($group_member_roles);
+      // allowed roles
+      $allowed_roles = ['project_group-editor','project_group-administrator'];
+      $allow_access = FALSE;
+      foreach ($allowed_roles as $role) {
+        if (array_key_exists($role, $group_member_roles)) {
+          $allow_access = TRUE;
+        }
+      }
+      return $allow_access ? AccessResult::allowed() : AccessResult::forbidden();
+    }
+    else {
+      return AccessResult::forbidden();
+    }
   }
 
  }

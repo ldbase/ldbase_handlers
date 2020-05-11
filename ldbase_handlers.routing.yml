@@ -5,7 +5,7 @@ ldbase_handlers.edit_organization:
     _controller: '\Drupal\ldbase_handlers\Controller\OrganizationController::editOrganization'
     _title: 'Edit Organization'
   requirements:
-    _permission: 'access content'
+    _permission: 'edit any organization content'
   options:
     parameters:
       node:
@@ -18,7 +18,7 @@ ldbase_handlers.edit_person:
     _controller: '\Drupal\ldbase_handlers\Controller\PersonController::editPerson'
     _title: 'Edit Person'
   requirements:
-    _permission: 'access content'
+    _permission: 'edit any person content'
   options:
     parameters:
       node:
