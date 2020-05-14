@@ -114,11 +114,12 @@ use Drupal\webform\Entity\WebformSubmission;
        $field_file_access_restrictions = [];
     }
     $field_external_resource = $submission_array['external_resource'];
+
     // file metadata paragraph
-    $files_array = $submission_array['file'];
+    $files_array = $submission_array['dataset'];
     if (!empty($files_array)) {
       foreach ($files_array as $key => $value) {
-        $file_id = $files_array[$key]['file_upload'];
+        $file_id = $files_array[$key]['dataset_upload'];
         if (!empty($file_id)) {
           $file = \Drupal\file\Entity\File::load($file_id);
           $path = $file->getFileUri();
@@ -131,19 +132,21 @@ use Drupal\webform\Entity\WebformSubmission;
         }
         $paragraph_data[$key] = Paragraph::create([
           'type' => 'file_metadata',
-          'field_file_format' => $value['file_format'],
+          'field_file_format' => $value['dataset_format'],
           'field_file_upload' => $paragraph_file_id,
-          'field_file_version_description' => $value['file_version_description'],
+          'field_file_version_id' => $value['dataset_version_id'],
+          'field_file_version_label' => $value['dataset_version_label'],
+          'field_file_version_description' => $value['dataset_version_description'],
         ]);
         $paragraph_data[$key]->save();
-        $field_file[$key] = [
+        $field_dataset_version[$key] = [
           'target_id' => $paragraph_data[$key]->id(),
           'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
         ];
       }
     }
     else {
-      $field_file = [];
+      $field_dataset_version = [];
     }
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
@@ -191,7 +194,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_dataset_upload_or_external' => $field_dataset_upload_or_external,
         'field_file_access_restrictions' => $field_file_access_restrictions,
         'field_external_resource' => $field_external_resource,
-        'field_file' => $field_file,
+        'field_dataset_version' => $field_dataset_version,
         'field_publication_info' => $field_publication_info,
         'field_affiliated_parents' => $passed_id,
       ]);
@@ -229,7 +232,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_file', $field_file);
+      $node->set('field_dataset_version', $field_dataset_version);
       $node->set('field_publication_info', $field_publication_info);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node

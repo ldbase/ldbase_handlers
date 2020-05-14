@@ -113,13 +113,15 @@ class DatasetController extends ControllerBase {
     }
     $external_resource = $node->get('field_external_resource')->uri;
 
-    // file paragraph
+    // file metadata paragraph
     $file = [];
-    foreach ($node->field_file as $delta => $file_paragraph) {
-      $p = $file_paragraph->entity;
-      $file[$delta]['file_format'] = $p->field_file_format->target_id;
-      $file[$delta]['file_upload'] = $p->field_file_upload->entity->id();
-      $file[$delta]['file_version_description'] = $p->field_file_version_description->value;
+    foreach ($node->field_dataset_version as $delta => $file_metadata_paragraph) {
+      $p = $file_metadata_paragraph->entity;
+      $file[$delta]['dataset_format'] = $p->field_file_format->target_id;
+      $file[$delta]['dataset_upload'] = $p->field_file_upload->entity->id();
+      $file[$delta]['dataset_version_id'] = $p->field_file_version_id->value;
+      $file[$delta]['dataset_version_label'] = $p->field_file_version_label->value;
+      $file[$delta]['dataset_version_description'] = $p->field_file_version_description->value;
     }
 
     // publication info paragraph
@@ -151,7 +153,7 @@ class DatasetController extends ControllerBase {
         'dataset_upload_or_external' => $dataset_upload_or_external,
         'file_access_restrictions' => $file_access_restrictions,
         'external_resource' => $external_resource,
-        'file' => $file,
+        'dataset' => $file,
         'publication_info' => $publication_info,
       ]
     ];
