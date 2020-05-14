@@ -130,11 +130,19 @@ use Drupal\webform\Entity\WebformSubmission;
         else {
           $paragraph_file_id = NULL;
         }
+
+        if (empty($value['dataset_version_id']) && !is_null($paragraph_file_id)) {
+          $dataset_version_id = 1;
+        }
+        else {
+          $dataset_version_id = $value['dataset_version_id'];
+        }
+
         $paragraph_data[$key] = Paragraph::create([
           'type' => 'file_metadata',
           'field_file_format' => $value['dataset_format'],
           'field_file_upload' => $paragraph_file_id,
-          'field_file_version_id' => $value['dataset_version_id'],
+          'field_file_version_id' => $dataset_version_id,
           'field_file_version_label' => $value['dataset_version_label'],
           'field_file_version_description' => $value['dataset_version_description'],
         ]);
