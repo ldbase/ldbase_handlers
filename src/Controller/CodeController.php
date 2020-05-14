@@ -48,8 +48,8 @@ class CodeController extends ControllerBase {
 
     $external_resource = $node->get('field_external_resource')->uri;
 
-    $document_file = $node->field_document_file->entity;
-    $document_file_id = !empty($document_file) ? $document_file->id() : NULL;
+    $code_file = $node->field_code_file->entity;
+    $code_file_id = !empty($code_file) ? $code_file->id() : NULL;
 
     // file access paragraph
     $file_access_restrictions = [];
@@ -79,7 +79,7 @@ class CodeController extends ControllerBase {
         'doi' => $doi,
         'code_upload_or_external' => $code_upload_or_external,
         'external_resource' => $external_resource,
-        'document_file' => $document_file_id,
+        'code_file' => $code_file_id,
         'file_access_restrictions' => $file_access_restrictions,
         'license' => $license,
         'publication_info' => $publication_info,

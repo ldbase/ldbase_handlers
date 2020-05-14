@@ -57,17 +57,17 @@ use Drupal\webform\Entity\WebformSubmission;
 
     $field_external_resource = $submission_array['external_resource'];
 
-    // document file
-    $document_fid = $submission_array['document_file'];
-    if (!empty($document_fid)) {
-      $file = \Drupal\file\Entity\File::load($document_fid);
+    // code file
+    $code_fid = $submission_array['code_file'];
+    if (!empty($code_fid)) {
+      $file = \Drupal\file\Entity\File::load($code_fid);
       $path = $file->getFileUri();
       $data = file_get_contents($path);
-      $node_document_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-      $field_document_file = $node_document_file->id();
+      $node_code_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
+      $field_code_file = $node_code_file->id();
     }
     else {
-      $field_document_file = NULL;
+      $field_code_file = NULL;
     }
 
     // file access restrictions paragraph
@@ -133,7 +133,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_doi' => $field_doi,
         'field_code_upload_or_external' => $field_code_upload_or_external,
         'field_external_resource' => $field_external_resource,
-        'field_document_file' => $field_document_file,
+        'field_code_file' => $field_code_file,
         'field_file_access_restrictions' => $field_file_access_restrictions,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
@@ -162,7 +162,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_doi', $field_doi);
       $node->set('field_code_upload_or_external', $field_code_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_document_file', $field_document_file);
+      $node->set('field_code_file', $field_code_file);
       $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
