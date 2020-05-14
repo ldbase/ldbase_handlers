@@ -31,7 +31,6 @@ use Symfony\Component\Routing\Route;
     $group_member = $node_group->getMember($account);
     if ($group_member) {
       $group_member_roles = $group_member->getRoles();
-      //dd($group_member_roles);
       // allowed roles
       $allowed_roles = ['project_group-editor','project_group-administrator'];
       $allow_access = FALSE;
@@ -40,7 +39,9 @@ use Symfony\Component\Routing\Route;
           $allow_access = TRUE;
         }
       }
-      return $allow_access ? AccessResult::allowed() : AccessResult::forbidden();
+      $access_result = $allow_access? AccessResult::allowed() : AccessResult::forbidden();
+      $access_result->addCacheableDependency($node)->cachePerUser();
+      return $access_result;
     }
     else {
       return AccessResult::forbidden();

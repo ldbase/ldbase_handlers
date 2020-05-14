@@ -44,7 +44,7 @@ ldbase_handlers.add_document_to_project:
     _title: 'Add Document'
     document_type: ''
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -57,7 +57,7 @@ ldbase_handlers.add_document_to_dataset:
     _title: 'Add Document'
     document_type: ''
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -70,7 +70,7 @@ ldbase_handlers.add_document_to_code:
     _title: 'Add Document'
     document_type: ''
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -83,7 +83,7 @@ ldbase_handlers.add_document_to_document:
     _title: 'Add Document'
     document_type: ''
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -110,7 +110,7 @@ ldbase_handlers.add_codebook_to_dataset:
     _title: 'Add Codebook'
     document_type: 'Codebook'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -135,7 +135,7 @@ ldbase_handlers.add_code_to_dataset:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
     _title: 'Add Code'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -147,7 +147,7 @@ ldbase_handlers.add_code_to_code:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
     _title: 'Add Code'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -172,7 +172,7 @@ ldbase_handlers.add_dataset_to_project:
     _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::addDataset'
     _title: 'Add Dataset'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
@@ -184,7 +184,7 @@ ldbase_handlers.add_dataset_to_dataset:
     _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::addDataset'
     _title: 'Add Dataset'
   requirements:
-    _permission: 'access content'
+    _group_update_node_access_check: 'TRUE'
   options:
     parameters:
       node:
