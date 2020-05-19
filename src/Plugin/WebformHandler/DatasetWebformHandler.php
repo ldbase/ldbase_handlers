@@ -62,18 +62,32 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     $field_data_collection_locations = $submission_array['data_collection_locations'];
     $field_assessment_name = $submission_array['assessment_name'];
+
     // demographics paragraph
     $demographics_array = $submission_array['participants'];
     if (!empty($demographics_array)) {
       foreach ($demographics_array as $key => $value) {
         $field_age_range['from'] = $value['age_range_from'];
         $field_age_range['to'] = $value['age_range_to'];
-        $demographic_data[$key] = Paragraph::create([
-          'type' => 'demographics',
-          'field_age_range' => $field_age_range,
-          'field_number_of_participants' => $value['number_of_participants'],
-          'field_participant_type' => $value['participant_type'],
-        ]);
+        $field_number_of_participants = $value['number_of_participants'];
+        $field_participant_type = $value['participant_type'];
+        $participants_target_id = $value['participants_target_id'];
+        $participants_target_revision_id = $value['participants_target_revision_id'];
+
+        if (empty($participants_target_id)) {
+          $demographic_data[$key] = Paragraph::create([
+            'type' => 'demographics',
+            'field_age_range' => $field_age_range,
+            'field_number_of_participants' => $field_number_of_participants,
+            'field_participant_type' => $field_participant_type,
+          ]);
+        }
+        else {
+          $demographic_data[$key] = Paragraph::load($participants_target_id);
+          $demographic_data[$key]->set('field_age_range', $field_age_range);
+          $demographic_data[$key]->set('field_number_of_participants', $field_number_of_participants);
+          $demographic_data[$key]->set('field_participant_type', $field_participant_type);
+        }
         $demographic_data[$key]->save();
         $field_demographics_information[$key] = [
           'target_id' => $demographic_data[$key]->id(),
@@ -84,6 +98,7 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_demographics_information = [];
     }
+
     $field_special_populations = $submission_array['special_populations'];
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
     if (!empty($submission_array['license'])) {
@@ -93,16 +108,32 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_license = [];
     }
     $field_dataset_upload_or_external = $submission_array['dataset_upload_or_external'];
+
     // file access restrictions paragraph
     $file_access_array = $submission_array['file_access_restrictions'];
     if (!empty($file_access_array)) {
       foreach ($file_access_array as $key => $value) {
-        $access_data[$key] = Paragraph::create([
-          'type' => 'file_access_restrictions',
-          'field_file_embargoed' => $value['file_embargoed'] == 'Yes' ? 1 : 0,
-          'field_embaro_expiry_date' => date($value['embargo_expiry_date']),
-          'field_allow_file_requests' => $value['allow_file_requests'] == 'Yes' ? 1 : 0,
-        ]);
+        $field_file_embargoed = $value['file_embargoed'] == 'Yes' ? 1 : 0;
+        $field_embaro_expiry_date = date($value['embargo_expiry_date']);
+        $field_allow_file_requests = $value['allow_file_requests'] == 'Yes' ? 1 : 0;
+        $access_restrictions_target_id = $value['access_restrictions_target_id'];
+        $access_restrictions_target_revision_id = $value['access_restrictions_target_revision_id'];
+
+        if (empty($access_restrictions_target_id)) {
+          $access_data[$key] = Paragraph::create([
+            'type' => 'file_access_restrictions',
+            'field_file_embargoed' => $field_file_embargoed,
+            'field_embaro_expiry_date' => $field_embaro_expiry_date,
+            'field_allow_file_requests' => $field_allow_file_requests,
+          ]);
+        }
+        else {
+          $access_data[$key] = Paragraph::load($access_restrictions_target_id);
+          $access_data[$key]->set('field_file_embargoed', $field_file_embargoed);
+          $access_data[$key]->set('field_embaro_expiry_date', $field_embaro_expiry_date);
+          $access_data[$key]->set('field_allow_file_requests', $field_allow_file_requests);
+        }
+
         $access_data[$key]->save();
         $field_file_access_restrictions[$key] = [
           'target_id' => $access_data[$key]->id(),
@@ -113,6 +144,7 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
        $field_file_access_restrictions = [];
     }
+
     $field_external_resource = $submission_array['external_resource'];
 
     // file metadata paragraph
@@ -137,15 +169,29 @@ use Drupal\webform\Entity\WebformSubmission;
         else {
           $dataset_version_id = $value['dataset_version_id'];
         }
+        $dataset_version_label = $value['dataset_version_label'];
+        $dataset_version_description = $value['dataset_version_description'];
+        $dataset_version_target_id = $value['dataset_version_target_id'];
+        $dataset_version_target_revision_id = $value['dataset_version_target_revision_id'];
 
-        $paragraph_data[$key] = Paragraph::create([
-          'type' => 'file_metadata',
-          'field_file_format' => $value['dataset_format'],
-          'field_file_upload' => $paragraph_file_id,
-          'field_file_version_id' => $dataset_version_id,
-          'field_file_version_label' => $value['dataset_version_label'],
-          'field_file_version_description' => $value['dataset_version_description'],
-        ]);
+        if (empty($dataset_version_target_id)) {
+          $paragraph_data[$key] = Paragraph::create([
+            'type' => 'file_metadata',
+            'field_file_format' => $value['dataset_format'],
+            'field_file_upload' => $paragraph_file_id,
+            'field_file_version_id' => $dataset_version_id,
+            'field_file_version_label' => $dataset_version_label,
+            'field_file_version_description' => $dataset_version_description,
+          ]);
+        }
+        else {
+          $paragraph_data[$key] = Paragraph::load($dataset_version_target_id);
+          $paragraph_data[$key]->set('field_file_format', $value['dataset_format']);
+          $paragraph_data[$key]->set('field_file_upload', $paragraph_file_id);
+          $paragraph_data[$key]->set('field_file_version_id', $dataset_version_id);
+          $paragraph_data[$key]->set('field_file_version_label', $dataset_version_label);
+          $paragraph_data[$key]->set('field_file_version_description', $dataset_version_description);
+        }
         $paragraph_data[$key]->save();
         $field_dataset_version[$key] = [
           'target_id' => $paragraph_data[$key]->id(),
@@ -160,11 +206,24 @@ use Drupal\webform\Entity\WebformSubmission;
     $publications_array = $submission_array['publication_info'];
     if (!empty($publications_array)) {
       foreach ($publications_array as $key => $value) {
-        $paragraph_data[$key] = Paragraph::create([
-          'type' => 'publication_metadata',
-          'field_publication_date' => $value['publication_date'],
-          'field_publication_source' => $value['publication_source'],
-        ]);
+        $publication_date = $value['publication_date'];
+        $publication_source = $value['publication_source'];
+        $publication_target_id = $value['publication_target_id'];
+        $publication_target_revision_id = $value['publication_target_revision_id'];
+
+        if (empty($publication_target_id)) {
+          $paragraph_data[$key] = Paragraph::create([
+            'type' => 'publication_metadata',
+            'field_publication_date' => $publication_date,
+            'field_publication_source' => $publication_source,
+          ]);
+        }
+        else {
+          $paragraph_data[$key] = Paragraph::load($publication_target_id);
+          $paragraph_data[$key]->set('field_publication_date', $publication_date);
+          $paragraph_data[$key]->set('field_publication_source', $publication_source);
+        }
+
         $paragraph_data[$key]->save();
         $field_publication_info[$key] = [
           'target_id' => $paragraph_data[$key]->id(),

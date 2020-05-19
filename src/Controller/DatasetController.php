@@ -90,15 +90,20 @@ class DatasetController extends ControllerBase {
       $participants[$delta]['participant_type'] = $p->field_participant_type->target_id;
       $participants[$delta]['age_range_from'] = $p->get('field_age_range')->from;
       $participants[$delta]['age_range_to'] = $p->get('field_age_range')->to;
+      $participants[$delta]['participants_target_id'] = $demographics_paragraph->target_id;
+      $participants[$delta]['participants_target_revision_id'] = $demographics_paragraph->target_revision_id;
     }
+
     $special_populations = [];
     foreach ($node->get('field_special_populations')->getValue() as $delta => $value) {
       $special_populations[$delta] = $value['target_id'];
     }
+
     $variable_types_in_dataset = [];
     foreach ($node->get('field_variable_types_in_dataset')->getValue() as $delta => $value) {
       $variable_types_in_dataset[$delta] = $value['target_id'];
     }
+
     $license = $node->get('field_license')->target_id;
 
     $dataset_upload_or_external = $node->get('field_dataset_upload_or_external')->value;
@@ -110,6 +115,8 @@ class DatasetController extends ControllerBase {
       $file_access_restrictions[$delta]['file_embargoed'] = $p->field_file_embargoed->value == 1 ? 'Yes' : 'No';
       $file_access_restrictions[$delta]['embargo_expiry_date'] = $p->field_embaro_expiry_date->value;
       $file_access_restrictions[$delta]['allow_file_requests'] = $p->field_allow_file_requests->value == 1 ? 'Yes' : 'No';
+      $file_access_restrictions[$delta]['access_restrictions_target_id'] = $access_paragraph->target_id;
+      $file_access_restrictions[$delta]['access_restrictions_target_revision_id'] = $access_paragraph->target_revision_id;
     }
     $external_resource = $node->get('field_external_resource')->uri;
 
@@ -122,6 +129,8 @@ class DatasetController extends ControllerBase {
       $file[$delta]['dataset_version_id'] = $p->field_file_version_id->value;
       $file[$delta]['dataset_version_label'] = $p->field_file_version_label->value;
       $file[$delta]['dataset_version_description'] = $p->field_file_version_description->value;
+      $file[$delta]['dataset_version_target_id'] = $file_metadata_paragraph->target_id;
+      $file[$delta]['dataset_version_target_revision_id'] = $file_metadata_paragraph->target_revision_id;
     }
 
     // publication info paragraph
@@ -130,6 +139,8 @@ class DatasetController extends ControllerBase {
       $p = $pub_paragraph->entity;
       $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
+      $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
+      $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
     }
 
     $values = [

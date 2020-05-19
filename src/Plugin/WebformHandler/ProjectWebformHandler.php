@@ -55,11 +55,24 @@ use Drupal\webform\Entity\WebformSubmission;
     // grant information paragraph
     $field_grant_information = [];
     foreach ($submission_array['grant_information'] as $key => $value) {
-      $grant_data[$key] = Paragraph::create([
-        'type' => 'grant_information',
-        'field_funding_agency' => $value['funding_agency'],
-        'field_grant_number' => $value['grant_number'],
-      ]);
+      $field_funding_agency = $value['funding_agency'];
+      $field_grant_number = $value['grant_number'];
+      $grant_target_id = $value['grant_target_id'];
+      $grant_target_revision_id = $value['grant_target_revision_id'];
+
+      if (empty($grant_target_id)) {
+        $grant_data[$key] = Paragraph::create([
+          'type' => 'grant_information',
+          'field_funding_agency' => $field_funding_agency,
+          'field_grant_number' => $field_grant_number,
+        ]);
+      }
+      else {
+        $grant_data[$key] = Paragraph::load($grant_target_id);
+        $grant_data[$key]->set('field_funding_agency', $field_funding_agency);
+        $grant_data[$key]->set('field_grant_number', $field_grant_number);
+      }
+
       $grant_data[$key]->save();
       $field_grant_information[$key] = [
         'target_id' => $grant_data[$key]->id(),

@@ -55,6 +55,8 @@ class ProjectController extends ControllerBase {
       $p = $grant_paragraph->entity;
       $grant_information[$delta]['funding_agency'] = $p->field_funding_agency->target_id;
       $grant_information[$delta]['grant_number'] = $p->field_grant_number->value;
+      $grant_information[$delta]['grant_target_id'] = $grant_paragraph->target_id;
+      $grant_information[$delta]['grant_target_revision_id'] = $grant_paragraph->target_revision_id;
     }
     $project_type = [];
     foreach ($node->get('field_project_type')->getValue() as $delta => $value) {

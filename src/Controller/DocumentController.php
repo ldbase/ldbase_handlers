@@ -102,6 +102,8 @@ class DocumentController extends ControllerBase {
       $file_access_restrictions[$delta]['file_embargoed'] = $p->field_file_embargoed->value == 1 ? 'Yes' : 'No';
       $file_access_restrictions[$delta]['embargo_expiry_date'] = $p->field_embaro_expiry_date->value;
       $file_access_restrictions[$delta]['allow_file_requests'] = $p->field_allow_file_requests->value == 1 ? 'Yes' : 'No';
+      $file_access_restrictions[$delta]['access_restrictions_target_id'] = $access_paragraph->target_id;
+      $file_access_restrictions[$delta]['access_restrictions_target_revision_id'] = $access_paragraph->target_revision_id;
     }
 
     $license = $node->get('field_license')->target_id;
@@ -111,6 +113,8 @@ class DocumentController extends ControllerBase {
       $p = $pub_paragraph->entity;
       $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
+      $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
+      $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
     }
 
     $values = [

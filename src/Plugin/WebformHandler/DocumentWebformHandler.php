@@ -79,12 +79,27 @@ use Drupal\webform\Entity\WebformSubmission;
     $file_access_array = $submission_array['file_access_restrictions'];
     if (!empty($file_access_array)) {
       foreach ($file_access_array as $key => $value) {
-        $access_data[$key] = Paragraph::create([
-          'type' => 'file_access_restrictions',
-          'field_file_embargoed' => $value['file_embargoed'] == 'Yes' ? 1 : 0,
-          'field_embaro_expiry_date' => date($value['embargo_expiry_date']),
-          'field_allow_file_requests' => $value['allow_file_requests'] == 'Yes' ? 1 : 0,
-        ]);
+        $field_file_embargoed = $value['file_embargoed'] == 'Yes' ? 1 : 0;
+        $field_embaro_expiry_date = date($value['embargo_expiry_date']);
+        $field_allow_file_requests = $value['allow_file_requests'] == 'Yes' ? 1 : 0;
+        $access_restrictions_target_id = $value['access_restrictions_target_id'];
+        $access_restrictions_target_revision_id = $value['access_restrictions_target_revision_id'];
+
+        if (empty($access_restrictions_target_id)) {
+          $access_data[$key] = Paragraph::create([
+            'type' => 'file_access_restrictions',
+            'field_file_embargoed' => $field_file_embargoed,
+            'field_embaro_expiry_date' => $field_embaro_expiry_date,
+            'field_allow_file_requests' => $field_allow_file_requests,
+          ]);
+        }
+        else {
+          $access_data[$key] = Paragraph::load($access_restrictions_target_id);
+          $access_data[$key]->set('field_file_embargoed', $field_file_embargoed);
+          $access_data[$key]->set('field_embaro_expiry_date', $field_embaro_expiry_date);
+          $access_data[$key]->set('field_allow_file_requests', $field_allow_file_requests);
+        }
+
         $access_data[$key]->save();
         $field_file_access_restrictions[$key] = [
           'target_id' => $access_data[$key]->id(),
@@ -105,19 +120,35 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // publication information paragraph
     $publications_array = $submission_array['publication_info'];
-    $field_publication_info = [];
-    foreach ($publications_array as $key => $value) {
-      $paragraph_data[$key] = Paragraph::create([
-        'type' => 'publication_metadata',
-        'field_publication_date' => $publications_array[$key]['publication_date'],
-        'field_publication_source' => $publications_array[$key]['publication_source'],
-      ]);
-      $paragraph_data[$key]->save();
+    if (!empty($publications_array)) {
+      foreach ($publications_array as $key => $value) {
+        $publication_date = $value['publication_date'];
+        $publication_source = $value['publication_source'];
+        $publication_target_id = $value['publication_target_id'];
+        $publication_target_revision_id = $value['publication_target_revision_id'];
 
-      $field_publication_info[$key] = [
-        'target_id' => $paragraph_data[$key]->id(),
-        'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-      ];
+        if (empty($publication_target_id)) {
+          $paragraph_data[$key] = Paragraph::create([
+            'type' => 'publication_metadata',
+            'field_publication_date' => $publication_date,
+            'field_publication_source' => $publication_source,
+          ]);
+        }
+        else {
+          $paragraph_data[$key] = Paragraph::load($publication_target_id);
+          $paragraph_data[$key]->set('field_publication_date', $publication_date);
+          $paragraph_data[$key]->set('field_publication_source', $publication_source);
+        }
+
+        $paragraph_data[$key]->save();
+        $field_publication_info[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
+        ];
+      }
+    }
+    else {
+      $field_publication_info = [];
     }
 
     // hidden passed_id field
