@@ -50,16 +50,41 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_location = $submission_array['location'];
     $field_component_skills = $submission_array['constructs'];
     $field_time_points = $submission_array['time_points'];
-    $data_collection_period = $submission_array['data_collection_period'];
-    if (!empty($data_collection_period)) {
-      foreach ($data_collection_period as $key => $value) {
-        $field_data_collection_period[$key]['value'] = $value['start_date'];
-        $field_data_collection_period[$key]['end_value'] = $value['end_date'];
+
+    // date range select paragraph
+    $field_data_collection_range = [];
+    foreach ($submission_array['data_collection_period'] as $key => $value) {
+      $field_from_month = $value['start_month'];
+      $field_from_year = $value['start_year'];
+      $field_to_month = $value['end_month'];
+      $field_to_year = $value['end_year'];
+      $period_target_id = $value['period_target_id'];
+      $period_target_revision_id = $value['period_target_revision_id'];
+
+      if (empty($period_target_id)) {
+        $date_range[$key] = Paragraph::create([
+          'type' => 'date_range_selection',
+          'field_from_month' => $field_from_month,
+          'field_from_year' => $field_from_year,
+          'field_to_month' => $field_to_month,
+          'field_to_year' => $field_to_year,
+        ]);
       }
+      else {
+        $date_range[$key] = Paragraph::load($period_target_id);
+        $date_range[$key]->set('field_from_month', $field_from_month);
+        $date_range[$key]->set('field_from_year', $field_from_year);
+        $date_range[$key]->set('field_to_month', $field_to_month);
+        $date_range[$key]->set('field_to_year', $field_to_year);
+      }
+
+      $date_range[$key]->save();
+      $field_data_collection_range[$key] = [
+        'target_id' => $date_range[$key]->id(),
+        'target_revision_id' => $date_range[$key]->getRevisionId(),
+      ];
     }
-    else {
-      $field_data_collection_period = [];
-    }
+
     $field_data_collection_locations = $submission_array['data_collection_locations'];
     $field_assessment_name = $submission_array['assessment_name'];
 
@@ -206,7 +231,8 @@ use Drupal\webform\Entity\WebformSubmission;
     $publications_array = $submission_array['publication_info'];
     if (!empty($publications_array)) {
       foreach ($publications_array as $key => $value) {
-        $publication_date = $value['publication_date'];
+        $publication_month = $value['publication_month'];
+        $publication_year = $value['publication_year'];
         $publication_source = $value['publication_source'];
         $publication_target_id = $value['publication_target_id'];
         $publication_target_revision_id = $value['publication_target_revision_id'];
@@ -214,13 +240,15 @@ use Drupal\webform\Entity\WebformSubmission;
         if (empty($publication_target_id)) {
           $paragraph_data[$key] = Paragraph::create([
             'type' => 'publication_metadata',
-            'field_publication_date' => $publication_date,
+            'field_publication_month' => $publication_month,
+            'field_publication_year' => $publication_year,
             'field_publication_source' => $publication_source,
           ]);
         }
         else {
           $paragraph_data[$key] = Paragraph::load($publication_target_id);
-          $paragraph_data[$key]->set('field_publication_date', $publication_date);
+          $paragraph_data[$key]->set('field_publication_month', $publication_month);
+          $paragraph_data[$key]->set('field_publication_year', $publication_year);
           $paragraph_data[$key]->set('field_publication_source', $publication_source);
         }
 
@@ -251,7 +279,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_location' => $field_location,
         'field_component_skills' => $field_component_skills,
         'field_time_points' => $field_time_points,
-        'field_data_collection_period' => $field_data_collection_period,
+        'field_data_collection_range' => $field_data_collection_range,
         'field_data_collection_locations' => $field_data_collection_locations,
         'field_assessment_name' => $field_assessment_name,
         'field_demographics_information' => $field_demographics_information,
@@ -289,7 +317,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_location', $field_location);
       $node->set('field_component_skills', $field_component_skills);
       $node->set('field_time_points', $field_time_points);
-      $node->set('field_data_collection_period', $field_data_collection_period);
+      $node->set('field_data_collection_range', $field_data_collection_range);
       $node->set('field_data_collection_locations', $field_data_collection_locations);
       $node->set('field_assessment_name', $field_assessment_name);
       $node->set('field_demographics_information', $field_demographics_information);
@@ -318,6 +346,8 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->validateDataCollectionDates($form_state);
     // validate participants
     $this->validateParticipants($form_state);
+    // validate publication date
+    $this->validatePublicationDate($form_state);
   }
 
   /**
@@ -350,9 +380,36 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     else {
       foreach ($data_collection_period as $delta => $row_array) {
-        if (strtotime($row_array['end_date']) <= strtotime($row_array['start_date'])) {
-          $message = 'The data collection end date must be after the start date.';
-          $form_state->setErrorByName('data_collection_period][items]['.$delta, $message);
+        // if start month then start year
+        if (!empty($row_array['start_month']) && empty($row_array['start_year'])) {
+          $message = 'If you select a data collection start month, then you must enter a start year.';
+          $form_state->setErrorByName('data_collection_period][items]['.$delta.'][start_year', $message);
+        }
+        // if end month then end year
+        if (!empty($row_array['end_month']) && empty($row_array['end_year'])) {
+          $message = 'If you select a data collection end month, then you must enter an end year.';
+          $form_state->setErrorByName('data_collection_period][items]['.$delta.'][end_year', $message);
+        }
+        // if end year
+          // then must have start year
+          // and end year must be >= to start year
+          // if years are equal and months are not empty, then to_month >= from_month
+        if (!empty($row_array['end_year'])) {
+          if (empty($row_array['start_year'])) {
+            $message = 'If you have a data collection end year, then you must enter a start year.';
+            $form_state->setErrorByName('data_collection_period][items]['.$delta, $message);
+          }
+          elseif ($row_array['end_year'] < $row_array['start_year']) {
+            $message = 'The data collection end year must be equal to or greater the start year.';
+            $form_state->setErrorByName('data_collection_period][items]['.$delta, $message);
+          }
+          elseif (($row_array['end_year'] == $row_array['start_year'])
+          && (!empty($row_array['end_month']) && !empty($row_array['start_month']))) {
+            if ($row_array['end_month'] < $row_array['start_month']) {
+              $message = 'The data collection end month and year must be later or equal to the start month and year.';
+              $form_state->setErrorByName('data_collection_period][items]['.$delta, $message);
+            }
+          }
         }
       }
     }
@@ -386,6 +443,25 @@ use Drupal\webform\Entity\WebformSubmission;
           $age_range_message = "The participant Age Range To must be greater than the Age Range From.";
           $form_state->setErrorByName('participants][items]['.$delta.'][age_range_from', $age_range_message);
           $form_state->setErrorByName('participants][items]['.$delta.'][age_range_to');
+        }
+      }
+    }
+  }
+
+  /**
+   * Validate Publication date
+   * If month is selected, then year must be selected
+   */
+  private function validatePublicationDate(FormStateInterface $form_state) {
+    $publications = $form_state->getValue('publication_info');
+    if (empty($publications)) {
+      return;
+    }
+    else {
+      foreach ($publications as $delta => $row_array) {
+        if (!empty($row_array['publication_month']) && empty($row_array['publication_year'])) {
+          $message = 'If you select a publication month, then you must select a publication year';
+          $form_state->setErrorByName('publication_info][items]['.$delta.'][publication_year', $message);
         }
       }
     }

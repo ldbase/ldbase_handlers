@@ -117,7 +117,8 @@ use Drupal\webform\Entity\WebformSubmission;
     $publications_array = $submission_array['publication_info'];
     if (!empty($publications_array)) {
       foreach ($publications_array as $key => $value) {
-        $publication_date = $value['publication_date'];
+        $publication_month = $value['publication_month'];
+        $publication_year = $value['publication_year'];
         $publication_source = $value['publication_source'];
         $publication_target_id = $value['publication_target_id'];
         $publication_target_revision_id = $value['publication_target_revision_id'];
@@ -125,13 +126,15 @@ use Drupal\webform\Entity\WebformSubmission;
         if (empty($publication_target_id)) {
           $paragraph_data[$key] = Paragraph::create([
             'type' => 'publication_metadata',
-            'field_publication_date' => $publication_date,
+            'field_publication_month' => $publication_month,
+            'field_publication_year' => $publication_year,
             'field_publication_source' => $publication_source,
           ]);
         }
         else {
           $paragraph_data[$key] = Paragraph::load($publication_target_id);
-          $paragraph_data[$key]->set('field_publication_date', $publication_date);
+          $paragraph_data[$key]->set('field_publication_month', $publication_month);
+          $paragraph_data[$key]->set('field_publication_year', $publication_year);
           $paragraph_data[$key]->set('field_publication_source', $publication_source);
         }
 
@@ -206,6 +209,14 @@ use Drupal\webform\Entity\WebformSubmission;
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    // validate publication date
+    $this->validatePublicationDate($form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $submission_array = $webform_submission->getData();
     // if no DOI redirect to DOI creation confirmation
@@ -220,6 +231,25 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  /**
+   * Validate Publication date
+   * If month is selected, then year must be selected
+   */
+  private function validatePublicationDate(FormStateInterface $form_state) {
+    $publications = $form_state->getValue('publication_info');
+    if (empty($publications)) {
+      return;
+    }
+    else {
+      foreach ($publications as $delta => $row_array) {
+        if (!empty($row_array['publication_month']) && empty($row_array['publication_year'])) {
+          $message = 'If you select a publication month, then you must select a publication year';
+          $form_state->setErrorByName('publication_info][items]['.$delta.'][publication_year', $message);
+        }
+      }
+    }
   }
 
  }

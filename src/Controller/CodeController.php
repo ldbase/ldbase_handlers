@@ -67,7 +67,8 @@ class CodeController extends ControllerBase {
     $publication_info = [];
     foreach ($node->field_publication_info as $delta => $pub_paragraph) {
       $p = $pub_paragraph->entity;
-      $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
+      $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
+      $publication_info[$delta]['publication_year'] = $p->field_publication_year->value;
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
       $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
       $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;

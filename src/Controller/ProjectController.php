@@ -43,10 +43,16 @@ class ProjectController extends ControllerBase {
     $related_persons = $node->get('field_related_persons')->getValue();
     $related_organizations = $node->get('field_related_organizations')->getValue();
     $doi = $node->get('field_doi')->getValue();
+    // date range selection paragraph
     $activity_range = [];
-    foreach ($node->get('field_activity_range')->getValue() as $delta => $value) {
-      $activity_range[$delta]['start_date'] = $value['value'];
-      $activity_range[$delta]['end_date'] = $value['end_value'];
+    foreach ($node->field_activity_range_select as $delta => $date_range_paragraph) {
+      $p = $date_range_paragraph->entity;
+      $activity_range[$delta]['from_month'] = $p->field_from_month->value;
+      $activity_range[$delta]['from_year'] =  $p->field_from_year->value;
+      $activity_range[$delta]['to_month'] = $p->field_to_month->value;
+      $activity_range[$delta]['to_year'] =  $p->field_to_year->value;
+      $activity_range[$delta]['activity_range_target_id'] = $date_range_paragraph->target_id;
+      $activity_range[$delta]['activity_range_target_revision_id'] =  $date_range_paragraph->target_revision_id;
     }
     $website = $node->get('field_website')->getValue();
     //grant information paragraph

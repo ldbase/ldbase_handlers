@@ -70,9 +70,14 @@ class DatasetController extends ControllerBase {
     }
     $time_points = $node->get('field_time_points')->value;
     $data_collection_period = [];
-    foreach ($node->get('field_data_collection_period')->getValue() as $delta => $value) {
-      $data_collection_period[$delta]['start_date'] = $value['value'];
-      $data_collection_period[$delta]['end_date'] = $value['end_value'];
+    foreach ($node->field_data_collection_range as $delta => $date_range_paragraph) {
+      $p = $date_range_paragraph->entity;
+      $data_collection_period[$delta]['start_month'] = $p->field_from_month->value;
+      $data_collection_period[$delta]['start_year'] = $p->field_from_year->value;
+      $data_collection_period[$delta]['end_month'] = $p->field_to_month->value;
+      $data_collection_period[$delta]['end_year'] = $p->field_to_year->value;
+      $data_collection_period[$delta]['period_target_id'] = $date_range_paragraph->target_id;
+      $data_collection_period[$delta]['period_target_revision_id'] = $date_range_paragraph->target_revision_id;
     }
     $data_collection_locations = [];
     foreach ($node->get('field_data_collection_locations')->getValue() as $delta => $value) {
@@ -137,7 +142,8 @@ class DatasetController extends ControllerBase {
     $publication_info = [];
     foreach ($node->field_publication_info as $delta => $pub_paragraph) {
       $p = $pub_paragraph->entity;
-      $publication_info[$delta]['publication_date'] = $p->field_publication_date->value;
+      $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
+      $publication_info[$delta]['publication_year'] = $p->field_publication_year->value;
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
       $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
       $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;

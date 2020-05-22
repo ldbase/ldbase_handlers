@@ -45,13 +45,43 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_related_persons = $submission_array['related_persons'];
     $field_related_organizations = $submission_array['related_organizations'];
     $field_doi = $submission_array['doi'];
-    $activity_range = $submission_array['activity_range'];
-    $field_activity_range = [];
-    foreach ($activity_range as $key => $value) {
-      $field_activity_range[$key]['value'] = $value['start_date'];
-      $field_activity_range[$key]['end_value'] = $value['end_date'];
+
+    // date range select paragraph
+    $field_activity_range_select = [];
+    foreach ($submission_array['activity_range'] as $key => $value) {
+      $field_from_month = $value['from_month'];
+      $field_from_year = $value['from_year'];
+      $field_to_month = $value['to_month'];
+      $field_to_year = $value['to_year'];
+      $activity_range_target_id = $value['activity_range_target_id'];
+      $activity_range_target_revision_id = $value['activity_range_target_revision_id'];
+
+      if (empty($activity_range_target_id)) {
+        $date_range[$key] = Paragraph::create([
+          'type' => 'date_range_selection',
+          'field_from_month' => $field_from_month,
+          'field_from_year' => $field_from_year,
+          'field_to_month' => $field_to_month,
+          'field_to_year' => $field_to_year,
+        ]);
+      }
+      else {
+        $date_range[$key] = Paragraph::load($activity_range_target_id);
+        $date_range[$key]->set('field_from_month', $field_from_month);
+        $date_range[$key]->set('field_from_year', $field_from_year);
+        $date_range[$key]->set('field_to_month', $field_to_month);
+        $date_range[$key]->set('field_to_year', $field_to_year);
+      }
+
+      $date_range[$key]->save();
+      $field_activity_range_select[$key] = [
+        'target_id' => $date_range[$key]->id(),
+        'target_revision_id' => $date_range[$key]->getRevisionId(),
+      ];
     }
+
     $field_website = $submission_array['website'];
+
     // grant information paragraph
     $field_grant_information = [];
     foreach ($submission_array['grant_information'] as $key => $value) {
@@ -94,7 +124,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_related_persons' => $field_related_persons,
         'field_related_organizations' => $field_related_organizations,
         'field_doi' => $field_doi,
-        'field_activity_range' => $field_activity_range,
+        'field_activity_range_select' => $field_activity_range_select,
         'field_website' => $field_website,
         'field_grant_information' => $field_grant_information,
         'field_project_type' => $field_project_type,
@@ -121,7 +151,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_related_persons', $field_related_persons);
       $node->set('field_related_organizations', $field_related_organizations);
       $node->set('field_doi', $field_doi);
-      $node->set('field_activity_range', $field_activity_range);
+      $node->set('field_activity_range_select', $field_activity_range_select);
       $node->set('field_website', $field_website);
       $node->set('field_grant_information', $field_grant_information);
       $node->set('field_project_type', $field_project_type);
@@ -174,19 +204,42 @@ use Drupal\webform\Entity\WebformSubmission;
       return;
     }
     else {
+
       foreach ($activity_ranges as $delta => $row_array) {
-        if (!empty($row_array['end_date'])) {
-          if (empty($row_array['start_date'])) {
-            $message = 'If you have a project end date, then you must enter a project start date.';
-            $form_state->setErrorByName('activity_range][items]['.$delta.'][start_date', $message);
-          }
-          elseif (strtotime($row_array['end_date']) <= strtotime($row_array['start_date'])) {
-            $message = 'The project end date must be after the start date.';
+        // if start month then start year
+        if (!empty($row_array['from_month']) && empty($row_array['from_year'])) {
+          $message = 'If you select a project start month, then you must enter a start year.';
+          $form_state->setErrorByName('activity_range][items]['.$delta.'][from_year', $message);
+        }
+        // if end month then end year
+        if (!empty($row_array['to_month']) && empty($row_array['to_year'])) {
+          $message = 'If you select a project end month, then you must enter an end year.';
+          $form_state->setErrorByName('activity_range][items]['.$delta.'][to_year', $message);
+        }
+        // if end year
+          // then must have start year
+          // and end year must be >= to start year
+          // if years are equal and months are not empty, then to_month >= from_month
+        if (!empty($row_array['to_year'])) {
+          if (empty($row_array['from_year'])) {
+            $message = 'If you have a project end year, then you must enter a start year.';
             $form_state->setErrorByName('activity_range][items]['.$delta, $message);
+          }
+          elseif ($row_array['to_year'] < $row_array['from_year']) {
+            $message = 'The project end year must be equal to or greater the start year.';
+            $form_state->setErrorByName('activity_range][items]['.$delta, $message);
+          }
+          elseif (($row_array['to_year'] == $row_array['from_year'])
+          && (!empty($row_array['to_month']) && !empty($row_array['from_month']))) {
+            if ($row_array['to_month'] < $row_array['from_month']) {
+              $message = 'The project end month and year must be later or equal to the start month and year.';
+              $form_state->setErrorByName('activity_range][items]['.$delta, $message);
+            }
           }
         }
       }
     }
+    //dd($form_state);
   }
 
  }

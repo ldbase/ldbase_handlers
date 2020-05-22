@@ -39,3 +39,25 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
   }
 }
 
+/**
+ * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter()
+ * Creates year options
+ *
+ * @param array $options
+ * @param array $element
+ */
+function ldbase_handlers_webform_options_years_alter(array &$options, array &$element) {
+  // load cached options if avaliable
+  if ($cache = \Drupal::cache()->get('years')) {
+    $options = $cache->data;
+    return;
+  }
+
+  $this_year = date("Y");
+  for ($x = $this_year + 2; $x >= $this_year - 50; $x--) {
+    $options[$x] = $x;
+  }
+  // cache options
+  \Drupal::cache()->set('years', $options);
+}
+
