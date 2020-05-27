@@ -137,6 +137,8 @@ class DatasetController extends ControllerBase {
       $file[$delta]['dataset_version_target_id'] = $file_metadata_paragraph->target_id;
       $file[$delta]['dataset_version_target_revision_id'] = $file_metadata_paragraph->target_revision_id;
     }
+    $latest_version = array_pop($file);
+    $file = [$latest_version];
 
     // publication info paragraph
     $publication_info = [];

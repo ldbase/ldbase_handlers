@@ -327,7 +327,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_dataset_version', $field_dataset_version);
+      //$node->set('field_dataset_version', $field_dataset_version);
       $node->set('field_publication_info', $field_publication_info);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
