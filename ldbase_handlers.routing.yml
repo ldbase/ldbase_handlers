@@ -215,3 +215,16 @@ ldbase_handlers.confirm_doi_creation:
     parameters:
       node:
         type: entity:node
+
+# Request file access 
+ldbase_handlers.request_file_access:
+  path: '/forms/request-file-access/{node}'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\RequestFileAccessController::requestAccess'
+    _title: "Request access to file"
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node
