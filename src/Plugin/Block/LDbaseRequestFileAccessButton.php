@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\ldbase_content\Plugin\Block;
+namespace Drupal\ldbase_handlers\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 
@@ -20,7 +20,7 @@ class LDbaseRequestFileAccessButton extends BlockBase {
    */
   public function build() {
     $text = $this->t('Request file access');
-    $url = '/form/request-file-access/';
+    $url = '/forms/request-file-access/';
 
     $node = \Drupal::routeMatch()->getParameter('node');
     if ($node instanceof \Drupal\node\NodeInterface) {
