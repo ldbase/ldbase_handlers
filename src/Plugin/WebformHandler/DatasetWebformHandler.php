@@ -178,11 +178,8 @@ use Drupal\webform\Entity\WebformSubmission;
       foreach ($files_array as $key => $value) {
         $file_id = $files_array[$key]['dataset_upload'];
         if (!empty($file_id)) {
-          $file = \Drupal\file\Entity\File::load($file_id);
-          $path = $file->getFileUri();
-          $data = file_get_contents($path);
-          $paragraph_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-          $paragraph_file_id = $paragraph_file->id();
+          $s3_fid = \Drupal::service('s3fs_storage')->transferWebformFileToS3fs($file_id, 'dataset');
+          $paragraph_file_id = $s3_fid;
         }
         else {
           $paragraph_file_id = NULL;

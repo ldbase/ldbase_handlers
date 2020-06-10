@@ -60,11 +60,8 @@ use Drupal\webform\Entity\WebformSubmission;
     // code file
     $code_fid = $submission_array['code_file'];
     if (!empty($code_fid)) {
-      $file = \Drupal\file\Entity\File::load($code_fid);
-      $path = $file->getFileUri();
-      $data = file_get_contents($path);
-      $node_code_file = file_save_data($data, 'public://' . $file->getFilename(), FILE_EXISTS_RENAME);
-      $field_code_file = $node_code_file->id();
+      $s3_fid = \Drupal::service('s3fs_storage')->transferWebformFileToS3fs($code_fid, 'code');
+      $field_code_file = $s3_fid;
     }
     else {
       $field_code_file = NULL;
