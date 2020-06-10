@@ -61,9 +61,9 @@ use Drupal\webform\Entity\WebformSubmission;
     // Get image upload, save to public files, attach to node.
     $image_fid = $submission_array['thumbnail'];
     if (!empty($image_fid)) {
-      $s3_fid = \Drupal::service('s3fs_storage')->transferWebformFileToS3fs($image_fid, 'person');
+      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($image_fid, 'person');
       $field_thumbnail = [
-        'target_id' => $s3_fid,
+        'target_id' => $new_fid,
         'alt' => 'Thumbnail for ' . $title,
         'title' => $title,
       ];

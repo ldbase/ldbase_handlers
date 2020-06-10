@@ -65,8 +65,8 @@ use Drupal\webform\Entity\WebformSubmission;
     // document file
     $document_fid = $submission_array['document_file'];
     if (!empty($document_fid)) {
-      $s3_fid = \Drupal::service('s3fs_storage')->transferWebformFileToS3fs($document_fid, 'document');
-      $field_document_file = $s3_fid;
+      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($document_fid, 'document');
+      $field_document_file = $new_fid;
     }
     else {
       $field_document_file = NULL;
