@@ -129,8 +129,8 @@ class DatasetController extends ControllerBase {
     $file = [];
     foreach ($node->field_dataset_version as $delta => $file_metadata_paragraph) {
       $p = $file_metadata_paragraph->entity;
-      $file[$delta]['dataset_format'] = $p->field_file_format->target_id;
-      $file[$delta]['dataset_upload'] = $p->field_file_upload->entity->id();
+      $file[$delta]['dataset_version_format'] = $p->field_file_format->target_id;
+      $file[$delta]['dataset_version_upload'] = $p->field_file_upload->entity->id();
       $file[$delta]['dataset_version_id'] = $p->field_file_version_id->value;
       $file[$delta]['dataset_version_label'] = $p->field_file_version_label->value;
       $file[$delta]['dataset_version_description'] = $p->field_file_version_description->value;
@@ -172,7 +172,7 @@ class DatasetController extends ControllerBase {
         'dataset_upload_or_external' => $dataset_upload_or_external,
         'file_access_restrictions' => $file_access_restrictions,
         'external_resource' => $external_resource,
-        'dataset' => $file,
+        'dataset_version' => $file,
         'publication_info' => $publication_info,
       ]
     ];

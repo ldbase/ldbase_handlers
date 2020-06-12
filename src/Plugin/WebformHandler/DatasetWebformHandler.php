@@ -173,10 +173,10 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_external_resource = $submission_array['external_resource'];
 
     // file metadata paragraph
-    $files_array = $submission_array['dataset'];
+    $files_array = $submission_array['dataset_version'];
     if (!empty($files_array)) {
       foreach ($files_array as $key => $value) {
-        $file_id = $files_array[$key]['dataset_upload'];
+        $file_id = $files_array[$key]['dataset_version_upload'];
         if (!empty($file_id)) {
           $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
           $paragraph_file_id = $new_fid;
@@ -199,7 +199,7 @@ use Drupal\webform\Entity\WebformSubmission;
         if (empty($dataset_version_target_id)) {
           $paragraph_data[$key] = Paragraph::create([
             'type' => 'file_metadata',
-            'field_file_format' => $value['dataset_format'],
+            'field_file_format' => $value['dataset_version_format'],
             'field_file_upload' => $paragraph_file_id,
             'field_file_version_id' => $dataset_version_id,
             'field_file_version_label' => $dataset_version_label,
@@ -208,7 +208,7 @@ use Drupal\webform\Entity\WebformSubmission;
         }
         else {
           $paragraph_data[$key] = Paragraph::load($dataset_version_target_id);
-          $paragraph_data[$key]->set('field_file_format', $value['dataset_format']);
+          $paragraph_data[$key]->set('field_file_format', $value['dataset_version_format']);
           $paragraph_data[$key]->set('field_file_upload', $paragraph_file_id);
           $paragraph_data[$key]->set('field_file_version_id', $dataset_version_id);
           $paragraph_data[$key]->set('field_file_version_label', $dataset_version_label);
@@ -324,7 +324,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_external_resource', $field_external_resource);
-      //$node->set('field_dataset_version', $field_dataset_version);
+      $node->set('field_dataset_version', $field_dataset_version);
       $node->set('field_publication_info', $field_publication_info);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
