@@ -110,20 +110,19 @@ class DatasetController extends ControllerBase {
     }
 
     $license = $node->get('field_license')->target_id;
-
     $dataset_upload_or_external = $node->get('field_dataset_upload_or_external')->value;
-
-    // file access paragraph
-    $file_access_restrictions = [];
-    foreach ($node->field_file_access_restrictions as $delta => $access_paragraph) {
-      $p = $access_paragraph->entity;
-      $file_access_restrictions[$delta]['file_embargoed'] = $p->field_file_embargoed->value == 1 ? 'Yes' : 'No';
-      $file_access_restrictions[$delta]['embargo_expiry_date'] = $p->field_embaro_expiry_date->value;
-      $file_access_restrictions[$delta]['allow_file_requests'] = $p->field_allow_file_requests->value == 1 ? 'Yes' : 'No';
-      $file_access_restrictions[$delta]['access_restrictions_target_id'] = $access_paragraph->target_id;
-      $file_access_restrictions[$delta]['access_restrictions_target_revision_id'] = $access_paragraph->target_revision_id;
-    }
     $external_resource = $node->get('field_external_resource')->uri;
+
+    // publication info paragraph
+    $publication_info = [];
+    foreach ($node->field_publication_info as $delta => $pub_paragraph) {
+      $p = $pub_paragraph->entity;
+      $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
+      $publication_info[$delta]['publication_year'] = $p->field_publication_year->value;
+      $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
+      $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
+      $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
+    }
 
     // file metadata paragraph
     $file = [];
@@ -140,16 +139,8 @@ class DatasetController extends ControllerBase {
     $latest_version = array_pop($file);
     $file = [$latest_version];
 
-    // publication info paragraph
-    $publication_info = [];
-    foreach ($node->field_publication_info as $delta => $pub_paragraph) {
-      $p = $pub_paragraph->entity;
-      $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
-      $publication_info[$delta]['publication_year'] = $p->field_publication_year->value;
-      $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
-      $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
-      $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
-    }
+    //Set $embargoed
+    //Set $embargo_expiry
 
     $values = [
       'data' => [
@@ -170,10 +161,11 @@ class DatasetController extends ControllerBase {
         'variable_types_in_dataset' => $variable_types_in_dataset,
         'license' => $license,
         'dataset_upload_or_external' => $dataset_upload_or_external,
-        'file_access_restrictions' => $file_access_restrictions,
         'external_resource' => $external_resource,
-        'dataset_version' => $file,
         'publication_info' => $publication_info,
+        'dataset_version' => $file,
+        //'embargoed' => $embargoed,
+        //'embargo_expiry' => $embargo_expiry,
       ]
     ];
 

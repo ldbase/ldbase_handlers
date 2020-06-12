@@ -43,26 +43,10 @@ class CodeController extends ControllerBase {
     $authors = $node->get('field_related_persons')->getValue();
     $code_type = $node->get('field_code_type')->target_id;
     $doi = $node->get('field_doi')->getValue();
-
     $code_upload_or_external = $node->get('field_code_upload_or_external')->value;
-
     $external_resource = $node->get('field_external_resource')->uri;
-
-    $code_file = $node->field_code_file->entity;
-    $code_file_id = !empty($code_file) ? $code_file->id() : NULL;
-
-    // file access paragraph
-    $file_access_restrictions = [];
-    foreach ($node->field_file_access_restrictions as $delta => $access_paragraph) {
-      $p = $access_paragraph->entity;
-      $file_access_restrictions[$delta]['file_embargoed'] = $p->field_file_embargoed->value == 1 ? 'Yes' : 'No';
-      $file_access_restrictions[$delta]['embargo_expiry_date'] = $p->field_embaro_expiry_date->value;
-      $file_access_restrictions[$delta]['allow_file_requests'] = $p->field_allow_file_requests->value == 1 ? 'Yes' : 'No';
-      $file_access_restrictions[$delta]['access_restrictions_target_id'] = $access_paragraph->target_id;
-      $file_access_restrictions[$delta]['access_restrictions_target_revision_id'] = $access_paragraph->target_revision_id;
-    }
-
     $license = $node->get('field_license')->target_id;
+
     // publication info paragraph
     $publication_info = [];
     foreach ($node->field_publication_info as $delta => $pub_paragraph) {
@@ -74,6 +58,12 @@ class CodeController extends ControllerBase {
       $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
     }
 
+    $code_file = $node->field_code_file->entity;
+    $code_file_id = !empty($code_file) ? $code_file->id() : NULL;
+
+    //Set $embargoed
+    //Set $embargo_expiry
+
     $values = [
       'data' => [
         'node_id' => $nid,
@@ -84,14 +74,16 @@ class CodeController extends ControllerBase {
         'doi' => $doi,
         'code_upload_or_external' => $code_upload_or_external,
         'external_resource' => $external_resource,
-        'code_file' => $code_file_id,
-        'file_access_restrictions' => $file_access_restrictions,
         'license' => $license,
         'publication_info' => $publication_info,
+        'code_file' => $code_file_id,
+        //'embargoed' => $embargoed,
+        //'embargo_expiry' => $embargo_expiry,
       ]
     ];
 
     $operation = 'edit';
+
     // get webform and load values
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_code');
     $webform = $webform->getSubmissionForm($values,$operation);
