@@ -126,51 +126,52 @@ use Drupal\webform\Entity\WebformSubmission;
 
     $field_special_populations = $submission_array['special_populations'];
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
+
     if (!empty($submission_array['license'])) {
       $field_license = $submission_array['license'];
     }
     else {
       $field_license = [];
     }
+
     $field_dataset_upload_or_external = $submission_array['dataset_upload_or_external'];
+    $field_external_resource = $submission_array['external_resource'];
 
-    // file access restrictions paragraph
-    $file_access_array = $submission_array['file_access_restrictions'];
-    if (!empty($file_access_array)) {
-      foreach ($file_access_array as $key => $value) {
-        $field_file_embargoed = $value['file_embargoed'] == 'Yes' ? 1 : 0;
-        $field_embaro_expiry_date = date($value['embargo_expiry_date']);
-        $field_allow_file_requests = $value['allow_file_requests'] == 'Yes' ? 1 : 0;
-        $access_restrictions_target_id = $value['access_restrictions_target_id'];
-        $access_restrictions_target_revision_id = $value['access_restrictions_target_revision_id'];
+    // publication information paragraph
+    $publications_array = $submission_array['publication_info'];
+    if (!empty($publications_array)) {
+      foreach ($publications_array as $key => $value) {
+        $publication_month = $value['publication_month'];
+        $publication_year = $value['publication_year'];
+        $publication_source = $value['publication_source'];
+        $publication_target_id = $value['publication_target_id'];
+        $publication_target_revision_id = $value['publication_target_revision_id'];
 
-        if (empty($access_restrictions_target_id)) {
-          $access_data[$key] = Paragraph::create([
-            'type' => 'file_access_restrictions',
-            'field_file_embargoed' => $field_file_embargoed,
-            'field_embaro_expiry_date' => $field_embaro_expiry_date,
-            'field_allow_file_requests' => $field_allow_file_requests,
+        if (empty($publication_target_id)) {
+          $paragraph_data[$key] = Paragraph::create([
+            'type' => 'publication_metadata',
+            'field_publication_month' => $publication_month,
+            'field_publication_year' => $publication_year,
+            'field_publication_source' => $publication_source,
           ]);
         }
         else {
-          $access_data[$key] = Paragraph::load($access_restrictions_target_id);
-          $access_data[$key]->set('field_file_embargoed', $field_file_embargoed);
-          $access_data[$key]->set('field_embaro_expiry_date', $field_embaro_expiry_date);
-          $access_data[$key]->set('field_allow_file_requests', $field_allow_file_requests);
+          $paragraph_data[$key] = Paragraph::load($publication_target_id);
+          $paragraph_data[$key]->set('field_publication_month', $publication_month);
+          $paragraph_data[$key]->set('field_publication_year', $publication_year);
+          $paragraph_data[$key]->set('field_publication_source', $publication_source);
         }
 
-        $access_data[$key]->save();
-        $field_file_access_restrictions[$key] = [
-          'target_id' => $access_data[$key]->id(),
-          'target_revision_id' => $access_data[$key]->getRevisionId(),
+        $paragraph_data[$key]->save();
+        $field_publication_info[$key] = [
+          'target_id' => $paragraph_data[$key]->id(),
+          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
         ];
       }
     }
     else {
-       $field_file_access_restrictions = [];
+      $field_publication_info = [];
     }
-
-    $field_external_resource = $submission_array['external_resource'];
 
     // file metadata paragraph
     $files_array = $submission_array['dataset_version'];
@@ -224,41 +225,9 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_dataset_version = [];
     }
-    // publication information paragraph
-    $publications_array = $submission_array['publication_info'];
-    if (!empty($publications_array)) {
-      foreach ($publications_array as $key => $value) {
-        $publication_month = $value['publication_month'];
-        $publication_year = $value['publication_year'];
-        $publication_source = $value['publication_source'];
-        $publication_target_id = $value['publication_target_id'];
-        $publication_target_revision_id = $value['publication_target_revision_id'];
 
-        if (empty($publication_target_id)) {
-          $paragraph_data[$key] = Paragraph::create([
-            'type' => 'publication_metadata',
-            'field_publication_month' => $publication_month,
-            'field_publication_year' => $publication_year,
-            'field_publication_source' => $publication_source,
-          ]);
-        }
-        else {
-          $paragraph_data[$key] = Paragraph::load($publication_target_id);
-          $paragraph_data[$key]->set('field_publication_month', $publication_month);
-          $paragraph_data[$key]->set('field_publication_year', $publication_year);
-          $paragraph_data[$key]->set('field_publication_source', $publication_source);
-        }
-
-        $paragraph_data[$key]->save();
-        $field_publication_info[$key] = [
-          'target_id' => $paragraph_data[$key]->id(),
-          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-        ];
-      }
-    }
-    else {
-      $field_publication_info = [];
-    }
+    $embargoed = $submission_array['embargoed']; // 1 if embargoed, 0 if unembargoed
+    $embargo_expiry = $submission_array['embargo_expiry']; // date if set, empty if not
 
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
@@ -284,10 +253,9 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_variable_types_in_dataset' => $field_variable_types_in_dataset,
         'field_license' => $field_license,
         'field_dataset_upload_or_external' => $field_dataset_upload_or_external,
-        'field_file_access_restrictions' => $field_file_access_restrictions,
         'field_external_resource' => $field_external_resource,
-        'field_dataset_version' => $field_dataset_version,
         'field_publication_info' => $field_publication_info,
+        'field_dataset_version' => $field_dataset_version,
         'field_affiliated_parents' => $passed_id,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
@@ -322,10 +290,9 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_variable_types_in_dataset', $field_variable_types_in_dataset);
       $node->set('field_license', $field_license);
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
-      $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_dataset_version', $field_dataset_version);
       $node->set('field_publication_info', $field_publication_info);
+      $node->set('field_dataset_version', $field_dataset_version);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
       $node->save();

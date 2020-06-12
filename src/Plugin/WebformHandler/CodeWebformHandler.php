@@ -51,57 +51,10 @@ use Drupal\webform\Entity\WebformSubmission;
       'value' => $submission_array['description'],
       'format' => 'basic_html',
     ];
+
     $field_doi = $submission_array['doi'];
-
     $field_code_upload_or_external = $submission_array['code_upload_or_external'];
-
     $field_external_resource = $submission_array['external_resource'];
-
-    // code file
-    $code_fid = $submission_array['code_file'];
-    if (!empty($code_fid)) {
-      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($code_fid, 'code');
-      $field_code_file = $new_fid;
-    }
-    else {
-      $field_code_file = NULL;
-    }
-
-    // file access restrictions paragraph
-    $file_access_array = $submission_array['file_access_restrictions'];
-    if (!empty($file_access_array)) {
-      foreach ($file_access_array as $key => $value) {
-        $field_file_embargoed = $value['file_embargoed'] == 'Yes' ? 1 : 0;
-        $field_embaro_expiry_date = date($value['embargo_expiry_date']);
-        $field_allow_file_requests = $value['allow_file_requests'] == 'Yes' ? 1 : 0;
-        $access_restrictions_target_id = $value['access_restrictions_target_id'];
-        $access_restrictions_target_revision_id = $value['access_restrictions_target_revision_id'];
-
-        if (empty($access_restrictions_target_id)) {
-          $access_data[$key] = Paragraph::create([
-            'type' => 'file_access_restrictions',
-            'field_file_embargoed' => $field_file_embargoed,
-            'field_embaro_expiry_date' => $field_embaro_expiry_date,
-            'field_allow_file_requests' => $field_allow_file_requests,
-          ]);
-        }
-        else {
-          $access_data[$key] = Paragraph::load($access_restrictions_target_id);
-          $access_data[$key]->set('field_file_embargoed', $field_file_embargoed);
-          $access_data[$key]->set('field_embaro_expiry_date', $field_embaro_expiry_date);
-          $access_data[$key]->set('field_allow_file_requests', $field_allow_file_requests);
-        }
-
-        $access_data[$key]->save();
-        $field_file_access_restrictions[$key] = [
-          'target_id' => $access_data[$key]->id(),
-          'target_revision_id' => $access_data[$key]->getRevisionId(),
-        ];
-      }
-    }
-    else {
-       $field_file_access_restrictions = [];
-    }
 
     if (!empty($submission_array['license'])) {
       $field_license = $submission_array['license'];
@@ -146,6 +99,19 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_publication_info = [];
     }
 
+    // code file
+    $code_fid = $submission_array['code_file'];
+    if (!empty($code_fid)) {
+      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($code_fid, 'code');
+      $field_code_file = $new_fid;
+    }
+    else {
+      $field_code_file = NULL;
+    }
+
+    $embargoed = $submission_array['embargoed']; // 1 if embargoed, 0 if unembargoed
+    $embargo_expiry = $submission_array['embargo_expiry']; // date if set, empty if not
+
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
 
@@ -161,10 +127,9 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_doi' => $field_doi,
         'field_code_upload_or_external' => $field_code_upload_or_external,
         'field_external_resource' => $field_external_resource,
-        'field_code_file' => $field_code_file,
-        'field_file_access_restrictions' => $field_file_access_restrictions,
         'field_license' => $field_license,
         'field_publication_info' => $field_publication_info,
+        'field_code_file' => $field_code_file,
         'field_affiliated_parents' => $passed_id,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully');
@@ -190,10 +155,9 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_doi', $field_doi);
       $node->set('field_code_upload_or_external', $field_code_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_code_file', $field_code_file);
-      $node->set('field_file_access_restrictions', $field_file_access_restrictions);
       $node->set('field_license', $field_license);
       $node->set('field_publication_info', $field_publication_info);
+      $node->set('field_code_file', $field_code_file);
       $form_state->set('redirect_message', $title . ' was updated successfully');
       //save the node
       $node->save();
