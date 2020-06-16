@@ -23,11 +23,11 @@ class TasksMenu extends MenuLinkDefault {
    */
   public function getRouteParameters() {
     if ($node = \Drupal::routeMatch()->getParameter('node')) {
-      return ['node' => $node->id()];
+      return ['node' => $node->uuid()];
     }
     else {
       // if no nid, pass some text to keep Structure > Menus > Edit Menu from breaking
-      return ['node' => 'not_a_dataset'];
+      return ['node' => 'not_a_node'];
     }
 
   }

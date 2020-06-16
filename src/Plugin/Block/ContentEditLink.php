@@ -27,10 +27,10 @@ class ContentEditLink extends BlockBase {
 
     $node = $this->getContextValue('node');
     $node_type = $node->getType();
-    $nid = $node->id();
+    $uuid = $node->uuid();
 
     $markup = '';
-    if (!empty($nid)) {
+    if (!empty($uuid)) {
       if ($node_type == 'document') {
         $document_type = $node->get('field_document_type')->target_id;
         $document_type_term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($document_type)->getName();
@@ -43,7 +43,7 @@ class ContentEditLink extends BlockBase {
       $text = 'Edit this ' . ucfirst($node_type);
       $class[] = 'ldbase-button';
 
-      $url = Url::fromRoute($route, array('node' => $nid));
+      $url = Url::fromRoute($route, array('node' => $uuid));
       if ($url->access()) {
         $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
       $link['#attributes'] = ['class' => $class];

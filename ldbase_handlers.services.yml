@@ -3,7 +3,11 @@ services:
     class: \Drupal\ldbase_handlers\Access\GroupUpdateNodeAccess
     arguments: ['@entity_type.manager']
     tags:
-    - { name: access_check, applies_to: _group_update_node_access_check }
+      - { name: access_check, applies_to: _group_update_node_access_check }
   ldbase.webform_file_storage_service:
     class: Drupal\ldbase_handlers\LDbaseWebformFileStorageService
     arguments: []
+  ldbase.uuid_converter_service:
+    class: Drupal\ldbase_handlers\Routing\UuidConverterService
+    tags:
+      - { name: paramconverter }
