@@ -175,55 +175,63 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // file metadata paragraph
     $files_array = $submission_array['dataset_version'];
-    if (!empty($files_array)) {
-      foreach ($files_array as $key => $value) {
-        $file_id = $files_array[$key]['dataset_version_upload'];
-        if (!empty($file_id)) {
-          $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
-          $paragraph_file_id = $new_fid;
-        }
-        else {
-          $paragraph_file_id = NULL;
-        }
-
-        if (empty($value['dataset_version_id']) && !is_null($paragraph_file_id)) {
-          $dataset_version_id = 1;
-        }
-        else {
-          $dataset_version_id = $value['dataset_version_id'];
-        }
-        $dataset_version_label = $value['dataset_version_label'];
-        $dataset_version_description = $value['dataset_version_description'];
-        $dataset_version_target_id = $value['dataset_version_target_id'];
-        $dataset_version_target_revision_id = $value['dataset_version_target_revision_id'];
-
-        if (empty($dataset_version_target_id)) {
-          $paragraph_data[$key] = Paragraph::create([
-            'type' => 'file_metadata',
-            'field_file_format' => $value['dataset_version_format'],
-            'field_file_upload' => $paragraph_file_id,
-            'field_file_version_id' => $dataset_version_id,
-            'field_file_version_label' => $dataset_version_label,
-            'field_file_version_description' => $dataset_version_description,
-          ]);
-        }
-        else {
-          $paragraph_data[$key] = Paragraph::load($dataset_version_target_id);
-          $paragraph_data[$key]->set('field_file_format', $value['dataset_version_format']);
-          $paragraph_data[$key]->set('field_file_upload', $paragraph_file_id);
-          $paragraph_data[$key]->set('field_file_version_id', $dataset_version_id);
-          $paragraph_data[$key]->set('field_file_version_label', $dataset_version_label);
-          $paragraph_data[$key]->set('field_file_version_description', $dataset_version_description);
-        }
-        $paragraph_data[$key]->save();
-        $field_dataset_version[$key] = [
-          'target_id' => $paragraph_data[$key]->id(),
-          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-        ];
-      }
+    if ($nid) {
+      $field_dataset_version = $this->getExistingDatasetVersions($nid);
     }
     else {
       $field_dataset_version = [];
+    }
+
+    if (!empty($files_array)) {
+      foreach ($files_array as $key => $composite) {
+
+        if ($this->fileHasChanged($composite)) {
+          $file_id = $files_array[$key]['dataset_version_upload'];
+          $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
+          $paragraph_file_id = $new_fid;
+
+          if (empty($composite['dataset_version_id'])) {
+            $dataset_version_id = 1;
+          }
+          else {
+            $dataset_version_id = $composite['dataset_version_id'] + 1;
+          }
+
+          $paragraph_data = Paragraph::create([
+            'type' => 'file_metadata',
+            'field_file_format' => $composite['dataset_version_format'],
+            'field_file_upload' => $paragraph_file_id,
+            'field_file_version_id' => $dataset_version_id,
+            'field_file_version_label' => $composite['dataset_version_label'],
+            'field_file_version_description' => $composite['dataset_version_description'],
+          ]);
+          $paragraph_data->save();
+          $new_paragraph = [
+            'target_id' => $paragraph_data->id(),
+            'target_revision_id' => $paragraph_data->getRevisionId(),
+          ];
+          array_push($field_dataset_version, $new_paragraph);
+        }
+        else { // file not changed
+          $paragraph_data = Paragraph::load($composite['dataset_version_target_id']);
+          $paragraph_data->set('field_file_format', $composite['dataset_version_format']);
+          $paragraph_data->set('field_file_version_label', $composite['dataset_version_label']);
+          $paragraph_data->set('field_file_version_description', $composite['dataset_version_description']);
+          $paragraph_data->save();
+        }
+      }
+    }
+    else {
+      /**
+       * If user clears all dataset version fields on an update, just get existing
+       * saved data.  Do not eliminate all versions
+       */
+      if ($nid) {
+        $field_dataset_version = $this->getExistingDatasetVersions($nid);
+      }
+      else {
+        $field_dataset_version = [];
+      }
     }
 
     $embargoed = $submission_array['embargoed']; // 1 if embargoed, 0 if unembargoed
@@ -312,6 +320,8 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->validateParticipants($form_state);
     // validate publication date
     $this->validatePublicationDate($form_state);
+    // validate dataset file
+    $this->validateDatasetFile($form_state);
   }
 
   /**
@@ -425,11 +435,76 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       foreach ($publications as $delta => $row_array) {
         if (!empty($row_array['publication_month']) && empty($row_array['publication_year'])) {
-          $message = 'If you select a publication month, then you must select a publication year';
+          $message = 'If you select a publication month, then you must select a publication year.';
           $form_state->setErrorByName('publication_info][items]['.$delta.'][publication_year', $message);
         }
       }
     }
+  }
+
+  /**
+   * Validate dataset file
+   * If file is uploaded, then format must be selected
+   * If format, version, or description are entered, then file must be uploaded
+   */
+  private function validateDatasetFile(FormStateInterface $form_state) {
+    $dataset_version = $form_state->getValue('dataset_version');
+    if (empty($dataset_version)) {
+      if ($form_state->getValue('dataset_upload_or_external') === "upload") {
+        $message = 'If you answer that the dataset will be uploaded, you must uplaod a file.';
+        $form_state->setErrorByName('dataset_version][items][0][dataset_version_upload', $message);
+      }
+      else {
+        return;
+      }
+    }
+    else {
+      foreach ($dataset_version as $delta => $row_array) {
+        if (!empty($row_array['dataset_version_upload']) && empty($row_array['dataset_version_format'])) {
+          $message = 'If you upload a dataset file, you must select a version format.';
+          $form_state->setErrorByName('dataset_version][items]['.$delta.'][dataset_version_format', $message);
+        }
+        $some_data = !empty($row_array['dataset_version_format']) || !empty($row_array['dataset_version_label']) || !empty($row_array['dataset_version_description']);
+        if ($some_data && empty($row_array['dataset_version_upload'])) {
+          $message = 'If you enter dataset version information, you must uplaod a file.';
+          $form_state->setErrorByName('dataset_version][items]['.$delta.'][dataset_version_upload', $message);
+        }
+      }
+    }
+  }
+
+  /**
+   * Check if file metadata paragraph has changes
+   */
+  private function fileHasChanged(array $submitted_values) {
+    $currentFile = $submitted_values['dataset_version_upload'];
+    $p = Paragraph::load($submitted_values['dataset_version_target_id']);
+    if ($p) {
+      $previousFile = $p->field_file_upload->entity->id();
+    }
+    else {
+      $previousFile = NULL;
+    }
+
+    if (!$p || $currentFile != $previousFile) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  /**
+   * Return existing dataset_versions for nid
+   */
+  private function getExistingDatasetVersions($nid) {
+    $versions = [];
+    $node = Node::load($nid);
+    foreach ($node->field_dataset_version as $delta => $file_metadata_paragraph) {
+      $p = $file_metadata_paragraph->entity;
+      $versions[$delta]['target_id'] = $file_metadata_paragraph->target_id;
+      $versions[$delta]['target_revision_id'] = $file_metadata_paragraph->target_revision_id;
+    }
+
+    return $versions;
   }
 
  }
