@@ -15,7 +15,6 @@ class ParagraphIdConverterService implements ParamConverterInterface {
    */
   public function convert($value, $definition, $name, $defaults) {
     $paragraph_loaded = Paragraph::load($value);
-    dd($paragraph_loaded);
     return $paragraph_loaded;
   }
 

@@ -204,6 +204,20 @@ ldbase_handlers.edit_dataset_version:
       paragraph_id:
         type: ldbase_paragraph
 
+ldbase_handlers.delete_dataset_version:
+  path: 'datasets/{node}/{nid}/{paragraph}/delete-version'
+  defaults:
+    _form: '\Drupal\ldbase_handlers\Form\ConfirmVersionDeleteForm'
+    _title: 'Confirm Version Deletion'
+  requirements:
+    _group_update_node_access_check: 'TRUE'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
+      paragraph_id:
+        type: ldbase_paragraph
+
 # Project
 ldbase_handlers.edit_project:
   path: '/projects/{node}/edit'
