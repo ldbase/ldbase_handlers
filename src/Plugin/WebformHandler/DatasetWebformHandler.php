@@ -297,8 +297,9 @@ use Drupal\webform\Entity\WebformSubmission;
       //save the node
       $node->save();
     }
-
-    // add node id to form_state to be used for redirection
+    // put new nid in form_state may be used for redirection
+    $form_state->set('this_nid', $node->id());
+    // add node uuid to form_state to be used for redirection
     $form_state->set('node_redirect', $node->uuid());
   }
 
@@ -326,7 +327,8 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       // redirect to node view
       $route_name = 'entity.node.canonical';
-      $form_state->set('node_redirect', $webform_submission->getData()['node_id']);
+      $node_id = $form_state->get('this_nid');
+      $form_state->set('node_redirect', $node_id);
     }
     $route_parameters = ['node' => $form_state->get('node_redirect')];
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
