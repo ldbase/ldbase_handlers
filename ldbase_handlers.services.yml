@@ -11,3 +11,7 @@ services:
     class: Drupal\ldbase_handlers\Routing\UuidConverterService
     tags:
       - { name: paramconverter }
+  ldbase.paragraph_id_converter_service:
+    class: Drupal\ldbase_handlers\Routing\ParagraphIdConverterService
+    tags:
+      - { name: paramconverter }

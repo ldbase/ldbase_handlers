@@ -5,6 +5,7 @@ namespace Drupal\ldbase_handlers\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -175,4 +176,29 @@ class DatasetController extends ControllerBase {
     return $webform;
   }
 
+  /**
+   * Loads a dataset version into its webform for editing
+   *
+   * @param Drupal\paragraphs\Entity\Paragraph $paragraph
+   */
+    public function editVersion(Paragraph $paragraph) {
+      $dataset_version = [];
+      $dataset_version[0]['dataset_version_format'] = $paragraph->field_file_format->target_id;
+      $dataset_version[0]['dataset_version_id'] = $paragraph->field_file_version_id->value;
+      $dataset_version[0]['dataset_version_label'] = $paragraph->field_file_version_label->value;
+      $dataset_version[0]['dataset_version_description'] = $paragraph->field_file_version_description->value;
+      $dataset_version[0]['dataset_version_target_id'] = $paragraph->id->value;
+      $dataset_version[0]['dataset_version_target_revision_id'] = $paragraph->revision_id->value;
+
+      $values = [
+        'data' => [
+          'dataset_version' => $dataset_version,
+        ]
+      ];
+
+      $operation = 'edit';
+      $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('edit_dataset_version');
+      $webform = $webform->getSubmissionForm($values, $operation);
+      return $webform;
+    }
 }

@@ -27,6 +27,7 @@ class DatasetVersionsViewLink extends BlockBase {
 
     $node = $this->getContextValue('node');
     $nid = $node->id();
+    $uuid = $node->uuid();
 
     $markup = '';
     if (!empty($nid)) {
@@ -34,7 +35,7 @@ class DatasetVersionsViewLink extends BlockBase {
       $text = 'View All Dataset Versions';
       $class[] = 'ldbase-button datasets-view-button';
 
-      $url = Url::fromRoute($route, array('arg_0' => $nid));
+      $url = Url::fromRoute($route, array('node' => $nid, 'uuid' => $uuid));
       if ($url->access()) {
         $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
         $link['#attributes'] = ['class' => $class];
