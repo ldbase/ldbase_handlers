@@ -184,6 +184,7 @@ class DatasetController extends ControllerBase {
     public function editVersion(Paragraph $paragraph) {
       $dataset_version = [];
       $dataset_version[0]['dataset_version_format'] = $paragraph->field_file_format->target_id;
+      $dataset_version[0]['dataset_version_upload'] = $paragraph->field_file_upload->entity->id();
       $dataset_version[0]['dataset_version_id'] = $paragraph->field_file_version_id->value;
       $dataset_version[0]['dataset_version_label'] = $paragraph->field_file_version_label->value;
       $dataset_version[0]['dataset_version_description'] = $paragraph->field_file_version_description->value;
