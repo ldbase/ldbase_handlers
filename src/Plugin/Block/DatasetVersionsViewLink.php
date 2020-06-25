@@ -31,15 +31,18 @@ class DatasetVersionsViewLink extends BlockBase {
 
     $markup = '';
     if (!empty($nid)) {
-      $route = 'view.dataset_versions.all_versions';
-      $text = 'View All Dataset Versions';
-      $class[] = 'ldbase-button datasets-view-button';
+      // link if uploaded dataset
+      if ($node->get('field_dataset_upload_or_external')->value === 'upload') {
+        $route = 'view.dataset_versions.all_versions';
+        $text = 'View All Dataset Versions';
+        $class[] = 'ldbase-button datasets-view-button';
 
-      $url = Url::fromRoute($route, array('node' => $nid, 'uuid' => $uuid));
-      if ($url->access()) {
-        $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
-        $link['#attributes'] = ['class' => $class];
-        $markup .= render($link) . ' ';
+        $url = Url::fromRoute($route, array('node' => $nid, 'uuid' => $uuid));
+        if ($url->access()) {
+          $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
+          $link['#attributes'] = ['class' => $class];
+          $markup .= render($link) . ' ';
+        }
       }
     }
     else {

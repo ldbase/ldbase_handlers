@@ -68,7 +68,7 @@ function ldbase_handlers_webform_options_years_alter(array &$options, array &$el
 function ldbase_handlers_webform_element_managed_file_alter(&$element, &$form_state, $context) {
   if ($element['#webform'] === 'create_update_dataset') {
     if (isset($element['remove_button']['#value'])) {
-      $element['remove_button']['#value'] = t('New Version');
+      $element['remove_button']['#value'] = t('Upload New Version');
     }
     if (!empty($element['#type']) && $element['#type'] == 'managed_file') {
       $element['#process'][] = 'custom_remove_button_label';
@@ -78,7 +78,7 @@ function ldbase_handlers_webform_element_managed_file_alter(&$element, &$form_st
 
 function custom_remove_button_label($element, FormStateInterface $form_state, $form) {
   if (isset($element['remove_button']['#value'])) {
-    $element['remove_button']['#value'] = t('New Version');
+    $element['remove_button']['#value'] = t('Upload New Version');
   }
   return $element;
 }
