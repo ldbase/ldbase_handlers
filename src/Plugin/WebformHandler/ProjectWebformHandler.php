@@ -110,6 +110,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       ];
     }
     $field_project_type = $submission_array['project_type'];
+    $field_project_type_other = $submission_array['project_type_other'];
     $field_schooling = $submission_array['schooling'];
     $field_curricula = $submission_array['curricula'];
     $field_time_method = $submission_array['time_method'];
@@ -128,6 +129,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
         'field_website' => $field_website,
         'field_grant_information' => $field_grant_information,
         'field_project_type' => $field_project_type,
+        'field_project_type_other' => $field_project_type_other,
         'field_schooling' => $field_schooling,
         'field_curricula' => $field_curricula,
         'field_time_method' => $field_time_method,
@@ -155,6 +157,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $node->set('field_website', $field_website);
       $node->set('field_grant_information', $field_grant_information);
       $node->set('field_project_type', $field_project_type);
+      $node->set('field_project_type_other', $field_project_type_other);
       $node->set('field_schooling', $field_schooling);
       $node->set('field_curricula', $field_curricula);
       $node->set('field_time_method', $field_time_method);

@@ -84,10 +84,12 @@ class DatasetController extends ControllerBase {
     foreach ($node->get('field_data_collection_locations')->getValue() as $delta => $value) {
        $data_collection_locations[$delta] = $value['target_id'];
     }
+    $data_collection_locations_other = $node->get('field_data_locations_other')->value;
     $assessment_name = [];
     foreach($node->get('field_assessment_name')->getValue() as $delta => $value) {
       $assessment_name[$delta] = $value['target_id'];
     }
+    $assessment_names_other = $node->get('field_assessment_names_other')->value;
     // demographics paragraph (participants)
     $participants = [];
     foreach ($node->field_demographics_information as $delta => $demographics_paragraph) {
@@ -156,7 +158,9 @@ class DatasetController extends ControllerBase {
         'time_points' => $time_points,
         'data_collection_period' => $data_collection_period,
         'data_collection_locations' =>  $data_collection_locations,
+        'data_collection_locations_other' => $data_collection_locations_other,
         'assessment_name' => $assessment_name,
+        'assessment_names_other' => $assessment_names_other,
         'participants' => $participants,
         'special_populations' => $special_populations,
         'variable_types_in_dataset' => $variable_types_in_dataset,

@@ -86,7 +86,9 @@ use Drupal\webform\Entity\WebformSubmission;
     }
 
     $field_data_collection_locations = $submission_array['data_collection_locations'];
+    $field_data_locations_other = $submission_array['data_collection_locations_other'];
     $field_assessment_name = $submission_array['assessment_name'];
+    $field_assessment_names_other = $submission_array['assessment_names_other'];
 
     // demographics paragraph
     $demographics_array = $submission_array['participants'];
@@ -255,7 +257,9 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_time_points' => $field_time_points,
         'field_data_collection_range' => $field_data_collection_range,
         'field_data_collection_locations' => $field_data_collection_locations,
+        'field_data_locations_other' => $field_data_locations_other,
         'field_assessment_name' => $field_assessment_name,
+        'field_assessment_names_other' => $field_assessment_names_other,
         'field_demographics_information' => $field_demographics_information,
         'field_special_populations' => $field_special_populations,
         'field_variable_types_in_dataset' => $field_variable_types_in_dataset,
@@ -292,7 +296,9 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_time_points', $field_time_points);
       $node->set('field_data_collection_range', $field_data_collection_range);
       $node->set('field_data_collection_locations', $field_data_collection_locations);
+      $node->set('field_data_locations_other', $field_data_locations_other);
       $node->set('field_assessment_name', $field_assessment_name);
+      $node->set('field_assessment_names_other', $field_assessment_names_other);
       $node->set('field_demographics_information', $field_demographics_information);
       $node->set('field_special_populations', $field_special_populations);
       $node->set('field_variable_types_in_dataset', $field_variable_types_in_dataset);

@@ -68,6 +68,7 @@ class ProjectController extends ControllerBase {
     foreach ($node->get('field_project_type')->getValue() as $delta => $value) {
       $project_type[$delta] = $value['target_id'];
     }
+    $project_type_other = $node->get('field_project_type_other')->value;
     $schooling = [];
     foreach ($node->get('field_schooling')->getValue() as $delta => $value) {
       $schooling[$delta] = $value['target_id'];
@@ -93,6 +94,7 @@ class ProjectController extends ControllerBase {
         'website' => $website,
         'grant_information' => $grant_information,
         'project_type' => $project_type,
+        'project_type_other' => $project_type_other,
         'schooling' => $schooling,
         'curricula' => $curricula,
         'time_method' => $time_method,

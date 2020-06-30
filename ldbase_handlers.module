@@ -40,6 +40,54 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
 }
 
 /**
+ * Implements HOOK_webform_submission_form_alter().
+ * Sets visibility trigger pattern to $tid for "Other"
+ */
+function ldbase_handlers_webform_submission_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  // project webform
+  if ($form['#webform_id'] === "create_update_project") {
+    $name = 'Other';
+    $vocabulary = 'project_types';
+    $tid = getTermId($name, $vocabulary);
+    foreach ($form['elements']['project_type_other']['#states']['visible'] as $key => $value) {
+      // $key is a generated id that includes webform name and node id, foreach gets past this
+      $form['elements']['project_type_other']['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
+    }
+  }
+  // Dataset webform
+  if ($form['#webform_id'] === "create_update_dataset") {
+    $name = 'Other';
+
+    // data collection locations
+    foreach ($form['elements']['data_collection_locations_other']['#states']['visible'] as $key => $value) {
+      $tid = getTermId($name, 'data_collection_locations');
+      // $key is a generated id that includes webform name and node id, foreach gets past this
+      $form['elements']['data_collection_locations_other']['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
+    }
+
+    // assessment name
+    foreach ($form['elements']['assessment_names_other']['#states']['visible'] as $key => $value) {
+      $tid = getTermId($name, 'assessments');
+      // $key is a generated id that includes webform name and node id, foreach gets past this
+      $form['elements']['assessment_names_other']['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
+    }
+  }
+}
+
+function getTermId($name, $vocabulary) {
+  if (empty($name) || empty($vocabulary)) {
+    return NULL;
+  }
+  else {
+    $term = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadByProperties(['name' => $name, 'vid' => $vocabulary]);
+    $term = reset($term);
+    return $term->id();
+  }
+}
+
+/**
  * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter()
  * Creates year options
  *
