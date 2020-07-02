@@ -31,8 +31,8 @@ class DatasetVersionsViewLink extends BlockBase {
 
     $markup = '';
     if (!empty($nid)) {
-      // link if uploaded dataset
-      if ($node->get('field_dataset_upload_or_external')->value === 'upload') {
+      // link if uploaded dataset and more than 1 version exists
+      if ($node->get('field_dataset_upload_or_external')->value === 'upload' && count($node->field_dataset_version) > 1) {
         $route = 'view.dataset_versions.all_versions';
         $text = 'View All Dataset Versions';
         $class[] = 'ldbase-button datasets-view-button';
