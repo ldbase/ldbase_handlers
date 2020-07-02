@@ -44,34 +44,40 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
  * Sets visibility trigger pattern to $tid for "Other"
  */
 function ldbase_handlers_webform_submission_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
-  // project webform
-  if ($form['#webform_id'] === "create_update_project") {
-    $name = 'Other';
-    $vocabulary = 'project_types';
-    $tid = getTermId($name, $vocabulary);
-    foreach ($form['elements']['project_type_other']['#states']['visible'] as $key => $value) {
-      // $key is a generated id that includes webform name and node id, foreach gets past this
-      $form['elements']['project_type_other']['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
+
+  $changes = getOtherTermsInfo();  // gets webform, field, term, and vocabulary data
+  foreach ($changes as $webform_id => $changes) {
+    if ($form['#webform_id'] === $webform_id) {
+      foreach ($changes as $change) {
+        $tid = getTermId($change['term'], $change['vocabulary']);
+        foreach ($form['elements'][$change['field']]['#states']['visible'] as $key => $value) {
+          // $key is a generated id that includes webform name and node id, foreach gets past this
+          $form['elements'][$change['field']]['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
+        }
+      }
     }
   }
-  // Dataset webform
-  if ($form['#webform_id'] === "create_update_dataset") {
-    $name = 'Other';
+}
 
-    // data collection locations
-    foreach ($form['elements']['data_collection_locations_other']['#states']['visible'] as $key => $value) {
-      $tid = getTermId($name, 'data_collection_locations');
-      // $key is a generated id that includes webform name and node id, foreach gets past this
-      $form['elements']['data_collection_locations_other']['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
-    }
+function getOtherTermsInfo() {
+  // webform_id, field, term, vocabulary
+  $other_terms = array(
+    "create_update_project" => [
+      ["field" => "project_type_other", "term" => "Other", "vocabulary" => "project_types"],
+      ["field" => "schooling_other", "term" => "Other", "vocabulary" => "schooling"],
+      ["field" => "curricula_other", "term" => "Other", "vocabulary" => "curricula"],
+      ["field" => "time_method_other", "term" => "Other", "vocabulary" => "time_methods"],
+    ],
+    "create_update_dataset" => [
+      ["field" => "constructs_other", "term" => "Other", "vocabulary" => "constructs"],
+      ["field" => "data_collection_locations_other", "term" => "Other", "vocabulary" => "data_collection_locations"],
+      ["field" => "assessment_names_other", "term" => "Other", "vocabulary" => "assessments"],
+      ["field" => "special_populations_other", "term" => "Other", "vocabulary" => "special_populations"],
+      ["field" => "variable_types_other", "term" => "Other", "vocabulary" => "dataset_variables"],
+    ],
+  );
 
-    // assessment name
-    foreach ($form['elements']['assessment_names_other']['#states']['visible'] as $key => $value) {
-      $tid = getTermId($name, 'assessments');
-      // $key is a generated id that includes webform name and node id, foreach gets past this
-      $form['elements']['assessment_names_other']['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
-    }
-  }
+  return $other_terms;
 }
 
 function getTermId($name, $vocabulary) {

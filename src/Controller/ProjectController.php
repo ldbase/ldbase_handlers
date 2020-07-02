@@ -73,14 +73,17 @@ class ProjectController extends ControllerBase {
     foreach ($node->get('field_schooling')->getValue() as $delta => $value) {
       $schooling[$delta] = $value['target_id'];
     }
+    $schooling_other = $node->get('field_schooling_other')->value;
     $curricula = [];
     foreach ($node->get('field_curricula')->getValue() as $delta => $value) {
       $curricula[$delta] = $value['target_id'];
     }
+    $curricula_other = $node->get('field_curricula_other')->value;
     $time_method = [];
     foreach ($node->get('field_time_method')->getValue() as $delta => $value) {
       $time_method[$delta] = $value['target_id'];
     }
+    $time_method_other = $node->get('field_time_method_other')->value;
 
     $values = [
       'data' => [
@@ -96,8 +99,11 @@ class ProjectController extends ControllerBase {
         'project_type' => $project_type,
         'project_type_other' => $project_type_other,
         'schooling' => $schooling,
+        'schooling_other' => $schooling_other,
         'curricula' => $curricula,
+        'curricula_other' => $curricula_other,
         'time_method' => $time_method,
+        'time_method_other' => $time_method_other,
       ]
     ];
 
