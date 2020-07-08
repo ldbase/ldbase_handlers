@@ -15,7 +15,7 @@ class TasksMenu extends MenuLinkDefault {
    * {@inheritdoc}
    */
   public function getCacheContexts() {
-    return Cache::mergeContexts(parent::getCacheContexts(), array('route'));
+    return Cache::mergeContexts(parent::getCacheContexts(), array('user'));
   }
 
   /**
@@ -30,5 +30,9 @@ class TasksMenu extends MenuLinkDefault {
       return ['node' => 'not_a_node'];
     }
 
+  }
+
+  public function getCacheMaxAge() {
+    return 0;
   }
 }
