@@ -136,3 +136,16 @@ function custom_remove_button_label($element, FormStateInterface $form_state, $f
   }
   return $element;
 }
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ * Removes local tasks from Group user management
+ */
+
+function ldbase_handlers_menu_local_tasks_alter(&$data, $route_name, &$cacheability) {
+  if ($route_name == 'entity.group_content.edit_form' ||
+    $route_name == 'entity.group_content.delete_form'
+    ) {
+      unset($data['tabs'][0]);
+    }
+}
