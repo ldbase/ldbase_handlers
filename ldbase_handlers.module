@@ -146,6 +146,36 @@ function ldbase_handlers_menu_local_tasks_alter(&$data, $route_name, &$cacheabil
   if ($route_name == 'entity.group_content.edit_form' ||
     $route_name == 'entity.group_content.delete_form'
     ) {
-      unset($data['tabs'][0]);
+    unset($data['tabs'][0]);
+  }
+}
+
+/**
+ * Implements hook_preprocess_page_title.
+ * Includes Project name on Add Member page rather than group content type
+ */
+function ldbase_handlers_preprocess_page_title(&$variables) {
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.group_content.add_form') {
+    $destination_query = \Drupal::request()->query->get('destination');
+    if (!empty($destination_query) &&
+    $ldbase_object_uuid = \Drupal::service('ldbase.object_service')->isUrlAnLdbaseObjectUrl($destination_query)
+    ) {
+      $ldbase_object = \Drupal::service('ldbase.object_service')->getLdbaseObjectFromUuid($ldbase_object_uuid);
+      $variables['title'] = t('Add Project: @title member', ['@title' => $ldbase_object->getTitle()]);
     }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ * On Project membership forms, changes 'delete' to 'remove'
+ */
+function ldbase_handlers_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'group_content_project_group-group_membership_delete_form') {
+    $form['#title'] = t('Are you sure you want to remove %name?', ['%name' => $form['#title']->getArguments()['%name']]);
+    $form['actions']['submit']['#value'] = t("Remove");
+  }
+  elseif ($form_id == 'group_content_project_group-group_membership_edit_form') {
+    $form['actions']['delete']['#title'] = t("Remove");
+  }
 }
