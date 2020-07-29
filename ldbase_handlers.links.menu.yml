@@ -1,24 +1,31 @@
 # Project Tasks menu items
+ldbase_handlers.add_code_to_project:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: project-tasks
+  title: 'Add Code'
+  route_name: ldbase_handlers.add_code_to_project
+  weight: 0
+
 ldbase_handlers.add_dataset_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_project
-  weight: 0
+  weight: 1
 
 ldbase_handlers.add_document_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_project
-  weight: 1
+  weight: 2
 
 ldbase_handlers.manage_project_users:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenuWithGroup
   menu_name: project-tasks
   title: 'Manage Members'
   route_name: view.group_members.ldbase_project
-  weight: 2
+  weight: 3
 
 # Dataset Tasks menu items
 ldbase_handlers.add_dataset_to_dataset:

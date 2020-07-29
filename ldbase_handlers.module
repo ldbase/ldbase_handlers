@@ -172,7 +172,7 @@ function ldbase_handlers_preprocess_page_title(&$variables) {
  */
 function ldbase_handlers_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id == 'group_content_project_group-group_membership_delete_form') {
-    $form['#title'] = t('Are you sure you want to remove %name?', ['%name' => $form['#title']->getArguments()['%name']]);
+    $form['#title'] = t('Are you sure you want to remove %name from the project?', ['%name' => $form['#title']->getArguments()['%name']]);
     $form['actions']['submit']['#value'] = t("Remove");
   }
   elseif ($form_id == 'group_content_project_group-group_membership_edit_form') {
