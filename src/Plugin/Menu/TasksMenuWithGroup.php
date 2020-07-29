@@ -31,7 +31,7 @@ class TasksMenuWithGroup extends MenuLinkDefault {
     }
     else {
       // if no nid, pass some text to keep Structure > Menus > Edit Menu from breaking
-      return ['node' => 'not_a_node'];
+      return ['node' => 'not_a_node', 'group' => 'not_a_group'];
     }
 
   }
