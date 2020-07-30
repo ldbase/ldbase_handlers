@@ -18,7 +18,7 @@ services:
   plugin.manager.viewsaccess:
     class: Drupal\ldbase_handlers\Plugin\views\access\LDbaseViewsCustomAccess
     parent: default_plugin_manager
-  ldbase.breadcrumbs:
+  ldbase_handlers.breadcrumbs:
     class: Drupal\ldbase_handlers\Breadcrumb\LDbaseGroupBreadcrumbBuilder
     arguments: []
     tags:
