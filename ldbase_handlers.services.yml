@@ -15,7 +15,7 @@ services:
     class: Drupal\ldbase_handlers\Routing\ParagraphIdConverterService
     tags:
       - { name: paramconverter }
-  plugin.manager.viewsaccess:
+  plugin.manager.ldbase_viewsaccess:
     class: Drupal\ldbase_handlers\Plugin\views\access\LDbaseViewsCustomAccess
     parent: default_plugin_manager
   ldbase_handlers.breadcrumbs:
