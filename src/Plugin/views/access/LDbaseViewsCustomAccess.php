@@ -32,7 +32,7 @@ class LDbaseViewsCustomAccess extends AccessPluginBase {
 
   public function access(AccountInterface $account) {
     $node = \Drupal::routeMatch()->getParameter('node');
-    return \Drupal::service('group_content.update_access_checker')->access($account, $node);
+    return \Drupal::service('ldbase_handlers.group_content.update_access_checker')->access($account, $node);
   }
 
   /**

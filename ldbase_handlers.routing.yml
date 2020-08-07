@@ -205,7 +205,7 @@ ldbase_handlers.add_dataset_to_dataset:
 ldbase_handlers.edit_dataset_version:
   path: '/datasets/{node}/{nid}/{paragraph}/edit-dataset-version'
   defaults:
-    _controller: 'Drupal\ldbase_handlers\Controller\DatasetController::editVersion'
+    _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::editVersion'
     _title: 'Edit Dataset Version'
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -217,7 +217,7 @@ ldbase_handlers.edit_dataset_version:
         type: ldbase_paragraph
 
 ldbase_handlers.delete_dataset_version:
-  path: 'datasets/{node}/{nid}/{paragraph}/delete-version'
+  path: '/datasets/{node}/{nid}/{paragraph}/delete-version'
   defaults:
     _form: '\Drupal\ldbase_handlers\Form\ConfirmVersionDeleteForm'
     _title: 'Confirm Version Deletion'
@@ -256,3 +256,6 @@ ldbase_handlers.confirm_doi_creation:
     parameters:
       node:
         type: ldbase_uuid
+
+route_callbacks:
+  - '\Drupal\ldbase_handlers\Routing\LdbaseHandlerRouteProvider::routes'
