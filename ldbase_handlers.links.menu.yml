@@ -1,79 +1,136 @@
 # Project Tasks menu items
+ldbase_handlers.edit_project:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: project-tasks
+  title: 'Edit this Project'
+  route_name: ldbase_handlers.edit_project
+  weight: 0
+
+ldbase_handlers.confirm_project_deletion:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: project-tasks
+  title: 'Delete this Project ...'
+  route_name: ldbase_handlers.confirm_project_deletion
+  weight: 1
+
 ldbase_handlers.add_code_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_project
-  weight: 0
+  weight: 2
 
 ldbase_handlers.add_dataset_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_project
-  weight: 1
+  weight: 3
 
 ldbase_handlers.add_document_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_project
-  weight: 2
+  weight: 4
 
 ldbase_handlers.manage_project_users:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenuWithGroup
   menu_name: project-tasks
   title: 'Manage Members'
   route_name: view.group_members.ldbase_project
-  weight: 3
+  weight: 5
 
 # Dataset Tasks menu items
+ldbase_handlers.edit_dataset:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: dataset-tasks
+  title: 'Edit this Dataset'
+  route_name: ldbase_handlers.edit_dataset
+  weight: 0
+
+ldbase_handlers.confirm_dataset_deletion:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: dataset-tasks
+  title: 'Delete Dataset ...'
+  route_name: ldbase_handlers.confirm_dataset_deletion
+  weight: 1
+
 ldbase_handlers.add_dataset_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_dataset
-  weight: 0
+  weight: 2
 
 ldbase_handlers.add_code_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_dataset
-  weight: 1
+  weight: 3
 
 ldbase_handlers.add_codebook_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
   title: 'Add Codebook'
   route_name: ldbase_handlers.add_codebook_to_dataset
-  weight: 2
+  weight: 4
 
 ldbase_handlers.add_document_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_dataset
-  weight: 3
+  weight: 5
+
+# Code Tasks items
+ldbase_handlers.edit_code:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: code-tasks
+  title: 'Edit this Code'
+  route_name: ldbase_handlers.edit_code
+  weight: 0
+
+ldbase_handlers.confirm_code_deletion:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: code-tasks
+  title: 'Delete Code ...'
+  route_name: ldbase_handlers.confirm_code_deletion
+  weight: 1
 
 ldbase_handlers.add_code_to_code:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: code-tasks
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_code
-  weight: 0
+  weight: 2
 
 ldbase_handlers.add_document_to_code:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: code-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_code
-  weight: 1
+  weight: 3
 
 # Document Tasks menu items
+ldbase_handlers.edit_document:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: document-tasks
+  title: 'Edit this Document'
+  route_name: ldbase_handlers.edit_document
+  weight: 0
+
+ldbase_handlers.confirm_document_deletion:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: document-tasks
+  title: 'Delete Document ...'
+  route_name: ldbase_handlers.confirm_document_deletion
+  weight: 1
+
 ldbase_handlers.add_document_to_document:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: document-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_document
-  weight: 0
+  weight: 2

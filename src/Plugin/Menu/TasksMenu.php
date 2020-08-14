@@ -29,7 +29,6 @@ class TasksMenu extends MenuLinkDefault {
       // if no nid, pass some text to keep Structure > Menus > Edit Menu from breaking
       return ['node' => 'not_a_node'];
     }
-
   }
 
   public function getCacheMaxAge() {
