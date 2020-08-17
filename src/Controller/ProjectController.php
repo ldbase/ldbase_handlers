@@ -30,6 +30,15 @@ class ProjectController extends ControllerBase {
   }
 
   /**
+   * Gets title for edit page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getEditTitle(NodeInterface $node) {
+    return 'Edit Project: ' . $node->getTitle();
+  }
+
+  /**
    * Loads Project node data into its webform for editing
    *
    * @param \Drupal\Node\NodeInterface $node

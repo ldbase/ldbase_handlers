@@ -30,6 +30,24 @@ class CodeController extends ControllerBase {
   }
 
   /**
+   * Gets title for "Add Code to ..." page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getAddCodeTitle(NodeInterface $node) {
+    return 'Add Code to ' . ucfirst($node->getType()) . ': ' . $node->getTitle();
+  }
+
+  /**
+   * Gets title for edit page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getEditTitle(NodeInterface $node) {
+    return 'Edit Code: ' . $node->getTitle();
+  }
+
+  /**
    * Loads code node data into a webform for editing
    *
    * @param \Drupal\Node\NodeInterface $node

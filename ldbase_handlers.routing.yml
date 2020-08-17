@@ -29,7 +29,7 @@ ldbase_handlers.edit_document:
   path: '/documents/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::editDocument'
-    _title: 'Edit Document'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getEditTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -41,7 +41,7 @@ ldbase_handlers.add_document_to_project:
   path: '/projects/{node}/add-document'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
-    _title: 'Add Document'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getAddDocumentTitle'
     document_type: ''
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -54,7 +54,7 @@ ldbase_handlers.add_document_to_dataset:
   path: '/datasets/{node}/add-document'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
-    _title: 'Add Document'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getAddDocumentTitle'
     document_type: ''
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -67,7 +67,7 @@ ldbase_handlers.add_document_to_code:
   path: '/code/{node}/add-document'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
-    _title: 'Add Document'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getAddDocumentTitle'
     document_type: ''
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -80,7 +80,7 @@ ldbase_handlers.add_document_to_document:
   path: '/documents/{node}/add-document'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
-    _title: 'Add Document'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getAddDocumentTitle'
     document_type: ''
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -94,7 +94,7 @@ ldbase_handlers.edit_codebook:
   path: '/documents/{node}/codebook/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::editDocument'
-    _title: 'Edit Codebook'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getEditTitle'
     document_type: 'Codebook'
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -107,7 +107,7 @@ ldbase_handlers.add_codebook_to_dataset:
   path: '/datasets/{node}/add-codebook'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DocumentController::addDocument'
-    _title: 'Add Codebook'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DocumentController::getAddDocumentTitle'
     document_type: 'Codebook'
   requirements:
     _group_update_node_access_check: 'TRUE'
@@ -121,7 +121,7 @@ ldbase_handlers.edit_code:
   path: '/code/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::editCode'
-    _title: 'Edit Code'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\CodeController::getEditTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -133,7 +133,7 @@ ldbase_handlers.add_code_to_dataset:
   path: '/datasets/{node}/add-code'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
-    _title: 'Add Code'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\CodeController::getAddCodeTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -145,7 +145,7 @@ ldbase_handlers.add_code_to_code:
   path: '/code/{node}/add-code'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
-    _title: 'Add Code'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\CodeController::getAddCodeTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -157,7 +157,7 @@ ldbase_handlers.add_code_to_project:
   path: '/projects/{node}/add-code'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\CodeController::addCode'
-    _title: 'Add Code'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\CodeController::getAddCodeTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -170,7 +170,7 @@ ldbase_handlers.edit_dataset:
   path: '/datasets/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::editDataset'
-    _title: 'Edit Dataset'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DatasetController::getEditTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -182,7 +182,7 @@ ldbase_handlers.add_dataset_to_project:
   path: '/projects/{node}/add-dataset'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::addDataset'
-    _title: 'Add Dataset'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DatasetController::getAddDatasetTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -194,7 +194,7 @@ ldbase_handlers.add_dataset_to_dataset:
   path: '/datasets/{node}/add-dataset'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::addDataset'
-    _title: 'Add Dataset'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DatasetController::getAddDatasetTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:
@@ -235,7 +235,7 @@ ldbase_handlers.edit_project:
   path: '/projects/{node}/edit'
   defaults:
     _controller: '\Drupal\ldbase_handlers\Controller\ProjectController::editProject'
-    _title: 'Edit Project'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\ProjectController::getEditTitle'
   requirements:
     _group_update_node_access_check: 'TRUE'
   options:

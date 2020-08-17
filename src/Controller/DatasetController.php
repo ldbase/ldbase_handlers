@@ -51,6 +51,24 @@ class DatasetController extends ControllerBase {
   }
 
   /**
+   * Gets title for "Add Dataset to ..." page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getAddDatasetTitle(NodeInterface $node) {
+    return 'Add Dataset to ' . ucfirst($node->getType()) . ': ' . $node->getTitle();
+  }
+
+  /**
+   * Gets title for edit page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getEditTitle(NodeInterface $node) {
+    return 'Edit Dataset: ' . $node->getTitle();
+  }
+
+  /**
    * Loads Dataset node data into a webform for editing
    *
    * @param \Drupal\Node\NodeInterface $node

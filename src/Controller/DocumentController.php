@@ -30,6 +30,25 @@ class DocumentController extends ControllerBase {
   }
 
   /**
+   * Gets title for "Add Document to ..." page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getAddDocumentTitle(NodeInterface $node, $document_type = NULL) {
+    $doc_type = empty($document_type) ? 'Document' : 'Codebook';
+    return 'Add ' . $doc_type . ' to ' . ucfirst($node->getType()) . ': ' . $node->getTitle();
+  }
+
+  /**
+   * Gets title for edit page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getEditTitle(NodeInterface $node) {
+    return 'Edit Document: ' . $node->getTitle();
+  }
+
+  /**
    * Loads Document Webform and associates project id
    *
    * The Project passed in
