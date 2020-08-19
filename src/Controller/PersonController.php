@@ -84,4 +84,13 @@ class PersonController extends ControllerBase {
     return $webform;
   }
 
+  /**
+   * Gets title for edit page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getEditTitle(NodeInterface $node) {
+    return 'Edit Person: ' . $node->getTitle();
+  }
+
 }
