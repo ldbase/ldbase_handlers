@@ -45,7 +45,9 @@ class DocumentController extends ControllerBase {
    * @param \Drupal\Node\NodeInterface $node
    */
   public function getEditTitle(NodeInterface $node) {
-    return 'Edit Document: ' . $node->getTitle();
+    $uuid = $node->uuid();
+    $doc_type = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($uuid) ? 'Codebook' : 'Document';
+    return "Edit {$doc_type}: " . $node->getTitle();
   }
 
   /**

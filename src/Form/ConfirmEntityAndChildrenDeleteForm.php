@@ -52,8 +52,9 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
    */
   public function getQuestion() {
     $node = $this->node;
+    $bundle = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
     return t('Are you sure you want to delete %type: %title and any related items from LDbase?', [
-      '%type' => ucfirst($node->getType()),
+      '%type' => ucfirst($bundle),
       '%title' => $node->getTitle(),
     ]);
   }
@@ -63,14 +64,17 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
    */
   public function getDescription() {
     $node = $this->node;
+    $bundle = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
     $description = "<div class='delete-content-confirmation'>" .
       '<p>' . t('Related items branch down from %type: %title in the Project Tree.', [
-        '%type' => ucfirst($node->getType()),
+        '%type' => ucfirst($bundle),
         '%title' => $node->getTitle(),
       ]) . '</p>' .
       '<p>' . t('If you confirm, then the following content will be deleted:') . '</p>' .
       "<ul class='delete-content-confirmation-list'>" .
-      "<li class='delete-content-confirmation-list-item'>" . t(ucfirst($node->getType()) . ': ' . $node->getTitle()) . '</li>' .
+      "<li class='delete-content-confirmation-list-item'>" .
+      t(ucfirst($bundle) . ': ' . $node->getTitle()) .
+      '</li>' .
       \Drupal\ldbase_handlers\Form\ConfirmEntityAndChildrenDeleteForm::getChildrenAsHtmlList($node->id()) .
       '</ul>' .
       '<p>' . t('This action cannot be undone.') . '</p>' .
@@ -129,8 +133,9 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
         $list .= '<ul>';
         foreach ($children_result as $child) {
           $node = Node::load($child);
+          $bundle = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
           $list .= '<li>' .
-            t(ucfirst($node->getType()) . ': ' . $node->getTitle()) .
+            t(ucfirst($bundle) . ': ' . $node->getTitle()) .
             '</li>';
           $list .= \Drupal\ldbase_handlers\Form\ConfirmEntityAndChildrenDeleteForm::getChildrenAsHtmlList($node->id());
         }
