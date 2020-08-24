@@ -18,7 +18,7 @@ ldbase_handlers.edit_person:
     _controller: '\Drupal\ldbase_handlers\Controller\PersonController::editPerson'
     _title_callback: '\Drupal\ldbase_handlers\Controller\PersonController::getEditTitle'
   requirements:
-    _permission: 'edit own person content'
+    _user_profile_access_check: 'TRUE'
   options:
     parameters:
       node:

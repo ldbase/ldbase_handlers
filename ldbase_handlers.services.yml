@@ -9,6 +9,11 @@ services:
     arguments: ['@entity_type.manager']
     tags:
       - { name: access_check, applies_to: _group_delete_node_access_check }
+  ldbase_handlers.profile_access_checker:
+    class: \Drupal\ldbase_handlers\Access\LdbaseProfileAccess
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: access_check, applies_to: _user_profile_access_check }
   ldbase.webform_file_storage_service:
     class: Drupal\ldbase_handlers\LDbaseWebformFileStorageService
     arguments: []
