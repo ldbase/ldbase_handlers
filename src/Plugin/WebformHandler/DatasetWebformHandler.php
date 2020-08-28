@@ -338,6 +338,8 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->validatePublicationDate($form_state);
     // validate dataset file
     $this->validateDatasetFile($form_state);
+    // add any new taxonomy terms from Select2 fields
+    $this->validateSelect2Fields($form, $form_state, $webform_submission);
   }
 
   /**
@@ -522,6 +524,43 @@ use Drupal\webform\Entity\WebformSubmission;
     }
 
     return $versions;
+  }
+
+  /**
+   * validate Select2 fields, adding new taxonomy terms
+   */
+  private function validateSelect2Fields(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    $submitted_data = $webform_submission->getData();
+    $fields_vids = [
+      ["field" => "constructs", "vid" => "constructs"],
+      ["field" => "data_collection_locations", "vid" => "data_collection_locations"],
+      ["field" => "assessment_name", "vid" => "assessments"],
+      ["field" => "special_populations", "vid" => "special_populations"],
+      ["field" => "variable_types_in_dataset", "vid" => "dataset_variables"],
+    ];
+
+    foreach ($fields_vids as $current) {
+      $field_data = $submitted_data[$current['field']];
+      foreach ($field_data as $idx => $term) {
+        // if not a valid id for this taxonomy
+        if (!\Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($term)) {
+          // add term to taxonomy
+          $new_term = Term::create([
+            'name' => $term,
+            'vid' => $current['vid'],
+            // TODO: add verified field
+            // TODO: trigger email to admin?
+          ]);
+          // save and get term id
+          $new_term->save();
+          $new_id = $new_term->id();
+          unset($field_data[$idx]);
+          $field_data[$new_id] = $new_id;
+        }
+      }
+      $webform_submission->setElementData($current['field'], $field_data);
+      $form_state->setValueForElement($form['elements'][$current['field']], $field_data);
+    }
   }
 
  }

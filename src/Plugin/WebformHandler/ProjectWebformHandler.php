@@ -186,6 +186,8 @@ class ProjectWebformHandler extends WebformHandlerBase {
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // project end date cannot come before start date
     $this->validateActivityRange($form_state);
+    // add any new taxonomy terms from Select2 fields
+    $this->validateSelect2Fields($form, $form_state, $webform_submission);
   }
 
   /**
@@ -207,6 +209,39 @@ class ProjectWebformHandler extends WebformHandlerBase {
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  private function validateSelect2Fields(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    $submitted_data = $webform_submission->getData();
+    $fields_vids = [
+      ["field" => "project_type", "vid" => "project_types"],
+      ["field" => "schooling", "vid" => "schooling"],
+      ["field" => "curricula", "vid" => "curricula"],
+      ["field" => "time_method", "vid" => "time_methods"],
+    ];
+
+    foreach ($fields_vids as $current) {
+      $field_data = $submitted_data[$current['field']];
+      foreach ($field_data as $idx => $term) {
+        // if not a valid id for this taxonomy
+        if (!\Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($term)) {
+          // add term to taxonomy
+          $new_term = Term::create([
+            'name' => $term,
+            'vid' => $current['vid'],
+            // TODO: add verified field
+            // TODO: trigger email to admin?
+          ]);
+          // save and get term id
+          $new_term->save();
+          $new_id = $new_term->id();
+          unset($field_data[$idx]);
+          $field_data[$new_id] = $new_id;
+        }
+      }
+      $webform_submission->setElementData($current['field'], $field_data);
+      $form_state->setValueForElement($form['elements'][$current['field']], $field_data);
+    }
   }
 
   /**

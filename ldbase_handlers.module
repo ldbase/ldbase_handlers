@@ -36,6 +36,26 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
       $element['#element']['#element_validate'] = array();
       array_push($element['#element']['#element_validate'], $use_validation);
     }
+
+    // Select2 validation - remove default validation so we can add taxonomy terms
+    $select2_fields = array(
+      'create_update_project--project_type',
+      'create_update_project--schooling',
+      'create_update_project--curricula',
+      'create_update_project--time_method',
+      'create_update_dataset--constructs',
+      'create_update_dataset--data_collection_locations',
+      'create_update_dataset--assessment_name',
+      'create_update_dataset--special_populations',
+      'create_update_dataset--variable_types_in_dataset'
+    );
+
+    if (in_array($element['#webform_id'], $select2_fields)) {
+      $use_validation = array('validateMultipleOptions');
+      unset($element['#element_validate'][0]);
+      array_push($element['#element_validate'], $use_validation);
+      $element['#validated']  = TRUE;
+    }
   }
 }
 
