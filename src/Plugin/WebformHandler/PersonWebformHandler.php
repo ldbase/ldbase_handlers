@@ -7,6 +7,7 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\user\Entity\User;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
@@ -32,7 +33,6 @@ use Drupal\webform\Entity\WebformSubmission;
     * {@inheritdoc}
     */
   public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-
     // Get the submitted form values
     $submission_array = $webform_submission->getData();
 
@@ -70,6 +70,13 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     else {
       $field_thumbnail = NULL;
+    }
+
+    $ldbase_password = $submission_array['ldbase_password'];
+    if ($ldbase_password) {
+      $user = User::load(\Drupal::currentUser()->id());
+      $user->setPassword($ldbase_password);
+      $user->save();
     }
 
     if (!$nid) {
@@ -116,18 +123,14 @@ use Drupal\webform\Entity\WebformSubmission;
 
     //save the node
     $node->save();
-    // add node id to form_state to be used for redirection
-    //$form_state->set('node_redirect', $node->id());
   }
 
   /**
    * {@inheritdoc}
    */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    // redirect to node view
-    //$route_name = 'entity.node.canonical';
+    // redirect to user profile
     $route_name = 'entity.user.canonical';
-    //$route_parameters = ['node' => $form_state->get('node_redirect')];
     $route_parameters = ['user' => \Drupal::currentUser()->id()];
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
