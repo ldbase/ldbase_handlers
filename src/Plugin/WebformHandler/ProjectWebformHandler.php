@@ -217,7 +217,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
           $new_term = Term::create([
             'name' => $term,
             'vid' => $current['vid'],
-            // TODO: add verified field
+            'field_needs_review' => ['value' => 1,]
             // TODO: trigger email to admin?
           ]);
           // save and get term id
