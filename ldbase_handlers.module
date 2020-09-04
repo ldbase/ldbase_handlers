@@ -59,59 +59,6 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
 }
 
 /**
- * Implements HOOK_webform_submission_form_alter().
- * Sets visibility trigger pattern to $tid for "Other"
- */
-function ldbase_handlers_webform_submission_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
-  // get webform, field, term, and vocabulary data
-  $changes = getOtherTermsInfo();
-  foreach ($changes as $webform_id => $changes) {
-    if ($form['#webform_id'] === $webform_id) {
-      foreach ($changes as $change) {
-        $tid = getTermId($change['term'], $change['vocabulary']);
-        foreach ($form['elements'][$change['field']]['#states']['visible'] as $key => $value) {
-          // $key is a generated id that includes webform name and node id, foreach gets past this
-          $form['elements'][$change['field']]['#states']['visible'][$key]['value']['pattern'] = "\b{$tid}\b";
-        }
-      }
-    }
-  }
-}
-// gets webform, field, term, and vocabulary data
-function getOtherTermsInfo() {
-  // webform_id, field, term, vocabulary
-  $other_terms = array(
-    "create_update_project" => [
-      ["field" => "project_type_other", "term" => "Other", "vocabulary" => "project_types"],
-      ["field" => "schooling_other", "term" => "Other", "vocabulary" => "schooling"],
-      ["field" => "curricula_other", "term" => "Other", "vocabulary" => "curricula"],
-      ["field" => "time_method_other", "term" => "Other", "vocabulary" => "time_methods"],
-    ],
-    "create_update_dataset" => [
-      ["field" => "constructs_other", "term" => "Other", "vocabulary" => "constructs"],
-      ["field" => "data_collection_locations_other", "term" => "Other", "vocabulary" => "data_collection_locations"],
-      ["field" => "assessment_names_other", "term" => "Other", "vocabulary" => "assessments"],
-      ["field" => "special_populations_other", "term" => "Other", "vocabulary" => "special_populations"],
-      ["field" => "variable_types_other", "term" => "Other", "vocabulary" => "dataset_variables"],
-    ],
-  );
-  return $other_terms;
-}
-// gets the tid for a given term and vocabulary
-function getTermId($name, $vocabulary) {
-  if (empty($name) || empty($vocabulary)) {
-    return NULL;
-  }
-  else {
-    $term = \Drupal::entityTypeManager()
-    ->getStorage('taxonomy_term')
-    ->loadByProperties(['name' => $name, 'vid' => $vocabulary]);
-    $term = reset($term);
-    return $term->id();
-  }
-}
-
-/**
  * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter()
  * Creates year options
  *

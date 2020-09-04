@@ -87,7 +87,6 @@ class DatasetController extends ControllerBase {
     foreach ($node->get('field_component_skills')->getValue() as $delta => $value) {
       $constructs[$delta] = $value['target_id'];
     }
-    $constructs_other = $node->get('field_component_skills_other')->value;
     $time_points = $node->get('field_time_points')->value;
     $data_collection_period = [];
     foreach ($node->field_data_collection_range as $delta => $date_range_paragraph) {
@@ -103,12 +102,10 @@ class DatasetController extends ControllerBase {
     foreach ($node->get('field_data_collection_locations')->getValue() as $delta => $value) {
        $data_collection_locations[$delta] = $value['target_id'];
     }
-    $data_collection_locations_other = $node->get('field_data_locations_other')->value;
     $assessment_name = [];
     foreach($node->get('field_assessment_name')->getValue() as $delta => $value) {
       $assessment_name[$delta] = $value['target_id'];
     }
-    $assessment_names_other = $node->get('field_assessment_names_other')->value;
     // demographics paragraph (participants)
     $participants = [];
     foreach ($node->field_demographics_information as $delta => $demographics_paragraph) {
@@ -125,13 +122,11 @@ class DatasetController extends ControllerBase {
     foreach ($node->get('field_special_populations')->getValue() as $delta => $value) {
       $special_populations[$delta] = $value['target_id'];
     }
-    $special_populations_other = $node->get('field_special_populations_other')->value;
 
     $variable_types_in_dataset = [];
     foreach ($node->get('field_variable_types_in_dataset')->getValue() as $delta => $value) {
       $variable_types_in_dataset[$delta] = $value['target_id'];
     }
-    $variable_types_other = $node->get('field_variable_types_other')->value;
 
     $license = $node->get('field_license')->target_id;
     $dataset_upload_or_external = $node->get('field_dataset_upload_or_external')->value;
@@ -176,18 +171,13 @@ class DatasetController extends ControllerBase {
         'host_organizations' => $host_organizations,
         'location' => $location,
         'constructs' => $constructs,
-        'constructs_other' => $constructs_other,
         'time_points' => $time_points,
         'data_collection_period' => $data_collection_period,
         'data_collection_locations' =>  $data_collection_locations,
-        'data_collection_locations_other' => $data_collection_locations_other,
         'assessment_name' => $assessment_name,
-        'assessment_names_other' => $assessment_names_other,
         'participants' => $participants,
         'special_populations' => $special_populations,
-        'special_populations_other' => $special_populations_other,
         'variable_types_in_dataset' => $variable_types_in_dataset,
-        'variable_types_other' => $variable_types_other,
         'license' => $license,
         'dataset_upload_or_external' => $dataset_upload_or_external,
         'external_resource' => $external_resource,
