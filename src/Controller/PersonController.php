@@ -49,6 +49,7 @@ class PersonController extends ControllerBase {
     $orcid = $node->get('field_orcid')->value;
     $web_presence = $node->get('field_web_presence')->getValue();
     $professional_titles = $node->get('field_professional_titles')->getValue();
+    $related_organizations = [];
     foreach ($node->get('field_related_organizations')->getValue() as $delta => $value) {
       $related_organizations[$delta] = $value['target_id'];
     }
