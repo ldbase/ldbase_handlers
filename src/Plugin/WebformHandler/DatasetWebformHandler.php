@@ -49,7 +49,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_related_organizations = $submission_array['host_organizations'];
     $field_location = $submission_array['location'];
     $field_component_skills = $submission_array['constructs'];
-    $field_component_skills_other = $submission_array['constructs_other'];
     $field_time_points = $submission_array['time_points'];
 
     // date range select paragraph
@@ -87,9 +86,7 @@ use Drupal\webform\Entity\WebformSubmission;
     }
 
     $field_data_collection_locations = $submission_array['data_collection_locations'];
-    $field_data_locations_other = $submission_array['data_collection_locations_other'];
     $field_assessment_name = $submission_array['assessment_name'];
-    $field_assessment_names_other = $submission_array['assessment_names_other'];
 
     // demographics paragraph
     $demographics_array = $submission_array['participants'];
@@ -128,9 +125,7 @@ use Drupal\webform\Entity\WebformSubmission;
     }
 
     $field_special_populations = $submission_array['special_populations'];
-    $field_special_populations_other = $submission_array['special_populations_other'];
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
-    $field_variable_types_other = $submission_array['variable_types_other'];
 
     if (!empty($submission_array['license'])) {
       $field_license = $submission_array['license'];
@@ -257,18 +252,13 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_related_organizations' => $field_related_organizations,
         'field_location' => $field_location,
         'field_component_skills' => $field_component_skills,
-        'field_component_skills_other' => $field_component_skills_other,
         'field_time_points' => $field_time_points,
         'field_data_collection_range' => $field_data_collection_range,
         'field_data_collection_locations' => $field_data_collection_locations,
-        'field_data_locations_other' => $field_data_locations_other,
         'field_assessment_name' => $field_assessment_name,
-        'field_assessment_names_other' => $field_assessment_names_other,
         'field_demographics_information' => $field_demographics_information,
         'field_special_populations' => $field_special_populations,
-        'field_special_populations_other' => $field_special_populations_other,
         'field_variable_types_in_dataset' => $field_variable_types_in_dataset,
-        'field_variable_types_other' => $field_variable_types_other,
         'field_license' => $field_license,
         'field_dataset_upload_or_external' => $field_dataset_upload_or_external,
         'field_external_resource' => $field_external_resource,
@@ -299,18 +289,13 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_related_organizations', $field_related_organizations);
       $node->set('field_location', $field_location);
       $node->set('field_component_skills', $field_component_skills);
-      $node->set('field_component_skills_other', $field_component_skills_other);
       $node->set('field_time_points', $field_time_points);
       $node->set('field_data_collection_range', $field_data_collection_range);
       $node->set('field_data_collection_locations', $field_data_collection_locations);
-      $node->set('field_data_locations_other', $field_data_locations_other);
       $node->set('field_assessment_name', $field_assessment_name);
-      $node->set('field_assessment_names_other', $field_assessment_names_other);
       $node->set('field_demographics_information', $field_demographics_information);
       $node->set('field_special_populations', $field_special_populations);
-      $node->set('field_special_populations_other', $field_special_populations_other);
       $node->set('field_variable_types_in_dataset', $field_variable_types_in_dataset);
-      $node->set('field_variable_types_other', $field_variable_types_other);
       $node->set('field_license', $field_license);
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
@@ -548,7 +533,7 @@ use Drupal\webform\Entity\WebformSubmission;
           $new_term = Term::create([
             'name' => $term,
             'vid' => $current['vid'],
-            // TODO: add verified field
+            'field_needs_review' => ['value' => 1,]
             // TODO: trigger email to admin?
           ]);
           // save and get term id

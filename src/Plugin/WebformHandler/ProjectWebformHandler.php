@@ -110,13 +110,9 @@ class ProjectWebformHandler extends WebformHandlerBase {
       ];
     }
     $field_project_type = $submission_array['project_type'];
-    $field_project_type_other = $submission_array['project_type_other'];
     $field_schooling = $submission_array['schooling'];
-    $field_schooling_other = $submission_array['schooling_other'];
     $field_curricula = $submission_array['curricula'];
-    $field_curricula_other = $submission_array['curricula_other'];
     $field_time_method = $submission_array['time_method'];
-    $field_time_method_other = $submission_array['time_method_other'];
 
     if (!$nid) {
       //create node
@@ -132,13 +128,9 @@ class ProjectWebformHandler extends WebformHandlerBase {
         'field_website' => $field_website,
         'field_grant_information' => $field_grant_information,
         'field_project_type' => $field_project_type,
-        'field_project_type_other' => $field_project_type_other,
         'field_schooling' => $field_schooling,
-        'field_schooling_other' => $field_schooling_other,
         'field_curricula' => $field_curricula,
-        'field_curricula_other' => $field_curricula_other,
         'field_time_method' => $field_time_method,
-        'field_time_method_other' => $field_time_method_other,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
       //save the node
@@ -163,13 +155,9 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $node->set('field_website', $field_website);
       $node->set('field_grant_information', $field_grant_information);
       $node->set('field_project_type', $field_project_type);
-      $node->set('field_project_type_other', $field_project_type_other);
       $node->set('field_schooling', $field_schooling);
-      $node->set('field_schooling_other', $field_schooling_other);
       $node->set('field_curricula', $field_curricula);
-      $node->set('field_curricula_other', $field_curricula_other);
       $node->set('field_time_method', $field_time_method);
-      $node->set('field_time_method_other', $field_time_method_other);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
       $node->save();
@@ -229,7 +217,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
           $new_term = Term::create([
             'name' => $term,
             'vid' => $current['vid'],
-            // TODO: add verified field
+            'field_needs_review' => ['value' => 1,]
             // TODO: trigger email to admin?
           ]);
           // save and get term id
