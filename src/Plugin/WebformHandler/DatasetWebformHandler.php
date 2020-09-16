@@ -534,13 +534,15 @@ use Drupal\webform\Entity\WebformSubmission;
             'name' => $term,
             'vid' => $current['vid'],
             'field_needs_review' => ['value' => 1,]
-            // TODO: trigger email to admin?
           ]);
           // save and get term id
           $new_term->save();
           $new_id = $new_term->id();
           unset($field_data[$idx]);
           $field_data[$new_id] = $new_id;
+
+          // save message that term was added
+          \Drupal::service('ldbase_handlers.message_service')->newTermAddedMessage($new_term);
         }
       }
       $webform_submission->setElementData($current['field'], $field_data);

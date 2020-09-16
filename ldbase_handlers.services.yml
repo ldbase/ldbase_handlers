@@ -33,3 +33,6 @@ services:
     arguments: []
     tags:
       - { name: breadcrumb_builder, priority: 200 }
+  ldbase_handlers.message_service:
+    class: Drupal\ldbase_handlers\LDbaseMessageService
+    arguments: ['@entity_type.manager']
