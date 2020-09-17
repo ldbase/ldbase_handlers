@@ -8,5 +8,7 @@ namespace Drupal\ldbase_handlers;
 interface LDbaseMessageServiceInterface {
 
   public function newTermAddedMessage($term);
+  public function userAddedToGroupMessage($entity);
+  public function testMessage();
 
 }

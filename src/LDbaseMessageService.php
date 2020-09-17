@@ -39,4 +39,36 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     return $message;  // can Notify use this?
   }
 
+  public function userAddedToGroupMessage($entity) {
+    $messageTemplate = 'ldbase_user_added_to_project';
+    $added_user_id = $entity->entity_id->target_id;
+    $project_group_id = $entity->gid->target_id;
+    $role_id = $entity->group_roles->target_id;
+
+    //dd($entity->group_roles->target_id);
+
+    $project_group = $this->entityTypeManager->getStorage('group')->load($project_group_id);
+    $added_user = $this->entityTypeManager->getStorage('user')->load($added_user_id);
+    $group_role = $this->entityTypeManager->getStorage('group_role')->load($role_id);
+
+
+    // create a new message from template
+    $message = $this->entityTypeManager->getStorage('message')->create(['template' => $messageTemplate]);
+    $message->set('field_added_user', $added_user_id);
+    $message->set('field_group', $project_group_id);
+    $message->setArguments([
+      '@project_name' => $project_group->label(),
+      '@group_role' => $group_role->label(),
+    ]);
+    $message->save();
+  }
+
+  public function testMessage() {
+    // create a new message from template
+    $message = $this->entityTypeManager->getStorage('message')->create(['template' => 'test_message']);
+
+    // save the message
+    $message->save();
+  }
+
 }

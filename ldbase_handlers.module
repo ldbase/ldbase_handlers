@@ -160,3 +160,13 @@ function ldbase_handlers_preprocess_menu__document_tasks(&$variables) {
   $variables['items']['ldbase_handlers.edit_document']['title'] = "Edit this {$doc_type}";
   $variables['items']['ldbase_handlers.confirm_document_deletion']['title'] = "Delete this {$doc_type} ...";
 }
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ * Saves message to user when added to a project group
+ */
+function ldbase_handlers_group_content_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  if (\Drupal::RouteMatch()->getParameter('plugin_id') === 'group_membership') {
+    \Drupal::service('ldbase_handlers.message_service')->userAddedToGroupMessage($entity);
+  }
+}
