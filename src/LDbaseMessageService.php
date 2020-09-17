@@ -45,12 +45,9 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $project_group_id = $entity->gid->target_id;
     $role_id = $entity->group_roles->target_id;
 
-    //dd($entity->group_roles->target_id);
-
     $project_group = $this->entityTypeManager->getStorage('group')->load($project_group_id);
     $added_user = $this->entityTypeManager->getStorage('user')->load($added_user_id);
     $group_role = $this->entityTypeManager->getStorage('group_role')->load($role_id);
-
 
     // create a new message from template
     $message = $this->entityTypeManager->getStorage('message')->create(['template' => $messageTemplate]);
