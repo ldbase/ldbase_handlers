@@ -51,20 +51,12 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
 
     // create a new message from template
     $message = $this->entityTypeManager->getStorage('message')->create(['template' => $messageTemplate]);
-    $message->set('field_added_user', $added_user_id);
+    $message->set('field_to_user', $added_user_id);
     $message->set('field_group', $project_group_id);
     $message->setArguments([
       '@project_name' => $project_group->label(),
       '@group_role' => $group_role->label(),
     ]);
-    $message->save();
-  }
-
-  public function testMessage() {
-    // create a new message from template
-    $message = $this->entityTypeManager->getStorage('message')->create(['template' => 'test_message']);
-
-    // save the message
     $message->save();
   }
 

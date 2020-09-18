@@ -9,6 +9,5 @@ interface LDbaseMessageServiceInterface {
 
   public function newTermAddedMessage($term);
   public function userAddedToGroupMessage($entity);
-  public function testMessage();
 
 }
