@@ -1,0 +1,11 @@
+# File system.action.message_mark_read.yml
+langcode: en
+status: true
+dependencies:
+  module:
+    - message
+id: message_mark_read
+label: 'Mark message as Read'
+type: message
+plugin: message_mark_read
+configuration: {  }

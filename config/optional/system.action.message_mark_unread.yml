@@ -1,0 +1,11 @@
+# File system.action.message_mark_unread.yml
+langcode: en
+status: true
+dependencies:
+  module:
+    - message
+id: message_mark_unread
+label: 'Mark message as Unread'
+type: message
+plugin: message_mark_unread
+configuration: {  }

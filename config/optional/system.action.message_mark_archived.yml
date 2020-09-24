@@ -1,0 +1,11 @@
+# File system.action.message_mark_archived.yml
+langcode: en
+status: true
+dependencies:
+  module:
+    - message
+id: message_mark_archived
+label: 'Mark message as Archived'
+type: message
+plugin: message_mark_archived
+configuration: {  }
