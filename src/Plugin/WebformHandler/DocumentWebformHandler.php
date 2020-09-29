@@ -35,7 +35,6 @@ use Drupal\webform\Entity\WebformSubmission;
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-
     // Get the submitted form values
     $submission_array = $webform_submission->getData();
     $nid = $submission_array['node_id'];
@@ -62,10 +61,26 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_external_resource = $submission_array['external_resource'];
 
     if (!empty($submission_array['license'])) {
-      $field_license = $submission_array['license'];
+      $submitted_license = $submission_array['license'];
+      $check_license = \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadByProperties([
+            'vid' => 'licenses',
+            'field_valid_for' => 'document',
+            'tid' => $submitted_license,
+          ]);
+      if (!empty($check_license)) {
+        $field_license = $submitted_license;
+        $field_license_other = NULL;
+      }
+      else {
+        $field_license = NULL;
+        $field_license_other = $submitted_license;
+      }
     }
     else {
       $field_license = [];
+      $field_license_other = NULL;
     }
 
     // publication information paragraph
@@ -133,6 +148,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_doc_upload_or_external' => $field_document_upload_or_external,
         'field_external_resource' => $field_external_resource,
         'field_license' => $field_license,
+        'field_license_other' => $field_license_other,
         'field_publication_info' => $field_publication_info,
         'field_document_file' => $field_document_file,
         'field_affiliated_parents' => $passed_id,
@@ -161,6 +177,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_doc_upload_or_external', $field_document_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_license', $field_license);
+      $node->set('field_license_other', $field_license_other);
       $node->set('field_publication_info', $field_publication_info);
       $node->set('field_document_file', $field_document_file);
       $form_state->set('redirect_message', $title . ' was updated successfully.');

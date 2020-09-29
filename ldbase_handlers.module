@@ -81,6 +81,48 @@ function ldbase_handlers_webform_options_years_alter(array &$options, array &$el
 }
 
 /**
+ * Implements hook_webform_options_alter()
+ * Gets terms from licenses taxonomy and creates element options
+ */
+function ldbase_handlers_webform_options_alter(array &$options, array &$element, $options_id) {
+  $allowed_options = ['code_licenses','dataset_licenses','document_licenses'];
+  if (in_array($options_id, $allowed_options)) {
+    $type = explode('_', $options_id)[0];
+
+    // load cached options if avaliable
+    if ($cache = \Drupal::cache()->get($options_id)) {
+      $options = $cache->data;
+      return;
+    }
+
+    // get terms from licenses taxonomy that are valid for this type
+    $options = custom_get_license_terms($type);
+    //Add options to cache
+    \Drupal::cache()->set($options_id, $options);
+  }
+}
+
+function custom_get_license_terms($valid_for) {
+  $valid_list = ['document','code','dataset'];
+  if (!in_array($valid_for, $valid_list)) {
+    return $options = [];
+  }
+
+  // get taxonomy terms valid for given content type
+  $terms = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadByProperties([
+        'vid' => 'licenses',
+        'field_valid_for' => $valid_for,
+      ]);
+  $options = [];
+  foreach ($terms as $term) {
+    $options[$term->tid->value] = $term->name->value;
+  }
+  return $options;
+}
+
+/**
  * Implements HOOK_widget_form_alter()
  *
  */

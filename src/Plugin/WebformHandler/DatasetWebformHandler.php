@@ -128,10 +128,26 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_variable_types_in_dataset = $submission_array['variable_types_in_dataset'];
 
     if (!empty($submission_array['license'])) {
-      $field_license = $submission_array['license'];
+      $submitted_license = $submission_array['license'];
+      $check_license = \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadByProperties([
+            'vid' => 'licenses',
+            'field_valid_for' => 'dataset',
+            'tid' => $submitted_license,
+          ]);
+      if (!empty($check_license)) {
+        $field_license = $submitted_license;
+        $field_license_other = NULL;
+      }
+      else {
+        $field_license = NULL;
+        $field_license_other = $submitted_license;
+      }
     }
     else {
       $field_license = [];
+      $field_license_other = NULL;
     }
 
     $field_dataset_upload_or_external = $submission_array['dataset_upload_or_external'];
@@ -260,6 +276,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_special_populations' => $field_special_populations,
         'field_variable_types_in_dataset' => $field_variable_types_in_dataset,
         'field_license' => $field_license,
+        'field_license_other' => $field_license_other,
         'field_dataset_upload_or_external' => $field_dataset_upload_or_external,
         'field_external_resource' => $field_external_resource,
         'field_publication_info' => $field_publication_info,
@@ -297,6 +314,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_special_populations', $field_special_populations);
       $node->set('field_variable_types_in_dataset', $field_variable_types_in_dataset);
       $node->set('field_license', $field_license);
+      $node->set('field_license_other', $field_license_other);
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_publication_info', $field_publication_info);

@@ -111,6 +111,9 @@ class DocumentController extends ControllerBase {
     $document_upload_or_external = $node->get('field_doc_upload_or_external')->value;
     $external_resource = $node->get('field_external_resource')->uri;
     $license = $node->get('field_license')->target_id;
+    if (empty($license)) {
+      $license = $node->get('field_license_other')->value;
+    }
 
     // publication info paragraph
     $publication_info = [];

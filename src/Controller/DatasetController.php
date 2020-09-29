@@ -129,6 +129,9 @@ class DatasetController extends ControllerBase {
     }
 
     $license = $node->get('field_license')->target_id;
+    if (empty($license)) {
+      $license = $node->get('field_license_other')->value;
+    }
     $dataset_upload_or_external = $node->get('field_dataset_upload_or_external')->value;
     $external_resource = $node->get('field_external_resource')->uri;
 
