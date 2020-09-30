@@ -253,6 +253,9 @@ use Drupal\webform\Entity\WebformSubmission;
     $embargoed = $submission_array['embargoed']; // 1 if embargoed, 0 if unembargoed
     $embargo_expiry = $submission_array['embargo_expiry']; // date if set, empty if not
 
+    $field_data_unique_or_derived = $submission_array['dataset_unique'];
+    $field_derivation_source = $submission_array['derivation_source'];
+
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
 
@@ -282,6 +285,8 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_publication_info' => $field_publication_info,
         'field_dataset_version' => $field_dataset_version,
         'field_affiliated_parents' => $passed_id,
+        'field_data_unique_or_derived' => $field_data_unique_or_derived,
+        'field_derivation_source' => $field_derivation_source,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
       //save the node
@@ -319,6 +324,8 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_publication_info', $field_publication_info);
       $node->set('field_dataset_version', $field_dataset_version);
+      $node->set('field_data_unique_or_derived', $field_data_unique_or_derived);
+      $node->set('field_derivation_source', $field_derivation_source);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
       $node->save();

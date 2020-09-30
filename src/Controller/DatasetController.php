@@ -164,6 +164,10 @@ class DatasetController extends ControllerBase {
     //Set $embargoed
     //Set $embargo_expiry
 
+    // Data unique or derived
+    $dataset_unique = $node->get('field_data_unique_or_derived')->value;
+    $derivation_source = $node->get('field_derivation_source')->getValue();
+
     $values = [
       'data' => [
         'node_id' => $node_id,
@@ -188,6 +192,8 @@ class DatasetController extends ControllerBase {
         'dataset_version' => $file,
         //'embargoed' => $embargoed,
         //'embargo_expiry' => $embargo_expiry,
+        'dataset_unique' => $dataset_unique,
+        'derivation_source' => $derivation_source,
       ]
     ];
 
