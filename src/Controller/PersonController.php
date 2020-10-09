@@ -47,6 +47,7 @@ class PersonController extends ControllerBase {
     $last_name = $node->get('field_last_name')->value;
     $email = $node->get('field_email')->getValue();
     $orcid = $node->get('field_orcid')->value;
+    $google_scholar_id = $node->get('field_google_scholar_id')->value;
     $web_presence = $node->get('field_web_presence')->getValue();
     $professional_titles = $node->get('field_professional_titles')->getValue();
     $related_organizations = [];
@@ -70,6 +71,7 @@ class PersonController extends ControllerBase {
         'last_name' => $last_name,
         'email' => $email,
         'orcid' => $orcid,
+        'google_scholar_id' => $google_scholar_id,
         'web_presence' => $web_presence,
         'professional_titles' => $professional_titles,
         'related_organizations' => $related_organizations,

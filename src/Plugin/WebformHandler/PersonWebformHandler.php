@@ -49,6 +49,7 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_last_name = $submission_array['last_name'];
     $field_email = $submission_array['email'];
     $field_orcid = $submission_array['orcid'];
+    $field_google_scholar_id = $submission_array['google_scholar_id'];
     $field_web_presence = $submission_array['web_presence'];
     $field_professional_titles = $submission_array['professional_titles'];
 
@@ -93,6 +94,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_last_name' => $field_last_name,
         'field_email' => $field_email,
         'field_orcid' => $field_orcid,
+        'field_google_scholar_id' => $field_google_scholar_id,
         'field_web_presence' => $field_web_presence,
         'field_professional_titles' => $field_professional_titles,
         'field_related_organizations' => $field_related_organizations,
@@ -113,6 +115,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_last_name', $field_last_name);
       $node->set('field_email', $field_email);
       $node->set('field_orcid', $field_orcid);
+      $node->set('field_google_scholar_id', $field_google_scholar_id);
       $node->set('field_web_presence', $field_web_presence);
       $node->set('field_professional_titles', $field_professional_titles);
       $node->set('field_related_organizations', $field_related_organizations);
