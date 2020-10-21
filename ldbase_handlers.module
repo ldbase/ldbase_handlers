@@ -58,6 +58,14 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
   }
 }
 
+function ldbase_handlers_entity_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->getEntityType()->id() == 'node') {
+    // trim title field
+    $trimmed_title = trim($entity->get('title')->value);
+    $entity->setTitle($trimmed_title);
+  }
+}
+
 /**
  * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter()
  * Creates year options
