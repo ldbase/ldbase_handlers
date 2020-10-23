@@ -73,12 +73,14 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_thumbnail = NULL;
     }
 
+    $user = User::load(\Drupal::currentUser()->id());
+    $user->setEmail(trim($field_email));
+    $user->setUsername(trim($field_email));
     $ldbase_password = $submission_array['ldbase_password'];
     if ($ldbase_password) {
-      $user = User::load(\Drupal::currentUser()->id());
-      $user->setPassword($ldbase_password);
-      $user->save();
+      $user->setPassword(trim($ldbase_password));
     }
+    $user->save();
 
     if (!$nid) {
       // create node
@@ -131,6 +133,14 @@ use Drupal\webform\Entity\WebformSubmission;
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    // check that user email is unique in the system
+    $this->validateEmail($form_state, $webform_submission);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // redirect to user profile
     $route_name = 'entity.user.canonical';
@@ -138,6 +148,30 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  /**
+   * Check that user email is unique in system
+   */
+  private function validateEmail(FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    $data = $webform_submission->getData();
+    $email = $data['email'];
+
+    $nid = $data['node_id'];
+    $node = Node::load($nid);
+    $original_email = !empty($node) ? $node->get('field_email')->value : NULL;
+
+    if ($email <> $original_email) {
+      $existing_ids = \Drupal::entityQuery('user')
+        ->condition('mail', $email)
+        ->execute();
+
+      if (!empty($existing_ids)) {
+        $message = 'The email you entered is already associated with another LDbase user account.  Email addresses must be unique.';
+        $form_state->setErrorByName('email', $message);
+      }
+    }
+
   }
 
  }
