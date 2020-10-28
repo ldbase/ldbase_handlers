@@ -9,30 +9,34 @@ ldbase_handlers.edit_project:
 ldbase_handlers.confirm_project_deletion:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
-  title: 'Delete this Project ...'
+  title: 'Delete this Project'
   route_name: ldbase_handlers.confirm_project_deletion
   weight: 1
 
+ldbase_handlers.add_file_to_project:
+  menu_name: project-tasks
+  title: 'Add File...'
+  url: "internal:#more"
+  expanded: TRUE
+  weight: 2 
+
 ldbase_handlers.add_code_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: project-tasks
+  parent: ldbase_handlers.add_file_to_project
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_project
-  weight: 2
 
 ldbase_handlers.add_dataset_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: project-tasks
+  parent: ldbase_handlers.add_file_to_project
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_project
-  weight: 3
 
 ldbase_handlers.add_document_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: project-tasks
+  parent: ldbase_handlers.add_file_to_project
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_project
-  weight: 4
 
 ldbase_handlers.manage_project_users:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenuWithGroup
