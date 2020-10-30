@@ -14,11 +14,16 @@ ldbase_handlers.confirm_project_deletion:
   weight: 1
 
 ldbase_handlers.add_file_to_project:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
   title: 'Add File...'
-  url: "internal:#more"
+  route_name: ldbase_handlers.add_file_to_anything
   expanded: TRUE
-  weight: 2 
+  weight: 2
+  options:
+    attributes:
+      class:
+        - deactivate-link
 
 ldbase_handlers.add_code_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
@@ -56,37 +61,45 @@ ldbase_handlers.edit_dataset:
 ldbase_handlers.confirm_dataset_deletion:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
-  title: 'Delete Dataset ...'
+  title: 'Delete this Dataset'
   route_name: ldbase_handlers.confirm_dataset_deletion
   weight: 1
 
-ldbase_handlers.add_dataset_to_dataset:
+ldbase_handlers.add_file_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
+  title: 'Add File...'
+  route_name: ldbase_handlers.add_file_to_anything
+  expanded: TRUE
+  weight: 2
+  options:
+    attributes:
+      class:
+        - deactivate-link
+
+ldbase_handlers.add_dataset_to_dataset:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  parent: ldbase_handlers.add_file_to_dataset
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_dataset
-  weight: 2
 
 ldbase_handlers.add_code_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: dataset-tasks
+  parent: ldbase_handlers.add_file_to_dataset
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_dataset
-  weight: 3
 
 ldbase_handlers.add_codebook_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: dataset-tasks
+  parent: ldbase_handlers.add_file_to_dataset
   title: 'Add Codebook'
   route_name: ldbase_handlers.add_codebook_to_dataset
-  weight: 4
 
 ldbase_handlers.add_document_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: dataset-tasks
+  parent: ldbase_handlers.add_file_to_dataset
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_dataset
-  weight: 5
 
 # Code Tasks items
 ldbase_handlers.edit_code:
@@ -99,23 +112,32 @@ ldbase_handlers.edit_code:
 ldbase_handlers.confirm_code_deletion:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: code-tasks
-  title: 'Delete Code ...'
+  title: 'Delete this Code'
   route_name: ldbase_handlers.confirm_code_deletion
   weight: 1
 
+ldbase_handlers.add_file_to_code:                                                                                                                                                                                                           class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: code-tasks
+  title: 'Add File...'
+  route_name: ldbase_handlers.add_file_to_anything
+  expanded: TRUE
+  weight: 2
+  options:
+    attributes:
+      class:
+        - deactivate-link
+
 ldbase_handlers.add_code_to_code:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: code-tasks
+  parent: ldbase_handlers.add_file_to_code
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_code
-  weight: 2
 
 ldbase_handlers.add_document_to_code:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: code-tasks
+  parent: ldbase_handlers.add_file_to_code
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_code
-  weight: 3
 
 # Document Tasks menu items
 ldbase_handlers.edit_document:
@@ -128,7 +150,7 @@ ldbase_handlers.edit_document:
 ldbase_handlers.confirm_document_deletion:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: document-tasks
-  title: 'Delete Document ...'
+  title: 'Delete this Document'
   route_name: ldbase_handlers.confirm_document_deletion
   weight: 1
 
