@@ -208,7 +208,7 @@ function ldbase_handlers_preprocess_menu__document_tasks(&$variables) {
   $uuid = \Drupal::RouteMatch()->getParameter('node')->uuid();
   $doc_type = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($uuid) ? 'Codebook' : 'Document';
   $variables['items']['ldbase_handlers.edit_document']['title'] = "Edit this {$doc_type}";
-  $variables['items']['ldbase_handlers.confirm_document_deletion']['title'] = "Delete this {$doc_type} ...";
+  $variables['items']['ldbase_handlers.confirm_document_deletion']['title'] = "Delete this {$doc_type}";
 }
 
 /**

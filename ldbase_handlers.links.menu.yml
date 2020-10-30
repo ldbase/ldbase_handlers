@@ -116,7 +116,8 @@ ldbase_handlers.confirm_code_deletion:
   route_name: ldbase_handlers.confirm_code_deletion
   weight: 1
 
-ldbase_handlers.add_file_to_code:                                                                                                                                                                                                           class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+ldbase_handlers.add_file_to_code:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: code-tasks
   title: 'Add File...'
   route_name: ldbase_handlers.add_file_to_anything
