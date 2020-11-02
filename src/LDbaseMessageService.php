@@ -25,7 +25,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
 
   public function newTermAddedMessage($term) {
     // machine name of message template for new terms
-    $messageTemplate = 'ldbase_taxonomy_term_added';
+    $message_template = 'ldbase_taxonomy_term_added';
     $current_user = \Drupal::currentUser()->id();
     // get values for message arguments in template
     $taxonomy_term = $term->getName();
@@ -35,7 +35,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     // send a message to each admin
     foreach ($admin_user_ids as $admin_id) {
       // create a new message from template
-      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $messageTemplate, 'uid' => $admin_id]);
+      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $admin_id]);
       $message->set('field_from_user', $current_user);
       $message->set('field_to_user', $admin_id);
       // set arguments for term replacements
@@ -53,7 +53,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   }
 
   public function userAddedToGroupMessage($entity) {
-    $messageTemplate = 'ldbase_user_added_to_project';
+    $message_template = 'ldbase_user_added_to_project';
     $current_user = \Drupal::currentUser()->id();
     $added_user_id = $entity->entity_id->target_id;
     $project_group_id = $entity->gid->target_id;
@@ -65,13 +65,38 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
 
     // create a new message from template
     // Notify uses Message Author (uid) as "To" address
-    $message = $this->entityTypeManager->getStorage('message')->create(['template' => $messageTemplate, 'uid' => $added_user_id]);
+    $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $added_user_id]);
     $message->set('field_from_user', $current_user);
     $message->set('field_to_user', $added_user_id);
     $message->set('field_group', $project_group_id);
     $message->setArguments([
       '@project_name' => $project_group->label(),
       '@group_role' => $group_role->label(),
+    ]);
+
+    $message->save();
+
+    // send email notification
+    $this->sendLdbaseMessage($message);
+  }
+
+  /**
+   * Send message when User is added as a contributor (field_related_persons)
+   */
+  public function contributorAddedMessage($added_user_id, $node) {
+    $message_template = 'ldbase_user_added_as_contributor';
+    $current_user = \Drupal::currentUser();
+    $ldbase_object = ucfirst($node->bundle());
+    $ldbase_object_title = $node->getTitle();
+    // create a new message from template
+    // Notify uses Message Author (uid) as "To" address
+    $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $added_user_id]);
+    $message->set('field_from_user', $current_user->id());
+    $message->set('field_to_user', $added_user_id);
+    $message->setArguments([
+      '@object_type' => $ldbase_object,
+      '@object_title' => $ldbase_object_title,
+      '@user' => $current_user->getDisplayName(),
     ]);
 
     $message->save();

@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_webform_element_alter().
@@ -58,12 +59,36 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
   }
 }
 
-function ldbase_handlers_entity_presave(Drupal\Core\Entity\EntityInterface $entity) {
-  if ($entity->getEntityType()->id() == 'node') {
-    // trim title field
-    $trimmed_title = trim($entity->get('title')->value);
-    $entity->setTitle($trimmed_title);
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function ldbase_handlers_node_presave(Node $node) {
+  // trim title field
+  $trimmed_title = trim($node->get('title')->value);
+  $node->setTitle($trimmed_title);
+
+  //message users added as contributors
+  $contributor_content = ['project','dataset','document','code'];
+  if (in_array($node->getType(), $contributor_content)) {
+    $original = $node->original->toArray();
+    $original_persons = array_map('getTargetReferences', $original['field_related_persons']);
+    $submitted = $node->toArray();
+    $submitted_persons = array_map('getTargetReferences', $submitted['field_related_persons']);
+    $added_contributors = array_diff($submitted_persons, $original_persons);
+    $current_user_id = \Drupal::currentUser()->id();
+    foreach ($added_contributors as $key => $reference) {
+      $person = Node::load($reference);
+      $added_user_id = $person->field_drupal_account_id->target_id;
+      if (!empty($added_user_id) && $added_user_id <> $current_user_id) {
+        // send a message to the added user
+        \Drupal::service('ldbase_handlers.message_service')->contributorAddedMessage($added_user_id, $node);
+      }
+    }
   }
+}
+
+function getTargetReferences(array $value) {
+  return $value['target_id'];
 }
 
 /**
