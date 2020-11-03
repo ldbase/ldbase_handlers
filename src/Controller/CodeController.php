@@ -53,13 +53,15 @@ class CodeController extends ControllerBase {
    * @param \Drupal\Node\NodeInterface $node
    */
   public function editCode(NodeInterface $node) {
-
     // get node data
     $nid = $node->id();
     $title = $node->getTitle();
     $description = $node->get('body')->value;
     $authors = $node->get('field_related_persons')->getValue();
-    $code_type = $node->get('field_code_type')->target_id;
+    $code_type = [];
+    foreach ($node->get('field_code_type')->getValue() as $delta => $value) {
+      $code_type[$delta] = $value['target_id'];
+    }
     $doi = $node->get('field_doi')->getValue();
     $code_upload_or_external = $node->get('field_code_upload_or_external')->value;
     $external_resource = $node->get('field_external_resource')->uri;
