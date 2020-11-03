@@ -72,8 +72,14 @@ function ldbase_handlers_node_presave(Node $node) {
   //message users added as contributors
   $contributor_content = ['project','dataset','document','code'];
   if (in_array($node->getType(), $contributor_content)) {
-    $original = $node->original->toArray();
-    $original_persons = array_map('getTargetReferences', $original['field_related_persons']);
+    if (!empty($node->original)) {
+      $original = $node->original->toArray();
+      $original_persons = array_map('getTargetReferences', $original['field_related_persons']);
+    }
+    else {
+      $original = [];
+      $original_persons = [];
+    }
     $submitted = $node->toArray();
     $submitted_persons = array_map('getTargetReferences', $submitted['field_related_persons']);
     $added_contributors = array_diff($submitted_persons, $original_persons);
