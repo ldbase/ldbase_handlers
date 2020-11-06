@@ -163,6 +163,9 @@ function custom_get_license_terms($valid_for) {
   return $options;
 }
 
+/**
+ * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter().
+ */
 function ldbase_handlers_webform_options_project_tree_content_alter(array &$options, array $element) {
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
     $this_nid = $node->id();
