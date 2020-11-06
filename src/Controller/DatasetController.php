@@ -160,6 +160,7 @@ class DatasetController extends ControllerBase {
     }
     $latest_version = array_pop($file);
     $file = [$latest_version];
+    $passed_id = $node->get('field_affiliated_parents')->target_id;
 
     //Set $embargoed
     //Set $embargo_expiry
@@ -194,6 +195,7 @@ class DatasetController extends ControllerBase {
         //'embargo_expiry' => $embargo_expiry,
         'dataset_unique' => $dataset_unique,
         'derivation_source' => $derivation_source,
+        'passed_id' => $passed_id,
       ]
     ];
 

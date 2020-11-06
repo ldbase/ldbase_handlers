@@ -91,6 +91,7 @@ class DocumentController extends ControllerBase {
     // get webform and load values
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load($use_webform);
     $webform = $webform->getSubmissionForm($values, $operation);
+    //dd($values);
     return $webform;
   }
 
@@ -128,6 +129,7 @@ class DocumentController extends ControllerBase {
 
     $document_file = $node->field_document_file->entity;
     $document_file_id = !empty($document_file) ? $document_file->id() : NULL;
+    $passed_id = $node->get('field_affiliated_parents')->target_id;
 
     //Set $embargoed
     //Set $embargo_expiry
@@ -146,6 +148,7 @@ class DocumentController extends ControllerBase {
         'license' => $license,
         'publication_info' => $publication_info,
         'document_file' => $document_file_id,
+        'passed_id' => $passed_id,
         //'embargoed' => $embargoed,
         //'embargo_expiry' => $embargo_expiry,
       ]

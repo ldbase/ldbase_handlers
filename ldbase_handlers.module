@@ -163,6 +163,14 @@ function custom_get_license_terms($valid_for) {
   return $options;
 }
 
+function ldbase_handlers_webform_options_project_tree_content_alter(array &$options, array $element) {
+  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+    $this_nid = $node->id();
+    $parent_project_node = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($this_nid);
+    $options = \Drupal\ldbase_content\Controller\LDbaseProjectTreeController::output_select_options($parent_project_node, $node);
+  }
+}
+
 /**
  * Implements HOOK_widget_form_alter()
  *

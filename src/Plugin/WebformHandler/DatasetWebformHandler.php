@@ -326,6 +326,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_dataset_version', $field_dataset_version);
       $node->set('field_data_unique_or_derived', $field_data_unique_or_derived);
       $node->set('field_derivation_source', $field_derivation_source);
+      $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
       $node->save();

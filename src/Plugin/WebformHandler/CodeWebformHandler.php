@@ -176,6 +176,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_license_other', $field_license_other);
       $node->set('field_publication_info', $field_publication_info);
       $node->set('field_code_file', $field_code_file);
+      $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully');
       //save the node
       $node->save();

@@ -84,6 +84,8 @@ class CodeController extends ControllerBase {
     $code_file = $node->field_code_file->entity;
     $code_file_id = !empty($code_file) ? $code_file->id() : NULL;
 
+    $passed_id = $node->get('field_affiliated_parents')->target_id;
+
     //Set $embargoed
     //Set $embargo_expiry
 
@@ -100,6 +102,7 @@ class CodeController extends ControllerBase {
         'license' => $license,
         'publication_info' => $publication_info,
         'code_file' => $code_file_id,
+        'passed_id' => $passed_id,
         //'embargoed' => $embargoed,
         //'embargo_expiry' => $embargo_expiry,
       ]
