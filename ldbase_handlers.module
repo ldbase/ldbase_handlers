@@ -168,9 +168,15 @@ function custom_get_license_terms($valid_for) {
  */
 function ldbase_handlers_webform_options_project_tree_content_alter(array &$options, array $element) {
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
-    $this_nid = $node->id();
-    $parent_project_node = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($this_nid);
-    $options = \Drupal\ldbase_content\Controller\LDbaseProjectTreeController::output_select_options($parent_project_node, $node);
+    $ldbase_bundles = ['code','dataset','document','project'];
+    if (in_array($node->bundle(), $ldbase_bundles)) {
+      $this_nid = $node->id();
+      $parent_project_node = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($this_nid);
+      $options = \Drupal\ldbase_content\Controller\LDbaseProjectTreeController::output_select_options($parent_project_node, $node);
+    }
+    else {
+      $options = [];
+    }
   }
 }
 
