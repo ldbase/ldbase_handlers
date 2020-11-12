@@ -126,7 +126,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_related_organizations', $field_related_organizations);
       $node->set('field_areas_of_expertise', $field_areas_of_expertise);
       $node->set('field_thumbnail', $field_thumbnail);
-      $form_state->set('redirect_message', $title . ' was updated successfully');
+      $form_state->set('redirect_message', 'Your profile was updated successfully');
     }
 
     //save the node
