@@ -114,7 +114,7 @@ function ldbase_handlers_webform_options_years_alter(array &$options, array &$el
   }
 
   $this_year = date("Y");
-  for ($x = $this_year + 2; $x >= $this_year - 50; $x--) {
+  for ($x = $this_year + 10; $x >= $this_year - 50; $x--) {
     $options[$x] = $x;
   }
   // cache options
