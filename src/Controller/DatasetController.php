@@ -162,6 +162,8 @@ class DatasetController extends ControllerBase {
     $file = [$latest_version];
     $passed_id = $node->get('field_affiliated_parents')->target_id;
 
+    $user_agreement = $node->get('field_user_agreement')->value;
+
     //Set $embargoed
     //Set $embargo_expiry
 
@@ -191,6 +193,7 @@ class DatasetController extends ControllerBase {
         'external_resource' => $external_resource,
         'publication_info' => $publication_info,
         'dataset_version' => $file,
+        'user_agreement' => $user_agreement,
         //'embargoed' => $embargoed,
         //'embargo_expiry' => $embargo_expiry,
         'dataset_unique' => $dataset_unique,

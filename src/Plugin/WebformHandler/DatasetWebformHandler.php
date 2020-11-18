@@ -249,7 +249,7 @@ use Drupal\webform\Entity\WebformSubmission;
         $field_dataset_version = [];
       }
     }
-
+    $field_user_agreement = $submission_array['user_agreement']; // 1 if agreed, 0 if external
     $embargoed = $submission_array['embargoed']; // 1 if embargoed, 0 if unembargoed
     $embargo_expiry = $submission_array['embargo_expiry']; // date if set, empty if not
 
@@ -284,6 +284,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_external_resource' => $field_external_resource,
         'field_publication_info' => $field_publication_info,
         'field_dataset_version' => $field_dataset_version,
+        'field_user_agreement' => $field_user_agreement,
         'field_affiliated_parents' => $passed_id,
         'field_data_unique_or_derived' => $field_data_unique_or_derived,
         'field_derivation_source' => $field_derivation_source,
@@ -324,6 +325,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_publication_info', $field_publication_info);
       $node->set('field_dataset_version', $field_dataset_version);
+      $node->set('field_user_agreement', $field_user_agreement);
       $node->set('field_data_unique_or_derived', $field_data_unique_or_derived);
       $node->set('field_derivation_source', $field_derivation_source);
       $node->set('field_affiliated_parents', $passed_id);
