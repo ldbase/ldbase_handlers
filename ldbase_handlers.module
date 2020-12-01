@@ -237,11 +237,51 @@ function ldbase_handlers_preprocess_page_title(&$variables) {
 }
 
 /**
- * Implements hook_form_alter().
- * On Project membership forms, changes 'delete' to 'remove'
+ * Implements HOOK_form_BASE_FORM_ID_alter()
+ * modify group membership add and edit forms
  */
-function ldbase_handlers_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if ($form_id == 'group_content_project_group-group_membership_delete_form') {
+function ldbase_handlers_form_group_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // use entity reference view for member add for
+   if (strpos($form_id, 'group_membership_add_form')) {
+    $match_operator = $form['entity_id']['widget'][0]['target_id']['#selection_settings']['match_operator'];
+    $form['entity_id']['widget'][0]['target_id']['#selection_handler'] = 'views';
+    $form['entity_id']['widget'][0]['target_id']['#selection_settings'] = [
+      'view' => [
+        'view_name' => 'user_reference_autocomplete',
+        'display_name' => 'entity_reference_1',
+        'arguments' => [],
+      ],
+      'match_operator' => $match_operator,
+    ];
+  }
+  //prevent users from editing when member is the only project administrator
+  if (strpos($form_id, 'group_membership_edit_form')) {
+    $admin_role = 'project_group-administrator';
+    $member_group = \Drupal::routeMatch()->getParameter('group');
+    $group_admins = $member_group->getMembers($admin_role);
+
+    $member_uid = \Drupal::routeMatch()->getParameter('group_content')->get('entity_id')->target_id;
+    $member_account = \Drupal\user\Entity\User::load($member_uid);
+    $member_group_roles = $member_group->getMember($member_account)->getRoles();
+    // if there is only 1 project administrator, disable edit form options
+    if (array_key_exists($admin_role, $member_group_roles) && count($group_admins) === 1) {
+      $form['description']['#markup'] = t('You may not edit the only Project Administrator.  To edit this Member, you must add another Project Administrator first.');
+      $form['group_roles']['#access'] = FALSE;
+      $form['actions']['delete']['#access'] = FALSE;
+      $form['actions']['submit']['#value'] = t("Cancel");
+    }
+    else {
+      $form['actions']['delete']['#title'] = t("Remove");
+    }
+  }
+}
+
+/**
+ * Implements HOOK_form_BASE_FORM_ID_alter().
+ * On Project membership delete forms, changes 'delete' to 'remove'
+ */
+function ldbase_handlers_form_group_content_confirm_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'group_membership_delete_form')) {
     $admin_role = 'project_group-administrator';
     $member_group = \Drupal::routeMatch()->getParameter('group');
     $group_admins = $member_group->getMembers($admin_role);
@@ -261,26 +301,13 @@ function ldbase_handlers_form_alter(&$form, FormStateInterface $form_state, $for
     }
 
   }
-  elseif ($form_id == 'group_content_project_group-group_membership_edit_form') {
-    $admin_role = 'project_group-administrator';
-    $member_group = \Drupal::routeMatch()->getParameter('group');
-    $group_admins = $member_group->getMembers($admin_role);
+}
 
-    $member_uid = \Drupal::routeMatch()->getParameter('group_content')->get('entity_id')->target_id;
-    $member_account = \Drupal\user\Entity\User::load($member_uid);
-    $member_group_roles = $member_group->getMember($member_account)->getRoles();
-    // if there is only 1 project administrator, disable edit form options
-    if (array_key_exists($admin_role, $member_group_roles) && count($group_admins) === 1) {
-      $form['description']['#markup'] = t('You may not edit the only Project Administrator.  To edit this Member, you must add another Project Administrator first.');
-      $form['group_roles']['#access'] = FALSE;
-      $form['actions']['delete']['#access'] = FALSE;
-      $form['actions']['submit']['#value'] = t("Cancel");
-    }
-    else {
-      $form['actions']['delete']['#title'] = t("Remove");
-    }
-  }
-
+/**
+ * Implements hook_form_alter().
+ * changes password labels on Person webform
+ */
+function ldbase_handlers_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (isset($form['#webform_id']) && $form['#webform_id'] == 'create_update_person') {
     $form['#after_build'][] = 'custom_password_confirmation_labels';
   }
