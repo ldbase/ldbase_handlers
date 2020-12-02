@@ -265,7 +265,7 @@ function ldbase_handlers_form_group_content_form_alter(&$form, FormStateInterfac
     $member_group_roles = $member_group->getMember($member_account)->getRoles();
     // if there is only 1 project administrator, disable edit form options
     if (array_key_exists($admin_role, $member_group_roles) && count($group_admins) === 1) {
-      $form['description']['#markup'] = t('You may not edit the only Project Administrator.  To edit this Member, you must add another Project Administrator first.');
+      $form['description']['#markup'] = t('You may not edit the only Project Administrator.  To edit this member\'s roles, you must add another Project Administrator first.');
       $form['group_roles']['#access'] = FALSE;
       $form['actions']['delete']['#access'] = FALSE;
       $form['actions']['submit']['#value'] = t("Cancel");
