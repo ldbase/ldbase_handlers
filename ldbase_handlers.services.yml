@@ -36,3 +36,11 @@ services:
   ldbase_handlers.message_service:
     class: Drupal\ldbase_handlers\LDbaseMessageService
     arguments: ['@entity_type.manager']
+  # autocomplete
+  ldbase_handlers.route_subscriber:
+    class: Drupal\ldbase_handlers\Routing\AutocompleteRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  ldbase_handlers.autocomplete_matcher:
+    class: Drupal\ldbase_handlers\EntityAutocompleteMatcher
+    arguments: ['@plugin.manager.entity_reference_selection']
