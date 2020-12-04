@@ -112,7 +112,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
         $delete->delete();
       }
     }
-    $this->messenger()->addStatus($this->t('The content has been sucessfully deleted.'));
+    $this->messenger()->addStatus($this->t('The content has been successfully deleted.'));
     $form_state->setRedirectUrl($url);
   }
 
