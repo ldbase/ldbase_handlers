@@ -38,6 +38,18 @@ ldbase_handlers.edit_person:
       node:
         type: ldbase_uuid
 
+ldbase_handlers.change_password:
+  path: '/persons/{node}/change-password'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\PersonController::changePassword'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\PersonController::getPasswordChangeTitle'
+  requirements:
+    _user_profile_access_check: 'TRUE'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
+
 # Document
 ldbase_handlers.edit_document:
   path: '/documents/{node}/edit'

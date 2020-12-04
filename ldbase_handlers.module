@@ -3,6 +3,7 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Render\Element\PasswordConfirm;
+use Drupal\Core\Url;
 
 
 /**
@@ -58,6 +59,32 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
       array_push($element['#element_validate'], $use_validation);
       $element['#validated']  = TRUE;
     }
+  }
+}
+
+/**
+ * Implements hook_webform_submission_form_alter().
+ *
+ * Add 'Cancel' button to update password form.
+ */
+function ldbase_handlers_webform_submission_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ($form['#webform_id'] === 'update_password') {
+    $cancel_route = 'entity.user.canonical';
+    $route_parameters = ['user' => \Drupal::currentUser()->id()];
+
+    $url = Url::fromRoute($cancel_route, $route_parameters);
+    $form['actions']['cancel'] = [
+      '#type' => 'link',
+      '#title' => t('Cancel'),
+      '#attributes' => ['class' => ['button']],
+      '#url' => $url,
+      '#cache' => [
+        'contexts' => [
+          'url.path',
+        ],
+      ],
+      '#weight' => 10,
+    ];
   }
 }
 

@@ -98,4 +98,27 @@ class PersonController extends ControllerBase {
     return 'Edit Person: ' . $node->getTitle();
   }
 
+  /**
+   * Gets title for edit page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getPasswordChangeTitle(NodeInterface $node) {
+    return 'Change Password for ' . $node->getTitle();
+  }
+
+  /**
+   * Loads Webform to change password
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function changePassword(NodeInterface $node) {
+    $values = [];
+
+    $operation = 'add';
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('update_password');
+    $webform = $webform->getSubmissionForm($values, $operation);
+    return $webform;
+  }
+
 }
