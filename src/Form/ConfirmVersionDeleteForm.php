@@ -48,7 +48,7 @@ class ConfirmVersionDeleteForm extends ConfirmFormBase {
       }
       $this->paragraph->delete();
 
-      $this->messenger()->addStatus($this->t('The dataset version has been sucessfully deleted.'));
+      $this->messenger()->addStatus($this->t('The dataset version has been successfully deleted.'));
       $form_state->setRedirectUrl($this->getCancelUrl());
   }
 
