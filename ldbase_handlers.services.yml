@@ -36,6 +36,10 @@ services:
   ldbase_handlers.message_service:
     class: Drupal\ldbase_handlers\LDbaseMessageService
     arguments: ['@entity_type.manager']
+  ldbase_handlers.dashboard_route_subscriber:
+    class: Drupal\ldbase_handlers\Routing\LDbaseDashboardRouteSubscriber
+    tags:
+      - { name: event_subscriber }
   # autocomplete
   ldbase_handlers.route_subscriber:
     class: Drupal\ldbase_handlers\Routing\AutocompleteRouteSubscriber
