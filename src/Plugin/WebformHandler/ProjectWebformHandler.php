@@ -174,6 +174,8 @@ class ProjectWebformHandler extends WebformHandlerBase {
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // project end date cannot come before start date
     $this->validateActivityRange($form_state);
+    // check for required project type
+    $this->validateRequiredProjectType($form_state);
     // add any new taxonomy terms from Select2 fields
     $this->validateSelect2Fields($form, $form_state, $webform_submission);
   }
@@ -197,6 +199,14 @@ class ProjectWebformHandler extends WebformHandlerBase {
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  private function validateRequiredProjectType(FormStateInterface $form_state) {
+    $project_type = $form_state->getValue('project_type');
+    if (empty($project_type)) {
+      $message = 'You must select or enter at least one Project Descriptor.';
+      $form_state->setErrorByName('project_type', $message);
+    }
   }
 
   private function validateSelect2Fields(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
