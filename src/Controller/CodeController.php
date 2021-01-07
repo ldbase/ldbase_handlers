@@ -88,6 +88,12 @@ class CodeController extends ControllerBase {
 
     //Set $embargoed
     //Set $embargo_expiry
+    $embargo_id = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids(array($node->id()));
+    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load(key($embargo_id));
+
+    $embargoed = !empty($embargo);
+    $embargo_expiry = empty($embargo) ? '' : $embargo->getExpirationDate();
+    $embargo_exempt_users = empty($embargo) ? [] : $embargo->getExemptUsers();
 
     $values = [
       'data' => [
@@ -103,8 +109,9 @@ class CodeController extends ControllerBase {
         'publication_info' => $publication_info,
         'code_file' => $code_file_id,
         'passed_id' => $passed_id,
-        //'embargoed' => $embargoed,
-        //'embargo_expiry' => $embargo_expiry,
+        'embargoed' => $embargoed,
+        'embargo_expiry' => $embargo_expiry,
+        'embargo_exempt_users' => $embargo_exempt_users,
       ]
     ];
 

@@ -333,6 +333,53 @@ use Drupal\webform\Entity\WebformSubmission;
       //save the node
       $node->save();
     }
+
+    // create or update embargo
+    if ($embargoed) {
+      // is this node embargoed? getAllEmbargoesByNids() ?
+      $embargo_id = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
+      // load by embargo_id or create
+      if (empty($embargo_id)) {
+        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->create();
+        $log_values['action'] = 'created';
+      }
+      else {
+        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load(key($embargo_id));
+        $log_values['action'] = 'updated';
+      }
+
+      $embargo->setEmbargoType(0); // type: Files
+      $embargo->setExpirationType(!empty($submission_array['embargo_expiry']));
+      $embargo->setExpirationDate($submission_array['embargo_expiry']);
+      $embargo->setExemptIps('none');
+      $embargo->setExemptUsers($submission_array['embargo_exempt_users']);
+      $embargo->setAdditionalEmails('');
+      $embargo->setEmbargoedNode($node->id());
+      $embargo->setNotificationStatus(empty($embargo_id) ? 'created' : 'updated');
+      $embargo->save();
+
+      $log_values['node'] = $embargo->getEmbargoedNode();
+      $log_values['user'] = \Drupal::currentUser()->id();
+      $log_values['embargo_id'] = $embargo->id();
+      \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
+      \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
+    }
+    else {
+      // if no restriction, check for embargoes and delete
+      $embargo_id = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
+      if (!empty($embargo_id)) {
+        $embargo_to_delete = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load(key($embargo_id));
+        $embargo_to_delete->delete();
+
+        $log_values['node'] = $embargo_to_delete->getEmbargoedNode();
+        $log_values['user'] = \Drupal::currentUser()->id();
+        $log_values['embargo_id'] = $embargo_to_delete->id();
+        $log_values['action'] = 'deleted';
+        \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
+        \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
+      }
+    }
+
     // put new nid in form_state may be used for redirection
     $form_state->set('this_nid', $node->id());
     // add node uuid to form_state to be used for redirection
