@@ -9,7 +9,7 @@ ldbase_handlers.edit_project:
 ldbase_handlers.add_file_to_project:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
-  title: 'Add File to this Project...'
+  title: 'Add File to this Project ▼'
   route_name: ldbase_handlers.add_file_to_anything
   expanded: TRUE
   weight: 1
@@ -61,7 +61,7 @@ ldbase_handlers.edit_dataset:
 ldbase_handlers.add_file_to_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: dataset-tasks
-  title: 'Add File to this Dataset...'
+  title: 'Add File to this Dataset ▼'
   route_name: ldbase_handlers.add_file_to_anything
   expanded: TRUE
   weight: 1
@@ -112,7 +112,7 @@ ldbase_handlers.edit_code:
 ldbase_handlers.add_file_to_code:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: code-tasks
-  title: 'Add File to this Code...'
+  title: 'Add File to this Code ▼'
   route_name: ldbase_handlers.add_file_to_anything
   expanded: TRUE
   weight: 1
