@@ -131,6 +131,8 @@ use Drupal\webform\Entity\WebformSubmission;
 
     $embargoed = $submission_array['embargoed']; // 1 if embargoed, 0 if unembargoed
     $embargo_expiry = $submission_array['embargo_expiry']; // date if set, empty if not
+    $embargo_expiration_type = empty($embargo_expiry) ? 0 : 1;
+    $embargo_exempt_users = $submission_array['embargo_exempt_users'];
 
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
@@ -189,46 +191,39 @@ use Drupal\webform\Entity\WebformSubmission;
     // create or update embargo
     if ($embargoed) {
       // is this node embargoed? getAllEmbargoesByNids() ?
-      $embargo_id = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
+      $embargo_id = \Drupal::service('ldbase_embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
       // load by embargo_id or create
       if (empty($embargo_id)) {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->create();
-        $log_values['action'] = 'created';
+        $embargo = Node::create([
+          'type' => 'embargo',
+          'status' => TRUE, // published
+          'title' => 'change_to_uuid',
+          'field_embargo_type' => 0,
+          'field_embargoed_node' => $node->id(),
+          'field_expiration_type' => $embargo_expiration_type,
+          'field_expiration_date' => $embargo_expiry,
+          'field_exempt_users' => $embargo_exempt_users,
+        ]);
+        $embargo->set('title', $embargo->uuid->value);
+        $embargo->save();
+        \Drupal::messenger()->addMessage("Your embargo has been created.");
       }
       else {
-        $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load(key($embargo_id));
-        $log_values['action'] = 'updated';
+        $embargo = Node::load($embargo_id[0]);
+        $embargo->set('field_expiration_type', $embargo_expiration_type);
+        $embargo->set('field_expiration_date', $embargo_expiry);
+        $embargo->set('field_exempt_users', $embargo_exempt_users);
+        $embargo->save();
+        \Drupal::messenger()->addMessage("Your embargo has been updated.");
       }
-
-      $embargo->setEmbargoType(0); // type: Files
-      $embargo->setExpirationType(!empty($submission_array['embargo_expiry']));
-      $embargo->setExpirationDate($submission_array['embargo_expiry']);
-      $embargo->setExemptIps('none');
-      $embargo->setExemptUsers($submission_array['embargo_exempt_users']);
-      $embargo->setAdditionalEmails('');
-      $embargo->setEmbargoedNode($node->id());
-      $embargo->setNotificationStatus(empty($embargo_id) ? 'created' : 'updated');
-      $embargo->save();
-
-      $log_values['node'] = $embargo->getEmbargoedNode();
-      $log_values['user'] = \Drupal::currentUser()->id();
-      $log_values['embargo_id'] = $embargo->id();
-      \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
-      \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
     }
     else {
       // if no restriction, check for embargoes and delete
-      $embargo_id = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
+      $embargo_id = \Drupal::service('ldbase_embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
       if (!empty($embargo_id)) {
-        $embargo_to_delete = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load(key($embargo_id));
+        $embargo_to_delete = \Drupal::entityTypeManager()->getStorage('node')->load($embargo_id[0]);
         $embargo_to_delete->delete();
-
-        $log_values['node'] = $embargo_to_delete->getEmbargoedNode();
-        $log_values['user'] = \Drupal::currentUser()->id();
-        $log_values['embargo_id'] = $embargo_to_delete->id();
-        $log_values['action'] = 'deleted';
-        \Drupal::messenger()->addMessage("Your embargo has been {$log_values['action']}.");
-        \Drupal::service('embargoes.log')->logEmbargoEvent($log_values);
+        \Drupal::messenger()->addMessage("Your embargo has been deleted.");
       }
     }
 
