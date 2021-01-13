@@ -133,12 +133,11 @@ class DocumentController extends ControllerBase {
 
     //Set $embargoed
     //Set $embargo_expiry
-    $embargo_id = \Drupal::service('embargoes.embargoes')->getAllEmbargoesByNids(array($node->id()));
-    $embargo = \Drupal::entityTypeManager()->getStorage('embargoes_embargo_entity')->load(key($embargo_id));
-
+    $embargo_id = \Drupal::service('ldbase_embargoes.embargoes')->getAllEmbargoesByNids(array($node->id()));
+    $embargo = \Drupal::entityTypeManager()->getStorage('node')->load($embargo_id[0]);
     $embargoed = !empty($embargo);
-    $embargo_expiry = empty($embargo) ? '' : $embargo->getExpirationDate();
-    $embargo_exempt_users = empty($embargo) ? [] : $embargo->getExemptUsers();
+    $embargo_expiry = empty($embargo) ? '' : $embargo->get('field_expiration_date')->value;
+    $embargo_exempt_users = empty($embargo) ? [] : $embargo->get('field_exempt_users')->getValue();
 
     $values = [
       'data' => [
