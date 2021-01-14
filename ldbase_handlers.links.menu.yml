@@ -50,6 +50,28 @@ ldbase_handlers.confirm_project_deletion:
   route_name: ldbase_handlers.confirm_project_deletion
   weight: 5
 
+# Mini Project Tasks menu items
+ldbase_handlers.add_dataset_to_project_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-project-tasks
+  title: 'Add Dataset'
+  route_name: ldbase_handlers.add_dataset_to_project
+  weight: 0
+  
+ldbase_handlers.add_document_to_project_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-project-tasks
+  title: 'Add Document'
+  route_name: ldbase_handlers.add_document_to_project
+  weight: 1
+  
+ldbase_handlers.add_code_to_project_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-project-tasks
+  title: 'Add Code'
+  route_name: ldbase_handlers.add_code_to_project
+  weight: 1
+
 # Dataset Tasks menu items
 ldbase_handlers.edit_dataset:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
