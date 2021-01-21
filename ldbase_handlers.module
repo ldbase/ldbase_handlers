@@ -335,7 +335,7 @@ function ldbase_handlers_form_group_content_confirm_form_alter(&$form, FormState
  * changes password labels on Person webform
  */
 function ldbase_handlers_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (isset($form['#webform_id']) && $form['#webform_id'] == 'create_update_person') {
+  if (isset($form['#webform_id']) && ($form['#webform_id'] == 'create_update_person') || $form['#webform_id'] == 'update_password') {
     $form['#after_build'][] = 'custom_password_confirmation_labels';
   }
 }
