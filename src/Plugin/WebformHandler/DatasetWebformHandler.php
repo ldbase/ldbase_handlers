@@ -258,6 +258,8 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_data_unique_or_derived = $submission_array['dataset_unique'];
     $field_derivation_source = $submission_array['derivation_source'];
 
+    $field_harmonized_dataset = $submission_array['harmonized_dataset'];
+
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
 
@@ -290,6 +292,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_affiliated_parents' => $passed_id,
         'field_data_unique_or_derived' => $field_data_unique_or_derived,
         'field_derivation_source' => $field_derivation_source,
+        'field_harmonized_dataset' => $field_harmonized_dataset,
       ]);
 
       $form_state->set('redirect_message', $title . ' was created successfully.');
@@ -331,6 +334,14 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_user_agreement', $field_user_agreement);
       $node->set('field_data_unique_or_derived', $field_data_unique_or_derived);
       $node->set('field_derivation_source', $field_derivation_source);
+      // if harmonized dataset answer is changed to true, then send message on confirmation
+      if ($field_harmonized_dataset && ($field_harmonized_dataset != $node->field_harmonized_dataset->value)) {
+        $form_state->set('send_harmonized_data_message', TRUE);
+      }
+      else {
+        $form_state->set('send_harmonized_data_message', FALSE);
+      }
+      $node->set('field_harmonized_dataset', $field_harmonized_dataset);
       $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
@@ -380,6 +391,11 @@ use Drupal\webform\Entity\WebformSubmission;
     $form_state->set('this_nid', $node->id());
     // add node uuid to form_state to be used for redirection
     $form_state->set('node_redirect', $node->uuid());
+
+    // if harmonized dataset has changed and is true, send message
+    if ($form_state->get('send_harmonized_data_message')) {
+      \Drupal::service('ldbase_handlers.message_service')->harmonizedDatasetMessage($node);
+    }
   }
 
   /**

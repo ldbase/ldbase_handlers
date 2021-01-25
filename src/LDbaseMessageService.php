@@ -2,6 +2,8 @@
 
 namespace Drupal\ldbase_handlers;
 
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\message\Entity\Message;
 use Drpal\user\Entity\User;
@@ -103,6 +105,40 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
 
     // send email notification
     $this->sendLdbaseMessage($message);
+  }
+
+  public function harmonizedDatasetMessage($dataset_node) {
+    $message_template = 'ldbase_harmonized_dataset';
+    $current_user = \Drupal::currentUser();
+
+    $person = $this->entityTypeManager->getStorage('node')->loadByProperties(['field_drupal_account_id' => $current_user->id()]);
+    $user_name = !empty($person) ? array_values($person)[0]->getTitle() : '';
+
+    $ldbase_object_title = $dataset_node->getTitle();
+    $link_route = 'entity.node.canonical';
+    $link_text = $dataset_node->getTitle();
+    $link_url = Url::fromRoute($link_route, ['node' => $dataset_node->id()]);
+    $dataset_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+
+    $admin_user_ids = $this->getLdbaseAdministratorUserIds();
+    // send a message to each admin
+    foreach ($admin_user_ids as $admin_id) {
+      // create a new message from template
+      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $admin_id]);
+      $message->set('field_from_user', $current_user->id());
+      $message->set('field_to_user', $admin_id);
+      // set arguments for term replacements
+      $message->setArguments([
+        '@user_name' => $user_name,
+        '@user_email' => $current_user->getDisplayName(),
+        '@link_to_dataset_information' => $dataset_link,
+      ]);
+      // save the message
+      $message->save();
+
+      // send notification
+      $this->sendLdbaseMessage($message);
+    }
   }
 
   /**

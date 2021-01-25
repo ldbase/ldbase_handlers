@@ -177,6 +177,8 @@ class DatasetController extends ControllerBase {
     $dataset_unique = $node->get('field_data_unique_or_derived')->value;
     $derivation_source = $node->get('field_derivation_source')->getValue();
 
+    $harmonized_dataset = $node->get('field_harmonized_dataset')->value;
+
     $values = [
       'data' => [
         'node_id' => $node_id,
@@ -205,6 +207,7 @@ class DatasetController extends ControllerBase {
         'embargo_exempt_users' => $embargo_exempt_users,
         'dataset_unique' => $dataset_unique,
         'derivation_source' => $derivation_source,
+        'harmonized_dataset' => $harmonized_dataset,
         'passed_id' => $passed_id,
       ]
     ];
