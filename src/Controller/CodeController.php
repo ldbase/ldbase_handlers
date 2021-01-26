@@ -55,6 +55,7 @@ class CodeController extends ControllerBase {
   public function editCode(NodeInterface $node) {
     // get node data
     $nid = $node->id();
+    $published_flag = $node->status->value;
     $title = $node->getTitle();
     $description = $node->get('body')->value;
     $authors = $node->get('field_related_persons')->getValue();
@@ -97,6 +98,7 @@ class CodeController extends ControllerBase {
     $values = [
       'data' => [
         'node_id' => $nid,
+        'published_flag' => $published_flag,
         'title' => $title,
         'description' => $description,
         'authors' => $authors,

@@ -77,6 +77,7 @@ class DatasetController extends ControllerBase {
 
     // get node data
     $node_id = $node->id();
+    $published_flag = $node->status->value;
     $title = $node->getTitle();
     $doi = $node->get('field_doi')->getValue();
     $description = $node->get('body')->value;
@@ -182,6 +183,7 @@ class DatasetController extends ControllerBase {
     $values = [
       'data' => [
         'node_id' => $node_id,
+        'published_flag' => $published_flag,
         'title' => $title,
         'doi' => $doi,
         'description' => $description,

@@ -47,6 +47,7 @@ class ProjectController extends ControllerBase {
 
     //get node data
     $node_id = $node->id();
+    $published_flag = $node->status->value;
     $title = $node->getTitle();
     $description = $node->get('body')->value;
     $related_persons = $node->get('field_related_persons')->getValue();
@@ -93,6 +94,7 @@ class ProjectController extends ControllerBase {
     $values = [
       'data' => [
         'node_id' => $node_id,
+        'published_flag' => $published_flag,
         'title' => $title,
         'description' => $description,
         'related_persons' => $related_persons,

@@ -259,7 +259,7 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_derivation_source = $submission_array['derivation_source'];
 
     $field_harmonized_dataset = $submission_array['harmonized_dataset'];
-
+    $published_flag = $submission_array['published_flag'];
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
 
@@ -267,7 +267,7 @@ use Drupal\webform\Entity\WebformSubmission;
       // create node
       $node = Node::create([
         'type' => 'dataset',
-        'status' => TRUE, // published
+        'status' => $published_flag,
         'title' => $title,
         'field_doi' => $field_doi,
         'body' => $body,
@@ -311,6 +311,7 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       // update node
       $node = Node::load($nid);
+      $node->set('status', $published_flag);
       $node->set('title', $title);
       $node->set('field_doi', $field_doi);
       $node->set('body', $body);

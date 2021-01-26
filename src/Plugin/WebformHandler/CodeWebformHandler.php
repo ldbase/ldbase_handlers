@@ -38,6 +38,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // Get the submitted form values
     $submission_array = $webform_submission->getData();
+    $published_flag = $submission_array['published_flag'];
     $nid = $submission_array['node_id'];
     $title = $submission_array['title'];
     $field_related_persons = $submission_array['authors'];
@@ -137,7 +138,7 @@ use Drupal\webform\Entity\WebformSubmission;
       // create node
       $node = Node::create([
         'type' => 'code',
-        'status' => TRUE, // published
+        'status' => $published_flag,
         'title' => $title,
         'field_related_persons' => $field_related_persons,
         'field_code_type' => $field_code_type,
@@ -167,6 +168,7 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       // update node
       $node = Node::load($nid);
+      $node->set('status', $published_flag);
       $node->set('title', $title);
       $node->set('field_related_persons', $field_related_persons);
       $node->set('field_code_type', $field_code_type);
