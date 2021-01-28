@@ -142,12 +142,14 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   }
 
   /**
-   * Get Ids of Users with the Administrator role
+   * Get Ids of Users with the Administrator or FCRR Admin role
    */
   private function getLdbaseAdministratorUserIds() {
-    $ids = \Drupal::entityQuery('user')
+    $query = \Drupal::entityQuery('user');
+    $roles = $query->orConditionGroup()->condition('roles', 'administrator')->condition('roles', 'fcrr_admin');
+    $ids = $query
+      ->condition($roles)
       ->condition('status', 1)
-      ->condition('roles', 'administrator')
       ->execute();
 
     return $ids;
