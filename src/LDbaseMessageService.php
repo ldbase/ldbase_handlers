@@ -142,6 +142,35 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   }
 
   /**
+   * Send message from the Report a Problem Form
+   */
+  public function reportProblemMessage(array $message_data) {
+    $message_template = 'ldbase_report_a_problem';
+    $current_user = \Drupal::currentUser();
+    $admin_user_ids = $this->getLdbaseAdministratorUserIds();
+    // send a message to each admin
+    foreach ($admin_user_ids as $admin_id) {
+      // create a new message from template
+      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $admin_id]);
+      $message->set('field_from_user', $current_user->id());
+      $message->set('field_to_user', $admin_id);
+      // set arguments for term replacements
+      $message->setArguments([
+        '@name' => $message_data['name'],
+        '@email' => $message_data['email'],
+        '@reply_requested' => $message_data['reply_requested'],
+        '@issue' => $message_data['issue'],
+        '@url' => $message_data['url']
+      ]);
+      // save the message
+      $message->save();
+
+      // send notification
+      $this->sendLdbaseMessage($message);
+    }
+  }
+
+  /**
    * Get Ids of Users with the Administrator or FCRR Admin role
    */
   private function getLdbaseAdministratorUserIds() {
