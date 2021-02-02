@@ -134,6 +134,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
         'field_time_method' => $field_time_method,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
+      $form_state->set('confirm_doi', TRUE);
       //save the node
       $node->save();
       // Create new project_group from Project
@@ -161,6 +162,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $node->set('field_curricula', $field_curricula);
       $node->set('field_time_method', $field_time_method);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
+      $form_state->set('confirm_doi', FALSE);
       //save the node
       $node->save();
     }
@@ -187,8 +189,9 @@ class ProjectWebformHandler extends WebformHandlerBase {
    */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $submission_array = $webform_submission->getData();
+    $confirm_doi = $form_state->get('confirm_doi');
     // if no DOI redirect to DOI creation confirmation
-    if (empty($submission_array['doi'])) {
+    if ($confirm_doi && empty($submission_array['doi'])) {
       $route_name = 'ldbase_handlers.confirm_doi_creation';
     }
     else {
