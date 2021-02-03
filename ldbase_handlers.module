@@ -95,7 +95,12 @@ function ldbase_handlers_node_presave(Node $node) {
   // trim title field
   $trimmed_title = trim($node->get('title')->value);
   $node->setTitle($trimmed_title);
+}
 
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function ldbase_handlers_node_insert(Node $node) {
   //message users added as contributors
   $contributor_content = ['project','dataset','document','code'];
   if (in_array($node->getType(), $contributor_content)) {

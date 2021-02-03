@@ -90,14 +90,17 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $current_user = \Drupal::currentUser();
     $ldbase_object = ucfirst($node->bundle());
     $ldbase_object_title = $node->getTitle();
+    $link_route = 'entity.node.canonical';
+    $link_url = Url::fromRoute($link_route, ['node' => $node->id()]);
+    $link_text = $ldbase_object . ': ' . $ldbase_object_title;
+    $link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
     // create a new message from template
     // Notify uses Message Author (uid) as "To" address
     $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $added_user_id]);
     $message->set('field_from_user', $current_user->id());
     $message->set('field_to_user', $added_user_id);
     $message->setArguments([
-      '@object_type' => $ldbase_object,
-      '@object_title' => $ldbase_object_title,
+      '@link_to_object' => $link_to_object,
       '@user' => $current_user->getDisplayName(),
     ]);
 
