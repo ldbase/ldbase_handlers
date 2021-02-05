@@ -6,6 +6,10 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\group\Entity\Group;
+use Drupal\group\Entity\GroupContent;
 use Drupal\Node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -47,6 +51,11 @@ class DatasetController extends ControllerBase {
     $operation = 'add';
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_dataset');
     $webform = $webform->getSubmissionForm($values, $operation);
+    // get manage members text or link (if access)
+    $exempt_users_description = $this->getEmbargoExemptUsersDescription($node);
+    // overwrite exempt users description
+    $webform['elements']['embargo_exempt_users']['#description']['#markup'] = $exempt_users_description;
+
     return $webform;
   }
 
@@ -217,6 +226,11 @@ class DatasetController extends ControllerBase {
     $operation = 'edit';
     $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_dataset');
     $webform = $webform->getSubmissionForm($values, $operation);
+    // get manage members text or link (if access)
+    $exempt_users_description = $this->getEmbargoExemptUsersDescription($node);
+    // overwrite exempt users description
+    $webform['elements']['embargo_exempt_users']['#description']['#markup'] = $exempt_users_description;
+
     return $webform;
   }
 
@@ -225,25 +239,51 @@ class DatasetController extends ControllerBase {
    *
    * @param Drupal\paragraphs\Entity\Paragraph $paragraph
    */
-    public function editVersion(Paragraph $paragraph) {
-      $dataset_version = [];
-      $dataset_version[0]['dataset_version_format'] = $paragraph->field_file_format->target_id;
-      $dataset_version[0]['dataset_version_upload'] = $paragraph->field_file_upload->entity->id();
-      $dataset_version[0]['dataset_version_id'] = $paragraph->field_file_version_id->value;
-      $dataset_version[0]['dataset_version_label'] = $paragraph->field_file_version_label->value;
-      $dataset_version[0]['dataset_version_description'] = $paragraph->field_file_version_description->value;
-      $dataset_version[0]['dataset_version_target_id'] = $paragraph->id->value;
-      $dataset_version[0]['dataset_version_target_revision_id'] = $paragraph->revision_id->value;
+  public function editVersion(Paragraph $paragraph) {
+    $dataset_version = [];
+    $dataset_version[0]['dataset_version_format'] = $paragraph->field_file_format->target_id;
+    $dataset_version[0]['dataset_version_upload'] = $paragraph->field_file_upload->entity->id();
+    $dataset_version[0]['dataset_version_id'] = $paragraph->field_file_version_id->value;
+    $dataset_version[0]['dataset_version_label'] = $paragraph->field_file_version_label->value;
+    $dataset_version[0]['dataset_version_description'] = $paragraph->field_file_version_description->value;
+    $dataset_version[0]['dataset_version_target_id'] = $paragraph->id->value;
+    $dataset_version[0]['dataset_version_target_revision_id'] = $paragraph->revision_id->value;
 
-      $values = [
-        'data' => [
-          'dataset_version' => $dataset_version,
-        ]
-      ];
+    $values = [
+      'data' => [
+        'dataset_version' => $dataset_version,
+      ]
+    ];
 
-      $operation = 'edit';
-      $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('edit_dataset_version');
-      $webform = $webform->getSubmissionForm($values, $operation);
-      return $webform;
-    }
+    $operation = 'edit';
+    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('edit_dataset_version');
+    $webform = $webform->getSubmissionForm($values, $operation);
+    return $webform;
+  }
+
+  /**
+   * create description text with link for embargo_exemt_users field
+   */
+  private function getEmbargoExemptUsersDescription(NodeInterface $node) {
+    $nid = $node->id();
+    // get top project uuid
+    $project = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($nid);
+    // get group id
+    $group_contents = GroupContent::loadByEntity($project);
+    $group = array_pop($group_contents)->getGroup();
+
+    // create link
+    $route_name = 'view.group_members.ldbase_project';
+    $link_text = 'Project Administrators and Project Editors';
+    $link_url = Url::fromRoute($route_name, ['node' => $project->uuid(), 'group' => $group->id()], ['attributes' => ['target' => '_blank']]);
+    $rendered_link = Link::fromTextAndUrl($link_text, $link_url);
+    // if user has access return link, otherwise return text
+    $manage_members_link = $link_url->access($this->currentUser()) ? $rendered_link->toString() : $link_text;
+
+    // create exempt users field description
+    $exempt_users_description = "When you restrict public access to your data, {$manage_members_link} are the only people who can view those files. You can, however, allow certain individuals, such as a collaborator or a data requester whom you approve of, to override the restriction to view/download the data. Simply enter their LDbase name below. They will then gain access to this data, but they will not be able to to perform any actions that your Project Administrators and Project Editors can do.";
+
+    return $exempt_users_description;
+  }
+
 }
