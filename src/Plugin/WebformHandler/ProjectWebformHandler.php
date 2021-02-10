@@ -181,7 +181,9 @@ class ProjectWebformHandler extends WebformHandlerBase {
     // check for required project type
     $this->validateRequiredProjectType($form_state);
     // add any new taxonomy terms from Select2 fields
-    $this->validateSelect2Fields($form, $form_state, $webform_submission);
+    if (empty($form_state->getErrors())) {
+      $this->validateSelect2Fields($form, $form_state, $webform_submission);
+    }
   }
 
   /**
