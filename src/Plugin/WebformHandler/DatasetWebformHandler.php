@@ -414,7 +414,7 @@ use Drupal\webform\Entity\WebformSubmission;
     // validate dataset file
     $this->validateDatasetFile($form_state);
     // add any new taxonomy terms from Select2 fields
-    if (empty($form_state->getErrors())) {
+    if (!$form_state->hasAnyErrors()) {
       $this->validateSelect2Fields($form, $form_state, $webform_submission);
     }
   }
