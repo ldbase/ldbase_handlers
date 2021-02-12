@@ -98,8 +98,11 @@ class DocumentController extends ControllerBase {
     $webform = $webform->getSubmissionForm($values, $operation);
     // get manage members text or link (if access)
     $exempt_users_description = $this->getEmbargoExemptUsersDescription($node);
+    $embargoed_description = $this->getEmbargoedDescription($node);
     // overwrite exempt users description
     $webform['elements']['embargo_exempt_users']['#description']['#markup'] = $exempt_users_description;
+    // overwrite embargoed description
+    $webform['elements']['embargoed']['#description']['#markup'] = $embargoed_description;
 
     return $webform;
   }
@@ -183,8 +186,11 @@ class DocumentController extends ControllerBase {
     $webform = $webform->getSubmissionForm($values, $operation);
     // get manage members text or link (if access)
     $exempt_users_description = $this->getEmbargoExemptUsersDescription($node);
+    $embargoed_description = $this->getEmbargoedDescription($node);
     // overwrite exempt users description
     $webform['elements']['embargo_exempt_users']['#description']['#markup'] = $exempt_users_description;
+    // overwrite embargoed description
+    $webform['elements']['embargoed']['#description']['#markup'] = $embargoed_description;
     return $webform;
   }
 
@@ -192,6 +198,27 @@ class DocumentController extends ControllerBase {
    * create description text with link for embargo_exemt_users field
    */
   private function getEmbargoExemptUsersDescription(NodeInterface $node) {
+    $manage_members_link = $this->getManageMembersLink($node, true);
+    // create exempt users field description
+    $exempt_users_description = "When you restrict public access to your data, {$manage_members_link} are the only people who can view those files. You can, however, allow certain individuals, such as a collaborator or a data requester whom you approve of, to override the restriction to view/download the data. Simply enter their LDbase name below. They will then gain access to this data, but they will not be able to to perform any actions that your Project Administrators and Project Editors can do.";
+
+    return $exempt_users_description;
+  }
+
+  /**
+   * create description text with link for embargoed field
+   */
+  private function getEmbargoedDescription(NodeInterface $node) {
+    $manage_members_link = $this->getManageMembersLink($node, false);
+    $embargoed_description = "Checking this box will make the submitted files unavailable to anyone who is not a {$manage_members_link} of your project, but the document metadata will still be public.";
+
+    return $embargoed_description;
+  }
+
+  /**
+   * Return link to Manage Group Members page, or text if no access
+   */
+  private function getManageMembersLink(NodeInterface $node, $plural) {
     $nid = $node->id();
     // get top project uuid
     $project = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($nid);
@@ -201,16 +228,18 @@ class DocumentController extends ControllerBase {
 
     // create link
     $route_name = 'view.group_members.ldbase_project';
-    $link_text = 'Project Administrators and Project Editors';
+    if ($plural) {
+      $link_text = "Project Administrators and Project Editors";
+    } else {
+      $link_text = "Project Administrator or Project Editor";
+    }
+
     $link_url = Url::fromRoute($route_name, ['node' => $project->uuid(), 'group' => $group->id()], ['attributes' => ['target' => '_blank']]);
     $rendered_link = Link::fromTextAndUrl($link_text, $link_url);
     // if user has access return link, otherwise return text
     $manage_members_link = $link_url->access($this->currentUser()) ? $rendered_link->toString() : $link_text;
 
-    // create exempt users field description
-    $exempt_users_description = "When you restrict public access to your data, {$manage_members_link} are the only people who can view those files. You can, however, allow certain individuals, such as a collaborator or a data requester whom you approve of, to override the restriction to view/download the data. Simply enter their LDbase name below. They will then gain access to this data, but they will not be able to to perform any actions that your Project Administrators and Project Editors can do.";
-
-    return $exempt_users_description;
+    return $manage_members_link;
   }
 
 }
