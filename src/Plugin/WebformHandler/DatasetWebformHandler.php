@@ -202,8 +202,8 @@ use Drupal\webform\Entity\WebformSubmission;
 
         if ($this->fileHasChanged($composite)) {
           $file_id = $files_array[$key]['dataset_version_upload'];
-          //$new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
-          $paragraph_file_id = $file_id;
+          $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
+          $paragraph_file_id = $new_fid;
 
           if (empty($composite['dataset_version_id'])) {
             $dataset_version_id = 1;

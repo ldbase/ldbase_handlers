@@ -119,8 +119,8 @@ use Drupal\webform\Entity\WebformSubmission;
     // code file
     $code_fid = $submission_array['code_file'];
     if (!empty($code_fid)) {
-      //$new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($code_fid, 'code');
-      $field_code_file = $code_fid;
+      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($code_fid, 'code');
+      $field_code_file = $new_fid;
     }
     else {
       $field_code_file = NULL;
