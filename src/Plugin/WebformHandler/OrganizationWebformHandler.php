@@ -47,9 +47,9 @@ use Drupal\webform\Entity\WebformSubmission;
     // Get image upload, save to public files, attach to node.
     $image_fid = $submission_array['image'];
     if (!empty($image_fid)) {
-      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($image_fid, 'organization');
+      //$new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($image_fid, 'organization');
       $field_thumbnail = [
-        'target_id' => $new_fid,
+        'target_id' => $image_fid,
         'alt' => 'Thumbnail for ' . $title,
         'title' => $title,
       ];
