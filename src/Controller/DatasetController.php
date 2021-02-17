@@ -237,6 +237,15 @@ class DatasetController extends ControllerBase {
     // overwrite embargoed description
     $webform['elements']['embargoed']['#description']['#markup'] = $embargoed_description;
 
+    //overwrite doi descirption
+    if (!empty($doi)) {
+      $webform['elements']['generate_a_doi']['#access'] = false;
+      $webform['elements']['doi']['#description']['#markup'] = 'If you already have a DOI for your dataset, enter it here.';
+    }
+    else {
+      $webform['elements']['doi']['#description']['#markup'] = 'If you already have a DOI for your dataset, enter it here. If you don\'t have a DOI yet, you may check the option to generate one when submitting this form.';
+    }
+
     return $webform;
   }
 

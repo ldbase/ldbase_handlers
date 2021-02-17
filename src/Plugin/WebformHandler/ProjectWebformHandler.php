@@ -162,7 +162,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $node->set('field_curricula', $field_curricula);
       $node->set('field_time_method', $field_time_method);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
-      $form_state->set('confirm_doi', FALSE);
+      $form_state->set('confirm_doi', $submission_array['generate_a_doi']);
       //save the node
       $node->save();
     }

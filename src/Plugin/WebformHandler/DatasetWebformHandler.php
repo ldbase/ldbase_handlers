@@ -346,7 +346,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_harmonized_dataset', $field_harmonized_dataset);
       $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
-      $form_state->set('confirm_doi', FALSE);
+      $form_state->set('confirm_doi', $submission_array['generate_a_doi']);
       //save the node
       $node->save();
     }
