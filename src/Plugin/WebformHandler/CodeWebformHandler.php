@@ -153,7 +153,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_affiliated_parents' => $passed_id,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully');
-      $form_state->set('confirm_doi', TRUE);
       //save the node
       $node->save();
       // get groupId of parent that was passed in - assumes Group Cardinality = 1
@@ -183,7 +182,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_code_file', $field_code_file);
       $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully');
-      $form_state->set('confirm_doi', FALSE);
       //save the node
       $node->save();
     }
@@ -246,17 +244,10 @@ use Drupal\webform\Entity\WebformSubmission;
    */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $submission_array = $webform_submission->getData();
-    $confirm_doi = $form_state->get('confirm_doi');
-    // if no DOI redirect to DOI creation confirmation
-    if ($confirm_doi && empty($submission_array['doi'])) {
-      $route_name = 'ldbase_handlers.confirm_doi_creation';
-    }
-    else {
-      // redirect to node view
-      $route_name = 'entity.node.canonical';
-      $node_id = $form_state->get('this_nid');
-      $form_state->set('node_redirect', $node_id);
-    }
+    // redirect to node view
+    $route_name = 'entity.node.canonical';
+    $node_id = $form_state->get('this_nid');
+    $form_state->set('node_redirect', $node_id);
     $route_parameters = ['node' => $form_state->get('node_redirect')];
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
