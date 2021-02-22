@@ -174,8 +174,7 @@ class DatasetController extends ControllerBase {
     $latest_version = array_pop($file);
     $file = [$latest_version];
     $passed_id = $node->get('field_affiliated_parents')->target_id;
-
-    $user_agreement = $node->get('field_user_agreement')->value;
+    $user_agreement = empty($node->get('field_gdpr_data_uplaod_consent')->getValue()) ? 0 : 1;
 
     //Set $embargoed
     //Set $embargo_expiry
