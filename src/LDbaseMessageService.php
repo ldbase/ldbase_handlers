@@ -57,11 +57,23 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   public function userAddedToGroupMessage($entity) {
     $message_template = 'ldbase_user_added_to_project';
     $current_user = \Drupal::currentUser()->id();
+    // entity is the group membership itself
     $added_user_id = $entity->entity_id->target_id;
     $project_group_id = $entity->gid->target_id;
     $role_id = $entity->group_roles->target_id;
-
-    $project_group = $this->entityTypeManager->getStorage('group')->load($project_group_id);
+    // get the project group content entity for this group
+    $group_project = $this->entityTypeManager->getStorage('group_content')
+      ->loadByProperties(['gid' => $project_group_id, 'type' => 'project_group-group_node-project']);
+    // get the project node id from the group content entity
+    $project_nid = $group_project[key($group_project)]->entity_id->target_id;
+    // get the project node
+    $project = $this->entityTypeManager->getStorage('node')->load($project_nid);
+    $ldbase_object = ucfirst($project->bundle());
+    $ldbase_object_title = $project->getTitle();
+    $link_route = 'entity.node.canonical';
+    $link_url = Url::fromRoute($link_route, ['node' => $project->id()]);
+    $link_text = $ldbase_object . ': ' . $ldbase_object_title;
+    $link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
     $added_user = $this->entityTypeManager->getStorage('user')->load($added_user_id);
     $group_role = $this->entityTypeManager->getStorage('group_role')->load($role_id);
 
@@ -72,7 +84,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $message->set('field_to_user', $added_user_id);
     $message->set('field_group', $project_group_id);
     $message->setArguments([
-      '@project_name' => $project_group->label(),
+      '@link_to_object' => $link_to_object,
       '@group_role' => $group_role->label(),
     ]);
 
