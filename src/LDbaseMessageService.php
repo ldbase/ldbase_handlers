@@ -94,6 +94,80 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $this->sendLdbaseMessage($message);
   }
 
+    /**
+   * send message when an existing record request is submitted
+   */
+  public function existingRecordRequestMade($new_request_id) {
+    $message_template = 'ldbase_existing_record_request';
+    $current_user = \Drupal::currentUser()->id();
+    $existing_record_request = $this->entityTypeManager->getStorage('node')->load($new_request_id);
+    $content_id = $existing_record_request->field_requested_node_link->target_id;
+    $content_entity = $this->entityTypeManager->getStorage('node')->load($content_id);
+    $group_contents = GroupContent::loadByEntity($content_entity);
+    $group_content = reset($group_contents); // content can only belong to one group
+    $group_id = $group_content->getGroup()->id();
+    $link_route = 'view.existing_records_requests.page_1';
+    $link_url = Url::fromRoute($link_route, ['group' => $group_id]);
+    $link_text = 'View Existing Records Requests';
+    $existing_records_requests_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    $ldbase_object = ucfirst($content_entity->bundle());
+    $ldbase_object_title = $content_entity->getTitle();
+    $link_to_object_route = 'entity.node.canonical';
+    $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $content_id]);
+    $link_to_object_text = $ldbase_object . ': ' . $ldbase_object_title;
+    $link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
+    $real_person_id = $existing_record_request->field_requesting_person->target_id;
+    $real_person_node = $this->entityTypeManager->getStorage('node')->load($real_person_id);
+    $real_user_id = $real_person_node->field_drupal_account_id->target_id;
+
+    $group_admins = $this->getGroupUserIdsByRoles($content_entity, ['project_group-administrator']);
+    // create a new message from template
+    // Notify uses Message Author (uid) as "To" address
+    foreach ($group_admins as $admin_id) {
+      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $admin_id]);
+      $message->set('field_from_user', $real_user_id);
+      $message->set('field_to_user', $admin_id);
+      $message->set('field_group', $group_id);
+      $message->setArguments([
+        '@link_to_object' => $link_to_object,
+        '@existing_records_requests_link' => $existing_records_requests_link,
+        '@user' => $real_person_node->getTitle(),
+      ]);
+
+      $message->save();
+
+      // send email notification
+      $this->sendLdbaseMessage($message);
+    }
+
+  }
+
+  /**
+   * notify user of possible matches found in batch
+   */
+  public function possibleMatchesNotification($user_id) {
+    $message_template = 'ldbase_possible_duplicate_person';
+    $current_user = \Drupal::currentUser()->id();
+    $link_route = 'view.possible_account_matches.page_1';
+    $link_url = Url::fromRoute($link_route);
+    $link_text = 'Possible Account Matches';
+    $possible_matches_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+
+    // create a new message from template
+    // Notify uses Message Author (uid) as "To" address
+    $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $user_id]);
+    $message->set('field_from_user', $current_user);
+    $message->set('field_to_user', $user_id);
+    $message->setArguments([
+      '@possible_matches_link' => $possible_matches_link,
+    ]);
+
+    $message->save();
+
+    // send email notification
+    $this->sendLdbaseMessage($message);
+  }
+
   /**
    * Send message when User is added as a contributor (field_related_persons)
    */
