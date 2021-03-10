@@ -149,7 +149,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $message_template = 'ldbase_possible_duplicate_person';
     $current_user = \Drupal::currentUser()->id();
     $link_route = 'view.possible_account_matches.page_1';
-    $link_url = Url::fromRoute($link_route);
+    $link_url = Url::fromRoute($link_route,[],['absolute' => TRUE]);
     $link_text = 'Possible Account Matches';
     $possible_matches_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
 
