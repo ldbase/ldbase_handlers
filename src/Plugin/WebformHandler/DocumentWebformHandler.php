@@ -188,6 +188,16 @@ use Drupal\webform\Entity\WebformSubmission;
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       //save the node
       $node->save();
+
+      // if unpublished then unpublish children
+      if (!$published_flag) {
+        $unpublished_children = \Drupal::service('ldbase_handlers.unpublish')->unpublishChildNodes($nid);
+        if ($unpublished_children) {
+          $text = count($unpublished_children) > 1 ? 'nodes' : 'node';
+          $this->messenger()
+            ->addStatus($this->t('%count child %text also unpublished.', ['%count' => count($unpublished_children), '%text' => $text]));
+        }
+      }
     }
 
     // create or update embargo

@@ -99,6 +99,10 @@ class CodeController extends ControllerBase {
     $embargo_expiry = empty($embargo) ? '' : $embargo->get('field_expiration_date')->value;
     $embargo_exempt_users = empty($embargo) ? [] : $embargo->get('field_exempt_users')->getValue();
 
+    // is parent node published?
+    $parent_node = \Drupal::entityTypeManager()->getStorage('node')->load($passed_id);
+    $parent_is_published = $parent_node->status->value;
+
     $values = [
       'data' => [
         'node_id' => $nid,
@@ -117,6 +121,7 @@ class CodeController extends ControllerBase {
         'embargoed' => $embargoed,
         'embargo_expiry' => $embargo_expiry,
         'embargo_exempt_users' => $embargo_exempt_users,
+        'parent_is_published' => $parent_is_published,
       ]
     ];
 
@@ -133,6 +138,13 @@ class CodeController extends ControllerBase {
     // overwrite embargoed description
     $webform['elements']['embargoed']['#description']['#markup'] = $embargoed_description;
 
+    if (!$parent_is_published) {
+      $type = ucfirst($parent_node->bundle());
+      $title = $parent_node->getTitle();
+      $message = $this->t('You may save, but to publish this item you must first publish its parent %type: %title.', ['%type' => $type, '%title' => $title]);
+      $webform['elements']['disabled_publish_message']['#message_message']['#markup'] = $message;
+    }
+
     return $webform;
   }
 
@@ -145,10 +157,14 @@ class CodeController extends ControllerBase {
   public function addCode(NodeInterface $node) {
     $node_type = $node->getType();
     $passed_id = $node->id();
+    $parent_is_published = $node->status->value;
+    $published_flag = $parent_is_published;
 
     $values = [
       'data' => [
         'passed_id' => $passed_id,
+        'parent_is_published' => $parent_is_published,
+        'published_flag' => $published_flag,
       ]
     ];
 
@@ -162,6 +178,13 @@ class CodeController extends ControllerBase {
     $webform['elements']['embargo_exempt_users']['#description']['#markup'] = $exempt_users_description;
     // overwrite embargoed description
     $webform['elements']['embargoed']['#description']['#markup'] = $embargoed_description;
+
+    if (!$parent_is_published) {
+      $type = ucfirst($node->bundle());
+      $title = $node->getTitle();
+      $message = $this->t('You may save, but to publish this item you must first publish its parent %type: %title.', ['%type' => $type, '%title' => $title]);
+      $webform['elements']['disabled_publish_message']['#message_message']['#markup'] = $message;
+    }
 
     return $webform;
   }

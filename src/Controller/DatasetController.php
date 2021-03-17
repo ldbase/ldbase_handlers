@@ -42,9 +42,13 @@ class DatasetController extends ControllerBase {
    */
   public function addDataset(NodeInterface $node) {
     $passed_id = $node->id();
+    $parent_is_published = $node->status->value;
+    $published_flag = $parent_is_published;
     $values = [
       'data' => [
         'passed_id' => $passed_id,
+        'parent_is_published' => $parent_is_published,
+        'published_flag' => $published_flag,
       ]
     ];
 
@@ -58,6 +62,13 @@ class DatasetController extends ControllerBase {
     $webform['elements']['embargo_exempt_users']['#description']['#markup'] = $exempt_users_description;
     // overwrite embargoed description
     $webform['elements']['embargoed']['#description']['#markup'] = $embargoed_description;
+
+    if (!$parent_is_published) {
+      $type = ucfirst($node->bundle());
+      $title = $node->getTitle();
+      $message = $this->t('You may save, but to publish this item you must first publish its parent %type: %title.', ['%type' => $type, '%title' => $title]);
+      $webform['elements']['disabled_publish_message']['#message_message']['#markup'] = $message;
+    }
 
     return $webform;
   }
@@ -89,7 +100,7 @@ class DatasetController extends ControllerBase {
 
     // get node data
     $node_id = $node->id();
-    $published_flag = $node->status->value;
+    $published_flag = $node->get('status')->value;
     $title = $node->getTitle();
     $doi = $node->get('field_doi')->getValue();
     $description = $node->get('body')->value;
@@ -184,12 +195,15 @@ class DatasetController extends ControllerBase {
     $embargo_expiry = empty($embargo) ? '' : $embargo->get('field_expiration_date')->value;
     $embargo_exempt_users = empty($embargo) ? [] : $embargo->get('field_exempt_users')->getValue();
 
-
     // Data unique or derived
     $dataset_unique = $node->get('field_data_unique_or_derived')->value;
     $derivation_source = $node->get('field_derivation_source')->getValue();
 
     $harmonized_dataset = $node->get('field_harmonized_dataset')->value;
+
+    // is parent node published?
+    $parent_node = \Drupal::entityTypeManager()->getStorage('node')->load($passed_id);
+    $parent_is_published = $parent_node->status->value;
 
     $values = [
       'data' => [
@@ -222,6 +236,7 @@ class DatasetController extends ControllerBase {
         'derivation_source' => $derivation_source,
         'harmonized_dataset' => $harmonized_dataset,
         'passed_id' => $passed_id,
+        'parent_is_published' => $parent_is_published,
       ]
     ];
 
@@ -243,6 +258,13 @@ class DatasetController extends ControllerBase {
     }
     else {
       $webform['elements']['doi']['#description']['#markup'] = 'If you already have a DOI for your dataset, enter it here. If you don\'t have a DOI yet, you may check the option to generate one when submitting this form.';
+    }
+
+    if (!$parent_is_published) {
+      $type = ucfirst($parent_node->bundle());
+      $title = $parent_node->getTitle();
+      $message = $this->t('You may save, but to publish this item you must first publish its parent %type: %title.', ['%type' => $type, '%title' => $title]);
+      $webform['elements']['disabled_publish_message']['#message_message']['#markup'] = $message;
     }
 
     return $webform;

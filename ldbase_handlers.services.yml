@@ -40,6 +40,10 @@ services:
     class: Drupal\ldbase_handlers\Routing\LDbaseDashboardRouteSubscriber
     tags:
       - { name: event_subscriber }
+  ldbase_handlers.unpublish:
+    class: Drupal\ldbase_handlers\LDbaseUnpublishService
+    arguments:
+      - '@entity_type.manager'
   # autocomplete
   ldbase_handlers.route_subscriber:
     class: Drupal\ldbase_handlers\Routing\AutocompleteRouteSubscriber
