@@ -172,6 +172,8 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       // update node
       $node = Node::load($nid);
+      $existing_flag = $node->status->value;
+      $status_has_changed = $published_flag != $existing_flag ? true : false;
       $node->set('status', $published_flag);
       $node->set('title', $title);
       $node->set('field_related_persons', $field_related_persons);
@@ -196,6 +198,12 @@ use Drupal\webform\Entity\WebformSubmission;
           $text = count($unpublished_children) > 1 ? 'nodes' : 'node';
           $this->messenger()
             ->addStatus($this->t('%count child %text also unpublished.', ['%count' => count($unpublished_children), '%text' => $text]));
+        }
+      }
+      else {
+        $has_unpublished_child = \Drupal::service('ldbase_handlers.unpublish')->hasUnpublishedChild($nid);
+        if ($status_has_changed && $has_unpublished_child) {
+          $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
         }
       }
     }
