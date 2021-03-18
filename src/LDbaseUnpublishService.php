@@ -2,6 +2,7 @@
 namespace Drupal\ldbase_handlers;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\node\Entity\Node;
 
 /**
  * Class LDbaseUnpublishService.
@@ -52,7 +53,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
   }
 
   /**
-   * get  nodes
+   * get children nids
    *
    * @param int $nid
    *  Gets child nids of given nid.
@@ -72,6 +73,32 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
       $nid_array = array_merge($nid_array, $this->getChildNids($child));
     }
     return $nid_array;
+  }
+
+  /**
+   * Checks if given nid has unpublished child.
+   *
+   * @param int $nid
+   * Gets child nids of given nid.
+   *
+   * @return
+   * True if nid has unpublished child, otherwise false
+   *
+   */
+  public function hasUnpublishedChild($nid) {
+    $has_unpublished_child = false;
+    $node_storage = $this->entityManager->getStorage('node');
+    $children_ids = $this->getChildNids($nid);
+
+    foreach ($children_ids as $child) {
+      $node = $node_storage->load($child);
+      $status = $node->status->value;
+      if ($status == 0) {
+        $has_unpublished_child = true;
+        break;
+      }
+    }
+    return $has_unpublished_child;
   }
 
  }

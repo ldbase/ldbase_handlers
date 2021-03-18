@@ -21,4 +21,16 @@ interface LDbaseUnpublishServiceInterface {
    */
   public function getChildNids($nid);
 
+  /**
+   * Checks if given nid has unpublished child.
+   *
+   * @param int $nid
+   * Gets child nids of given nid.
+   *
+   * @return
+   * True if nid has unpublished child, otherwise false
+   *
+   */
+  public function hasUnpublishedChild($nid);
+
 }
