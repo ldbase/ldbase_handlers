@@ -94,6 +94,38 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $this->sendLdbaseMessage($message);
   }
 
+  /**
+   * Send message when content has remained unpublished
+   */
+  public function contentUnpublishedReminder($node) {
+    $message_template = 'ldbase_unpublished_content';
+    $current_user = \Drupal::currentUser()->id();
+
+    $ldbase_object = ucfirst($node->bundle());
+    $ldbase_object_title = $node->getTitle();
+    $link_to_object_route = 'entity.node.canonical';
+    $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $node->id()]);
+    $link_to_object_text = $ldbase_object . ': ' . $ldbase_object_title;
+    $link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
+
+    $group_admins = $this->getGroupUserIdsByRoles($node, ['project_group-administrator']);
+    // create a new message from template
+    // Notify uses Message Author (uid) as "To" address
+    foreach ($group_admins as $admin_id) {
+      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $admin_id]);
+      $message->set('field_from_user', $current_user);
+      $message->set('field_to_user', $admin_id);
+      $message->setArguments([
+        '@link_to_object' => $link_to_object,
+      ]);
+
+      $message->save();
+
+      // send email notification
+      $this->sendLdbaseMessage($message);
+    }
+  }
+
     /**
    * send message when an existing record request is submitted
    */
@@ -139,7 +171,6 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
       // send email notification
       $this->sendLdbaseMessage($message);
     }
-
   }
 
   /**

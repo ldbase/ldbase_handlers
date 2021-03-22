@@ -21,5 +21,12 @@
       "email": "fcalvo@fsu.edu",
       "role": "Maintainer"
     }
-  ]
+  ],
+  "extra": {
+    "drush": {
+      "services": {
+        "drush.services.yml": "^9"
+      }
+    }
+  }
 }
