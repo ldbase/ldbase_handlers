@@ -104,7 +104,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $ldbase_object = ucfirst($node->bundle());
     $ldbase_object_title = $node->getTitle();
     $link_to_object_route = 'entity.node.canonical';
-    $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $node->id()]);
+    $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $node->id()], ['absolute' => TRUE]);
     $link_to_object_text = $ldbase_object . ': ' . $ldbase_object_title;
     $link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
 
