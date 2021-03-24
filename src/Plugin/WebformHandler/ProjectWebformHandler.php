@@ -81,6 +81,19 @@ class ProjectWebformHandler extends WebformHandlerBase {
     }
 
     $field_website = $submission_array['website'];
+    // Project logo image
+    $logo_fid = $submission_array['project_logo'];
+    if (!empty($logo_fid)) {
+      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($logo_fid, 'project');
+      $field_project_logo = [
+        'target_id' => $new_fid,
+        'alt' => 'Project logo for ' . $title,
+        'title' => $title,
+      ];
+    }
+    else {
+      $field_project_logo = NULL;
+    }
 
     // grant information paragraph
     $field_grant_information = [];
@@ -127,6 +140,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
         'field_doi' => $field_doi,
         'field_activity_range_select' => $field_activity_range_select,
         'field_website' => $field_website,
+        'field_project_logo' => $field_project_logo,
         'field_grant_information' => $field_grant_information,
         'field_project_type' => $field_project_type,
         'field_schooling' => $field_schooling,
@@ -158,6 +172,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $node->set('field_doi', $field_doi);
       $node->set('field_activity_range_select', $field_activity_range_select);
       $node->set('field_website', $field_website);
+      $node->set('field_project_logo', $field_project_logo);
       $node->set('field_grant_information', $field_grant_information);
       $node->set('field_project_type', $field_project_type);
       $node->set('field_schooling', $field_schooling);

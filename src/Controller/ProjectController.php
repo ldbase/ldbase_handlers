@@ -65,6 +65,10 @@ class ProjectController extends ControllerBase {
       $activity_range[$delta]['activity_range_target_revision_id'] =  $date_range_paragraph->target_revision_id;
     }
     $website = $node->get('field_website')->getValue();
+    // project logo
+    $project_logo = $node->field_project_logo->entity;
+    $project_logo_fid = !empty($project_logo) ? $project_logo->id() : NULL;
+
     //grant information paragraph
     $grant_information = [];
     foreach ($node->field_grant_information as $delta => $grant_paragraph) {
@@ -102,6 +106,7 @@ class ProjectController extends ControllerBase {
         'doi' => $doi,
         'activity_range' =>$activity_range,
         'website' => $website,
+        'project_logo' => $project_logo_fid,
         'grant_information' => $grant_information,
         'project_type' => $project_type,
         'schooling' => $schooling,
