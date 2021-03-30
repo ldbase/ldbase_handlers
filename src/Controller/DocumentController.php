@@ -64,7 +64,6 @@ class DocumentController extends ControllerBase {
     $node_type = $node->getType();
     $passed_id = $node->id();
     $parent_is_published = $node->status->value;
-    $published_flag = $parent_is_published;
 
     if ($document_type) {
       $tid = '';
@@ -86,7 +85,6 @@ class DocumentController extends ControllerBase {
         'passed_id' => $passed_id,
         'document_type' => $doc_type,
         'parent_is_published' => $parent_is_published,
-        'published_flag' => $published_flag,
       ]
     ];
     if ($document_type === 'Codebook') {

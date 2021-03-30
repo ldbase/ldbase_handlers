@@ -43,12 +43,10 @@ class DatasetController extends ControllerBase {
   public function addDataset(NodeInterface $node) {
     $passed_id = $node->id();
     $parent_is_published = $node->status->value;
-    $published_flag = $parent_is_published;
     $values = [
       'data' => [
         'passed_id' => $passed_id,
         'parent_is_published' => $parent_is_published,
-        'published_flag' => $published_flag,
       ]
     ];
 
