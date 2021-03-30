@@ -152,42 +152,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_dataset_upload_or_external = $submission_array['dataset_upload_or_external'];
     $field_external_resource = $submission_array['external_resource'];
 
-    // publication information paragraph
-    $publications_array = $submission_array['publication_info'];
-    if (!empty($publications_array)) {
-      foreach ($publications_array as $key => $value) {
-        $publication_month = $value['publication_month'];
-        $publication_year = $value['publication_year'];
-        $publication_source = $value['publication_source'];
-        $publication_target_id = $value['publication_target_id'];
-        $publication_target_revision_id = $value['publication_target_revision_id'];
-
-        if (empty($publication_target_id)) {
-          $paragraph_data[$key] = Paragraph::create([
-            'type' => 'publication_metadata',
-            'field_publication_month' => $publication_month,
-            'field_publication_year' => $publication_year,
-            'field_publication_source' => $publication_source,
-          ]);
-        }
-        else {
-          $paragraph_data[$key] = Paragraph::load($publication_target_id);
-          $paragraph_data[$key]->set('field_publication_month', $publication_month);
-          $paragraph_data[$key]->set('field_publication_year', $publication_year);
-          $paragraph_data[$key]->set('field_publication_source', $publication_source);
-        }
-
-        $paragraph_data[$key]->save();
-        $field_publication_info[$key] = [
-          'target_id' => $paragraph_data[$key]->id(),
-          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-        ];
-      }
-    }
-    else {
-      $field_publication_info = [];
-    }
-
     // file metadata paragraph
     $files_array = $submission_array['dataset_version'];
     if ($nid) {
@@ -286,7 +250,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_license_other' => $field_license_other,
         'field_dataset_upload_or_external' => $field_dataset_upload_or_external,
         'field_external_resource' => $field_external_resource,
-        'field_publication_info' => $field_publication_info,
         'field_dataset_version' => $field_dataset_version,
         'field_user_agreement' => $field_user_agreement,
         'field_affiliated_parents' => $passed_id,
@@ -333,7 +296,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_license_other', $field_license_other);
       $node->set('field_dataset_upload_or_external', $field_dataset_upload_or_external);
       $node->set('field_external_resource', $field_external_resource);
-      $node->set('field_publication_info', $field_publication_info);
       $node->set('field_dataset_version', $field_dataset_version);
       $node->set('field_user_agreement', $field_user_agreement);
       $node->set('field_data_unique_or_derived', $field_data_unique_or_derived);
@@ -427,8 +389,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->validateDataCollectionDates($form_state);
     // validate participants
     $this->validateParticipants($form_state);
-    // validate publication date
-    $this->validatePublicationDate($form_state);
     // validate dataset file
     $this->validateDatasetFile($form_state);
     // add any new taxonomy terms from Select2 fields
@@ -533,25 +493,6 @@ use Drupal\webform\Entity\WebformSubmission;
           $age_range_message = "The participant Age Range To must be greater than the Age Range From.";
           $form_state->setErrorByName('participants][items]['.$delta.'][age_range_from', $age_range_message);
           $form_state->setErrorByName('participants][items]['.$delta.'][age_range_to');
-        }
-      }
-    }
-  }
-
-  /**
-   * Validate Publication date
-   * If month is selected, then year must be selected
-   */
-  private function validatePublicationDate(FormStateInterface $form_state) {
-    $publications = $form_state->getValue('publication_info');
-    if (empty($publications)) {
-      return;
-    }
-    else {
-      foreach ($publications as $delta => $row_array) {
-        if (!empty($row_array['publication_month']) && empty($row_array['publication_year'])) {
-          $message = 'If you select a publication month, then you must select a publication year.';
-          $form_state->setErrorByName('publication_info][items]['.$delta.'][publication_year', $message);
         }
       }
     }

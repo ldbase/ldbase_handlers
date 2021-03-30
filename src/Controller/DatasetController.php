@@ -158,7 +158,7 @@ class DatasetController extends ControllerBase {
     $external_resource = $node->get('field_external_resource')->uri;
 
     // publication info paragraph
-    $publication_info = [];
+    /*$publication_info = [];
     foreach ($node->field_publication_info as $delta => $pub_paragraph) {
       $p = $pub_paragraph->entity;
       $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
@@ -166,7 +166,7 @@ class DatasetController extends ControllerBase {
       $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
       $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
       $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
-    }
+    }*/
 
     // file metadata paragraph
     $file = [];
@@ -224,7 +224,7 @@ class DatasetController extends ControllerBase {
         'license' => $license,
         'dataset_upload_or_external' => $dataset_upload_or_external,
         'external_resource' => $external_resource,
-        'publication_info' => $publication_info,
+        //'publication_info' => $publication_info,
         'dataset_version' => $file,
         'user_agreement' => $user_agreement,
         'embargoed' => $embargoed,

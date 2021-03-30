@@ -75,17 +75,6 @@ class CodeController extends ControllerBase {
       $license = $node->get('field_license_other')->value;
     }
 
-    // publication info paragraph
-    $publication_info = [];
-    foreach ($node->field_publication_info as $delta => $pub_paragraph) {
-      $p = $pub_paragraph->entity;
-      $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
-      $publication_info[$delta]['publication_year'] = $p->field_publication_year->value;
-      $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
-      $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
-      $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
-    }
-
     $code_file = $node->field_code_file->entity;
     $code_file_id = !empty($code_file) ? $code_file->id() : NULL;
 
@@ -115,7 +104,6 @@ class CodeController extends ControllerBase {
         'code_upload_or_external' => $code_upload_or_external,
         'external_resource' => $external_resource,
         'license' => $license,
-        'publication_info' => $publication_info,
         'code_file' => $code_file_id,
         'passed_id' => $passed_id,
         'embargoed' => $embargoed,

@@ -137,17 +137,6 @@ class DocumentController extends ControllerBase {
       $license = $node->get('field_license_other')->value;
     }
 
-    // publication info paragraph
-    $publication_info = [];
-    foreach ($node->field_publication_info as $delta => $pub_paragraph) {
-      $p = $pub_paragraph->entity;
-      $publication_info[$delta]['publication_month'] = $p->field_publication_month->value;
-      $publication_info[$delta]['publication_year'] = $p->field_publication_year->value;
-      $publication_info[$delta]['publication_source'] = $p->get('field_publication_source')->uri;
-      $publication_info[$delta]['publication_target_id'] = $pub_paragraph->target_id;
-      $publication_info[$delta]['publication_target_revision_id'] = $pub_paragraph->target_revision_id;
-    }
-
     $document_file = $node->field_document_file->entity;
     $document_file_id = !empty($document_file) ? $document_file->id() : NULL;
     $passed_id = $node->get('field_affiliated_parents')->target_id;
@@ -177,7 +166,6 @@ class DocumentController extends ControllerBase {
         'codebook_uploaded_or_externally_linked' => $document_upload_or_external,
         'external_resource' => $external_resource,
         'license' => $license,
-        'publication_info' => $publication_info,
         'document_file' => $document_file_id,
         'passed_id' => $passed_id,
         'embargoed' => $embargoed,

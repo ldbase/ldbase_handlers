@@ -80,42 +80,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_license_other = NULL;
     }
 
-    // publication information paragraph
-    $publications_array = $submission_array['publication_info'];
-    if (!empty($publications_array)) {
-      foreach ($publications_array as $key => $value) {
-        $publication_month = $value['publication_month'];
-        $publication_year = $value['publication_year'];
-        $publication_source = $value['publication_source'];
-        $publication_target_id = $value['publication_target_id'];
-        $publication_target_revision_id = $value['publication_target_revision_id'];
-
-        if (empty($publication_target_id)) {
-          $paragraph_data[$key] = Paragraph::create([
-            'type' => 'publication_metadata',
-            'field_publication_month' => $publication_month,
-            'field_publication_year' => $publication_year,
-            'field_publication_source' => $publication_source,
-          ]);
-        }
-        else {
-          $paragraph_data[$key] = Paragraph::load($publication_target_id);
-          $paragraph_data[$key]->set('field_publication_month', $publication_month);
-          $paragraph_data[$key]->set('field_publication_year', $publication_year);
-          $paragraph_data[$key]->set('field_publication_source', $publication_source);
-        }
-
-        $paragraph_data[$key]->save();
-        $field_publication_info[$key] = [
-          'target_id' => $paragraph_data[$key]->id(),
-          'target_revision_id' => $paragraph_data[$key]->getRevisionId(),
-        ];
-      }
-    }
-    else {
-      $field_publication_info = [];
-    }
-
     // code file
     $code_fid = $submission_array['code_file'];
     if (!empty($code_fid)) {
@@ -148,7 +112,6 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_external_resource' => $field_external_resource,
         'field_license' => $field_license,
         'field_license_other' => $field_license_other,
-        'field_publication_info' => $field_publication_info,
         'field_code_file' => $field_code_file,
         'field_affiliated_parents' => $passed_id,
       ]);
@@ -180,7 +143,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_external_resource', $field_external_resource);
       $node->set('field_license', $field_license);
       $node->set('field_license_other', $field_license_other);
-      $node->set('field_publication_info', $field_publication_info);
       $node->set('field_code_file', $field_code_file);
       $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully');
@@ -252,14 +214,6 @@ use Drupal\webform\Entity\WebformSubmission;
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    // validate publication date
-    $this->validatePublicationDate($form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $submission_array = $webform_submission->getData();
     // redirect to node view
@@ -270,25 +224,6 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
-  }
-
-  /**
-   * Validate Publication date
-   * If month is selected, then year must be selected
-   */
-  private function validatePublicationDate(FormStateInterface $form_state) {
-    $publications = $form_state->getValue('publication_info');
-    if (empty($publications)) {
-      return;
-    }
-    else {
-      foreach ($publications as $delta => $row_array) {
-        if (!empty($row_array['publication_month']) && empty($row_array['publication_year'])) {
-          $message = 'If you select a publication month, then you must select a publication year';
-          $form_state->setErrorByName('publication_info][items]['.$delta.'][publication_year', $message);
-        }
-      }
-    }
   }
 
  }
