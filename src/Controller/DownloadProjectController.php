@@ -113,7 +113,8 @@ class DownloadProjectController extends ControllerBase {
     if ($this->fileSystem->prepareDirectory($zip_files_directory, FileSystemInterface::CREATE_DIRECTORY)) {
       foreach ($files as $file) {
         $download_file = file_get_contents($file);
-        $file_name = array_pop(explode('/', $file));
+        $file_name_parts = explode('/', $file);
+        $file_name = array_pop($file_name_parts);
 
         if (!$file_zip instanceof Zip) {
           $file_zip = new Zip($file_path);
