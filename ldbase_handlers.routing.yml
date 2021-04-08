@@ -12,6 +12,17 @@ ldbase_handlers.add_file_to_anything:
       node:
         type: ldbase_uuid
 
+ldbase_handlers.download_all_project_files:
+  path: '/projects/{node}/download-all-project-files'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DownloadProjectController::downloadProjectFiles'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
+
 # Organizations
 ldbase_handlers.edit_organization:
   path: '/organizations/{node}/edit'
