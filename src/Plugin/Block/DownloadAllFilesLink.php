@@ -29,19 +29,52 @@ class DownloadAllFilesLink extends BlockBase {
     $node = $this->getContextValue('node');
     $uuid = $node->uuid();
     $markup = '';
-
+    $show_button = false;
     if (!empty($uuid)) {
       $child_nodes_with_files = $this->getFileChildNodes($node);
+      $account = \Drupal::currentUser();
+      $embargo_service = \Drupal::service('ldbase_embargoes.file_access');
       if (!empty($child_nodes_with_files)) {
-        $route = 'ldbase_handlers.download_all_project_files';
-        $text = 'Download all Files';
-        $class[] = 'button';
+        // get files and check for embargoes
+        foreach ($child_nodes_with_files as $child_node) {
+          $type = $child_node->bundle();
+          switch ($type) {
+            case 'dataset':
+              $versions = [];
+              $dataset_versions = $child_node->field_dataset_version;
+              foreach ($dataset_versions as $delta => $paragraph) {
+                $p = $paragraph->entity;
+                $versions[$delta] = $p->field_file_upload->entity;
+              }
+              $latest_version = end($versions);
+              $file_entity = $latest_version;
+              break;
+            case 'code':
+              $file_entity = $child_node->field_code_file->entity;
+              break;
+            case 'document':
+              $file_entity = $child_node->field_document_file->entity;
+              break;
+          }
+          if ($file_entity) {
+            // check for embargoes
+            $embargo = $embargo_service->isActivelyEmbargoed($file_entity, $account);
+            if (!$embargo->isForbidden()) {
+              $show_button = true;
+            }
+          }
+        }
+        if ($show_button) {
+          $route = 'ldbase_handlers.download_all_project_files';
+          $text = 'Download all Files';
+          $class[] = 'button';
 
-        $url = Url::fromRoute($route, array('node' => $uuid));
-        if ($url->access()) {
-          $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
-          $link['#attributes'] = ['class' => $class];
-          $markup .= render($link) . ' ';
+          $url = Url::fromRoute($route, array('node' => $uuid));
+          if ($url->access()) {
+            $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
+            $link['#attributes'] = ['class' => $class];
+            $markup .= render($link) . ' ';
+          }
         }
       }
     }
