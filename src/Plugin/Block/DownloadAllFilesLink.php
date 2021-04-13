@@ -34,8 +34,8 @@ class DownloadAllFilesLink extends BlockBase {
       $child_nodes_with_files = $this->getFileChildNodes($node);
       if (!empty($child_nodes_with_files)) {
         $route = 'ldbase_handlers.download_all_project_files';
-        $text = 'Download all Files';
-        $class[] = 'button';
+        $text = 'Download all Project Files';
+        $class[] = 'download-all-files-button';
 
         $url = Url::fromRoute($route, array('node' => $uuid));
         if ($url->access()) {
