@@ -227,6 +227,46 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $this->sendLdbaseMessage($message);
   }
 
+  /**
+   * send message to subscribers when a dataset file has been updated.
+   */
+  public function datasetHasBeenUpdated($dataset_node) {
+    $subscribers = $dataset_node->field_subscribed_users->getValue();
+    if (!empty($subscribers)) {
+      $message_template = 'ldbase_dataset_update_message';
+      $current_user = \Drupal::currentUser()->id();
+
+      $ldbase_object_title = $dataset_node->getTitle();
+      $link_route = 'entity.node.canonical';
+      $link_text = $dataset_node->getTitle();
+      $link_url = Url::fromRoute($link_route, ['node' => $dataset_node->id()]);
+      $dataset_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+
+      foreach ($subscribers as $subscriber) {
+        $user_id = $subscriber['target_id'];
+        // create a new message from template
+        // Notify uses Message Author (uid) as "To" address
+        $message = $this->entityTypeManager
+          ->getStorage('message')
+          ->create(['template' => $message_template, 'uid' => $user_id]);
+
+        $message->set('field_from_user', $current_user);
+        $message->set('field_to_user', $user_id);
+        $message->setArguments([
+          '@link_to_dataset' => $dataset_link,
+        ]);
+        $message->save();
+
+        // send email notification
+        $this->sendLdbaseMessage($message);
+      }
+    }
+  }
+
+
+  /**
+   * send message when a user indicates they would like to contribute to the harmonized dataset.
+   */
   public function harmonizedDatasetMessage($dataset_node) {
     $message_template = 'ldbase_harmonized_dataset';
     $current_user = \Drupal::currentUser();

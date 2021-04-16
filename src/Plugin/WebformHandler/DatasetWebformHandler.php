@@ -160,11 +160,15 @@ use Drupal\webform\Entity\WebformSubmission;
     else {
       $field_dataset_version = [];
     }
-
+    // used for dataset update notifications
+    $notify_dataset_subscribers = false;
     if (!empty($files_array)) {
       foreach ($files_array as $key => $composite) {
+        $file_has_changed = $this->fileHasChanged($composite);
+        if ($file_has_changed) {
+          // notify dataset subscribers
+          $notify_dataset_subscribers = true;
 
-        if ($this->fileHasChanged($composite)) {
           $file_id = $files_array[$key]['dataset_version_upload'];
           $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
           $paragraph_file_id = $new_fid;
@@ -327,6 +331,14 @@ use Drupal\webform\Entity\WebformSubmission;
         $has_unpublished_child = \Drupal::service('ldbase_handlers.unpublish')->hasUnpublishedChild($nid);
         if ($status_has_changed && $has_unpublished_child) {
           $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
+        }
+      }
+
+      // notify subscribers of update
+      if ($notify_dataset_subscribers) {
+        $subscribers = $node->field_subscribed_users->getValue();
+        if (!empty($subscribers)) {
+          \Drupal::service('ldbase_handlers.message_service')->datasetHasBeenUpdated($node);
         }
       }
     }
