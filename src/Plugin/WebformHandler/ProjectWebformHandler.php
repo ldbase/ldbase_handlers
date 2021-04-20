@@ -165,6 +165,17 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $existing_flag = $node->status->value;
       $status_has_changed = $published_flag != $existing_flag ? true : false;
       $node->set('status', $published_flag);
+      // if unpublished add '(Unpublished)' to title if not there already
+      $unpublished_pattern = '/\(Unpublished\)$/';
+      if (!$published_flag) {
+        if (preg_match($unpublished_pattern, trim($title)) === 0) {
+          $title .= ' (Unpublished)';
+        }
+      }
+      else {
+        $published_title = preg_replace($unpublished_pattern, '', trim($title));
+        $title = trim($published_title);
+      }
       $node->set('title', $title);
       $node->set('body', $body);
       $node->set('field_related_persons', $field_related_persons);

@@ -41,13 +41,20 @@ use Drupal\node\Entity\Node;
     $node_storage = $this->entityManager->getStorage('node');
     $nids_to_uunpublish = $this->getChildNids($nid);
     $unpublished_nodes = [];
+    $unpublished_pattern = '/\(unpublished\)$/';
     foreach ($nids_to_uunpublish as $nid) {
       $node = $node_storage->load($nid);
+      $title = $node->getTitle();
+      // add (Unpublished) to title if not there
+      if (preg_match($unpublished_pattern, trim($title)) === 0) {
+        $title .= ' (unpublished)';
+        $node->set('title', $title);
+      }
       if ($node->status->value == 1) {
         $node->set('status', 0);
-        $node->save();
         array_push($unpublished_nodes, $nid);
       }
+      $node->save();
     }
     return $unpublished_nodes;
   }
