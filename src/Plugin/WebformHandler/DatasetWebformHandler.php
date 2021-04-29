@@ -344,14 +344,6 @@ use Drupal\webform\Entity\WebformSubmission;
           $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
         }
       }
-
-      // notify subscribers of update
-      if ($notify_dataset_subscribers) {
-        $subscribers = $node->field_subscribed_users->getValue();
-        if (!empty($subscribers)) {
-          \Drupal::service('ldbase_handlers.message_service')->datasetHasBeenUpdated($node);
-        }
-      }
     }
 
     // create or update embargo
@@ -390,6 +382,16 @@ use Drupal\webform\Entity\WebformSubmission;
         $embargo_to_delete = \Drupal::entityTypeManager()->getStorage('node')->load($embargo_id[0]);
         $embargo_to_delete->delete();
         \Drupal::messenger()->addMessage("Your embargo has been deleted.");
+        // notify dataset subscribers
+        $notify_dataset_subscribers = true;
+      }
+    }
+
+    // notify subscribers of update
+    if ($notify_dataset_subscribers) {
+      $subscribers = $node->field_subscribed_users->getValue();
+      if (!empty($subscribers)) {
+        \Drupal::service('ldbase_handlers.message_service')->datasetHasBeenUpdated($node);
       }
     }
 
