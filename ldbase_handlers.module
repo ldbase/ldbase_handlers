@@ -263,7 +263,7 @@ function ldbase_handlers_preprocess_page_title(&$variables) {
     $ldbase_object_uuid = \Drupal::service('ldbase.object_service')->isUrlAnLdbaseObjectUrl($destination_query)
     ) {
       $ldbase_object = \Drupal::service('ldbase.object_service')->getLdbaseObjectFromUuid($ldbase_object_uuid);
-      $variables['title'] = t('Add Project: @title member', ['@title' => $ldbase_object->getTitle()]);
+      $variables['title'] = t('Add Member to Project: @title', ['@title' => $ldbase_object->getTitle()]);
     }
   }
 }
@@ -285,6 +285,12 @@ function ldbase_handlers_form_group_content_form_alter(&$form, FormStateInterfac
       ],
       'match_operator' => $match_operator,
     ];
+    $description_text = "Type in/Select the name of the person. This gives them
+    full access to edit the metadata and data associated with this project. They
+    must already have an account with LDbase.";
+    $form['entity_id']['widget'][0]['target_id']['#description'] = t($description_text);
+    $roles_legend = "Roles (see previous screen for descriptions of roles)";
+    $form['group_roles']['widget']['#title'] = t($roles_legend);
   }
   //prevent users from editing when member is the only project administrator
   if (strpos($form_id, 'group_membership_edit_form')) {
