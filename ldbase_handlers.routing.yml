@@ -311,3 +311,60 @@ ldbase_handlers.confirm_doi_creation:
 
 route_callbacks:
   - '\Drupal\ldbase_handlers\Routing\LdbaseHandlerRouteProvider::routes'
+
+# taxonomy review
+ldbase_handlers.review_taxonomy_terms:
+  path: '/taxonomy-terms-for-review'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\TaxonomyReviewController::reviewPage'
+    _title: 'LDbase Taxonomy Terms for Review'
+  requirements:
+    _role: 'fcrr_admin+administrator'
+
+ldbase_handlers.accept_taxonomy_term:
+  path: '/taxonomy-terms-for-review/{taxonomy_term}/accept-term'
+  defaults:
+    _form: '\Drupal\ldbase_handlers\Form\ConfirmAcceptTermForm'
+    _title: 'Accept New Taxonomy Term'
+  requirements:
+    _role: 'fcrr_admin+administrator'
+  options:
+    parameters:
+      taxonomy_term:
+        type: entity:taxonomy_term
+
+ldbase_handlers.delete_taxonomy_term:
+  path: '/taxonomy-terms-for-review/{taxonomy_term}/delete-term'
+  defaults:
+    _form: '\Drupal\ldbase_handlers\Form\ConfirmDeleteTermForm'
+    _title: 'Delete Taxonomy Term'
+  requirements:
+    _role: 'fcrr_admin+administrator'
+  options:
+    parameters:
+      taxonomy_term:
+        type: entity:taxonomy_term
+
+ldbase_handlers.edit_taxonomy_term:
+  path: '/taxonomy-terms-for-review/{taxonomy_term}/edit-term'
+  defaults:
+    _form: '\Drupal\ldbase_handlers\Form\EditTermForm'
+    _title: 'Edit Taxonomy Term'
+  requirements:
+    _role: 'fcrr_admin+administrator'
+  options:
+    parameters:
+      taxonomy_term:
+        type: entity:taxonomy_term
+
+ldbase_handlers.change_taxonomy_term:
+  path: '/taxonomy-terms-for-review/{taxonomy_term}/use-other-term'
+  defaults:
+    _form: '\Drupal\ldbase_handlers\Form\ChangeTermForm'
+    _title: 'Use Different Taxonomy Term'
+  requirements:
+    _role: 'fcrr_admin+administrator'
+  options:
+    parameters:
+      taxonomy_term:
+        type: entity:taxonomy_term

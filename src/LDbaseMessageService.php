@@ -331,6 +331,46 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   }
 
   /**
+   * Send message to authors when a taxonomy term is replaced during review
+   * $message_array = [
+   *   'old_term_name' => $old_term_name,
+   *   'new_term_name' => $new_term_name,
+   *   'reason_for_change' => $message_to_users,
+   *   'message_nodes' => ['nid' => $node->id(),],
+   *  ];
+   */
+  public function taxonomyTermChanged(array $message_array) {
+    $message_template = 'ldbase_taxonomy_term_changed';
+    $current_user = \Drupal::currentUser();
+
+    foreach ($message_array['message_nodes'] as $value) {
+      $node = $this->entityTypeManager->getStorage('node')->load($value['nid']);
+      $node_author = $node->getOwnerId();
+      $ldbase_object = ucfirst($node->bundle());
+      $ldbase_object_title = $node->getTitle();
+      $link_route = 'entity.node.canonical';
+      $link_url = Url::fromRoute($link_route, ['node' => $node->id()]);
+      $link_text = $ldbase_object . ': ' . $ldbase_object_title;
+      $link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+      // create a new message from template
+      $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $node_author]);
+      $message->set('field_from_user', $current_user->id());
+      $message->set('field_to_user', $node_author);
+      // set arguments for term replacements
+      $message->setArguments([
+        '@old_term_name' => $message_array['old_term_name'],
+        '@new_term_name' => $message_array['new_term_name'],
+        '@reason_for_change' => $message_array['reason_for_change'],
+        '@link_to_object' => $link_to_object,
+      ]);
+      // save the message
+      $message->save();
+      // send notification
+      $this->sendLdbaseMessage($message);
+    }
+  }
+
+  /**
    * Get Ids of Users with the Administrator or FCRR Admin role
    */
   private function getLdbaseAdministratorUserIds() {
