@@ -99,7 +99,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
    */
   public function contentUnpublishedReminder($node) {
     $message_template = 'ldbase_unpublished_content';
-    $current_user = \Drupal::currentUser()->id();
+    $current_user = 1;
 
     $ldbase_object = ucfirst($node->bundle());
     $ldbase_object_title = $node->getTitle();
@@ -178,7 +178,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
    */
   public function possibleMatchesNotification($user_id) {
     $message_template = 'ldbase_possible_duplicate_person';
-    $current_user = \Drupal::currentUser()->id();
+    $current_user = 1;
     $link_route = 'view.possible_account_matches.page_1';
     $link_url = Url::fromRoute($link_route,[],['absolute' => TRUE]);
     $link_text = 'Possible Account Matches';
