@@ -128,6 +128,18 @@ class ProjectWebformHandler extends WebformHandlerBase {
     $field_time_method = $submission_array['time_method'];
     $published_flag = $submission_array['published_flag'];
 
+    // if unpublished add '(unpublished)' to title if not there already
+    $unpublished_pattern = '/\(unpublished\)$/';
+    if (!$published_flag) {
+      if (preg_match($unpublished_pattern, trim($title)) === 0) {
+        $title .= ' (unpublished)';
+      }
+    }
+    else {
+      $published_title = preg_replace($unpublished_pattern, '', trim($title));
+      $title = trim($published_title);
+    }
+
     if (!$nid) {
       //create node
       $node = Node::create([
@@ -165,17 +177,6 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $existing_flag = $node->status->value;
       $status_has_changed = $published_flag != $existing_flag ? true : false;
       $node->set('status', $published_flag);
-      // if unpublished add '(unpublished)' to title if not there already
-      $unpublished_pattern = '/\(unpublished\)$/';
-      if (!$published_flag) {
-        if (preg_match($unpublished_pattern, trim($title)) === 0) {
-          $title .= ' (unpublished)';
-        }
-      }
-      else {
-        $published_title = preg_replace($unpublished_pattern, '', trim($title));
-        $title = trim($published_title);
-      }
       $node->set('title', $title);
       $node->set('body', $body);
       $node->set('field_related_persons', $field_related_persons);
