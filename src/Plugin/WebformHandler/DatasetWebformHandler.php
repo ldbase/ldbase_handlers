@@ -315,13 +315,6 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_user_agreement', $field_user_agreement);
       $node->set('field_data_unique_or_derived', $field_data_unique_or_derived);
       $node->set('field_derivation_source', $field_derivation_source);
-      // if harmonized dataset answer is changed to true, then send message on confirmation
-      if ($field_harmonized_dataset && ($field_harmonized_dataset != $node->field_harmonized_dataset->value)) {
-        $form_state->set('send_harmonized_data_message', TRUE);
-      }
-      else {
-        $form_state->set('send_harmonized_data_message', FALSE);
-      }
       $node->set('field_harmonized_dataset', $field_harmonized_dataset);
       $node->set('field_affiliated_parents', $passed_id);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
@@ -343,6 +336,14 @@ use Drupal\webform\Entity\WebformSubmission;
         if ($status_has_changed && $has_unpublished_child) {
           $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
         }
+      }
+
+      // if harmonized dataset answer is true and item is published, then send message on confirmation
+      if ($field_harmonized_dataset && $published_flag) {
+        $form_state->set('send_harmonized_data_message', TRUE);
+      }
+      else {
+        $form_state->set('send_harmonized_data_message', FALSE);
       }
     }
 
