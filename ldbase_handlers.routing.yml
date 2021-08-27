@@ -23,6 +23,30 @@ ldbase_handlers.download_all_project_files:
       node:
         type: ldbase_uuid
 
+ldbase_handlers.contact_person:
+  path: '/persons/{node}/contact-ldbase-user'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\ContactPersonController::contactPerson'
+    _title: 'Contact LDbase User'
+  requirements:
+    _role: 'authenticated'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
+
+ldbase_handlers.contact_project:
+  path: '/projects/{node}/contact-ldbase-project'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\ContactProjectController::contactProject'
+    _title: 'Contact LDbase Project'
+  requirements:
+    _role: 'authenticated'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
+
 # Organizations
 ldbase_handlers.edit_organization:
   path: '/organizations/{node}/edit'
