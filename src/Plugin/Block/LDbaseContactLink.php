@@ -115,12 +115,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       if ($show_link) {
         $route = 'ldbase_handlers.contact_' . $node_type;
         $text = 'Contact ' . ucfirst($node_type);
-        $class[] = 'ldbase-button';
 
         $url = Url::fromRoute($route, array('node' => $uuid));
         if ($url->access()) {
           $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
-          $link['#attributes'] = ['class' => $class];
           $markup .= render($link) . ' ';
         }
       }
