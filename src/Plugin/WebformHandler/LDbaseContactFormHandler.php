@@ -54,18 +54,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   protected $ldbaseMessageService;
 
   /**
-   * Message notifier service
+   * The Drupal MailManager
    *
-   * @var \Drupal\message_notify\MessageNotifier
+   * @var Drupal\Core\Mail\MailManager
    */
-  protected $notifier;
-
-  /**
-   * The User Email Verification service
-   *
-   * @var \Drupal\user_email_verification\UserEmailVerification
-   */
-  protected $userEmailVerificationService;
+  protected $mailManager;
 
   /**
    * {@inheritdoc}
@@ -76,8 +69,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $instance->currentUser = $container->get('current_user');
     $instance->ldbaseObjectService = $container->get('ldbase.object_service');
     $instance->ldbaseMessageService = $container->get('ldbase_handlers.message_service');
-    $instance->notifier = $container->get('message_notify.sender');
-    $instance->userEmailVerificationService = $container->get('user_email_verification.service');
+    $instance->mailManager = $container->get('plugin.manager.mail');
     return $instance;
   }
 
@@ -88,39 +80,64 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $submission_array = $webform_submission->getData();
     $node = $this->entityTypeManager->getStorage('node')->load($submission_array['node_id']);
     $message_template = 'ldbase_contact_form';
-    $message_uid = $this->currentUser->id(); //sender
+    $field_from_user = $this->currentUser->id();
+    $from_email = $this->currentUser->getEmail();
     $message_subject = $submission_array['subject'];
     $message_body = $submission_array['message'];
 
     // contact person
     if ($node->bundle() == 'person') {
-      $field_to_users = $node->field_drupal_account_id->target_id;
+      $field_to_user = $node->field_drupal_account_id->target_id;
+      $field_to_users = '';
+      $message_uid = $field_to_user;
+      $email_list = $node->field_email_value;
+
+      $message = $this->entityTypeManager->getStorage('message')
+        ->create(['template' => $message_template, 'uid' => $message_uid]);
+      $message->set('field_from_user', $field_from_user);
+      $message->set('field_to_user', $field_to_user);
+      $message->set('field_to_users', $field_to_users);
+      $message->setArguments([
+        '@subject' => $message_subject,
+        '@message' => $message_body,
+      ]);
+      $message->save();
     }
     // contact project
     if ($node->bundle() == 'project') {
       $groupRoles = ['project_group-administrator'];
       $field_to_users = $this->ldbaseMessageService->getGroupUserIdsByRoles($node,$groupRoles);
       $group_admin_emails = [];
+      // save a message for each, but email all at once
       foreach ($field_to_users as $admin_id) {
         $admin = $this->entityTypeManager->getStorage('user')->load($admin_id);
         $group_admin_emails[] = $admin->mail->value;
+
+        $message = $this->entityTypeManager->getStorage('message')
+          ->create(['template' => $message_template, 'uid' => $admin_id]);
+        $message->set('field_from_user', $field_from_user);
+        $message->set('field_to_user', $admin_id);
+        $message->set('field_to_users', $field_to_users);
+        $message->setArguments([
+          '@subject' => $message_subject,
+          '@message' => $message_body,
+        ]);
+        $message->save();
       }
       $email_list = implode(',', $group_admin_emails);
     }
 
-    $message = $this->entityTypeManager->getStorage('message')
-      ->create(['template' => $message_template, 'uid' => $message_uid]);
-    $message->set('field_from_user', $message_uid);
-    $message->set('field_to_users', $field_to_users);
-    $message->setArguments([
-      '@subject' => $message_subject,
-      '@message' => $message_body,
-    ]);
-
-    $message->save();
-
-    //TODO
     // send email
+    $module = 'ldbase_handlers';
+    $key = 'ldbase_contact_form';
+    $to = $email_list;
+    $reply = $from_email;
+    $params['subject'] = 'LDbase Contact Message: ' . $message_subject;
+    $params['body'] = $message_body;
+    $langcode = $this->currentUser->getPreferredLangcode();
+    $send = TRUE;
+
+    $mail_result = $this->mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
 
   }
 
