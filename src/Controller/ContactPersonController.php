@@ -86,7 +86,7 @@ class ContactPersonController extends ControllerBase {
       else {
         // if not user, redirect to Person view with message
         $redirect_message = $this->t("This LDbase Person cannot be messaged using the contact form.");
-        $this->messenger()->addStatus($redirect_message);
+        $this->messenger()->addError($redirect_message);
 
         return $this->redirect('entity.node.canonical', ['node' => $node->id()]);
       }
