@@ -8,7 +8,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\user_email_verification\UserEmailVerification;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,20 +36,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   protected $entityTypeManager;
 
   /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
-  /**
-   * The User Email Verification service.
-   *
-   * @var \Drupal\user_email_verification\UserEmailVerification;
-   */
-  protected $userEmailVerification;
-
-  /**
    * Construct a new Contact Link Block.
    *
    * @param array $configuration
@@ -61,16 +46,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The Entity Type Manager
-   * @param \Drupal\Core\Session\AccountInterface $currentUser
-   *   The Current User
-   * @param \Drupal\user_email_verification\UserEmailVerification $userEmailVerification
-   *   User Email Verification Service
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entityTypeManager, AccountInterface $currentUser, UserEmailVerification $userEmailVerification) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entityTypeManager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entityTypeManager;
-    $this->currentUser = $currentUser;
-    $this->userEmailVerification = $userEmailVerification;
   }
 
   /**
@@ -81,9 +60,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager'),
-      $container->get('current_user'),
-      $container->get('user_email_verification.service')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -97,19 +74,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $allowed_types = ['person','project'];
     $markup = '';
     $show_link = false;
-    $uid = $this->currentUser->id();
 
     if (!empty($uuid) && in_array($node_type, $allowed_types)) {
       $show_link = true;
-      // check person has account
+      // check if target person has account
       if ($node_type == 'person') {
         if (empty($node->field_drupal_account_id->target_id)) {
           $show_link = false;
         }
-      }
-      // check if user has verified email
-      if ($this->userEmailVerification->isVerificationNeeded($uid)) {
-        $show_link = false;
       }
 
       if ($show_link) {
