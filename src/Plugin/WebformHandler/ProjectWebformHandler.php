@@ -139,6 +139,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $published_title = preg_replace($unpublished_pattern, '', trim($title));
       $title = trim($published_title);
     }
+    $field_do_not_contact = $submission_array['do_not_contact_flag'];
 
     if (!$nid) {
       //create node
@@ -158,6 +159,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
         'field_schooling' => $field_schooling,
         'field_curricula' => $field_curricula,
         'field_time_method' => $field_time_method,
+        'field_do_not_contact' => $field_do_not_contact,
       ]);
       $form_state->set('redirect_message', $title . ' was created successfully.');
       $form_state->set('confirm_doi', TRUE);
@@ -190,6 +192,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $node->set('field_schooling', $field_schooling);
       $node->set('field_curricula', $field_curricula);
       $node->set('field_time_method', $field_time_method);
+      $node->set('field_do_not_contact', $field_do_not_contact);
       $form_state->set('redirect_message', $title . ' was updated successfully.');
       $form_state->set('confirm_doi', $submission_array['generate_a_doi']);
       //save the node

@@ -44,10 +44,10 @@ class ProjectController extends ControllerBase {
    * @param \Drupal\Node\NodeInterface $node
    */
   public function editProject(NodeInterface $node) {
-
     //get node data
     $node_id = $node->id();
     $published_flag = $node->status->value;
+    $do_not_contact_flag = $node->field_do_not_contact->value;
     $title = $node->getTitle();
     $description = $node->get('body')->value;
     $related_persons = $node->get('field_related_persons')->getValue();
@@ -112,6 +112,7 @@ class ProjectController extends ControllerBase {
         'schooling' => $schooling,
         'curricula' => $curricula,
         'time_method' => $time_method,
+        'do_not_contact_flag' => $do_not_contact_flag,
       ]
     ];
 

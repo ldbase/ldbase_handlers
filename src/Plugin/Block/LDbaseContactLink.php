@@ -83,6 +83,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
           $show_link = false;
         }
       }
+      // check if project allows for contact
+      if ($node_type == 'project') {
+        if ($node->field_do_not_contact->value) {
+          $show_link = false;
+        }
+      }
 
       if ($show_link) {
         $route = 'ldbase_handlers.contact_' . $node_type;
