@@ -73,7 +73,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $link_route = 'entity.node.canonical';
     $link_url = Url::fromRoute($link_route, ['node' => $project->id()]);
     $link_text = $ldbase_object . ': ' . $ldbase_object_title;
-    $link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    //$link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    $link_to_object = $link_url->setAbsolute()->toString();
     $added_user = $this->entityTypeManager->getStorage('user')->load($added_user_id);
     $group_role = $this->entityTypeManager->getStorage('group_role')->load($role_id);
 
@@ -84,6 +85,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $message->set('field_to_user', $added_user_id);
     $message->set('field_group', $project_group_id);
     $message->setArguments([
+      '@object_text' => $link_text,
       '@link_to_object' => $link_to_object,
       '@group_role' => $group_role->label(),
     ]);
@@ -106,7 +108,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $link_to_object_route = 'entity.node.canonical';
     $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $node->id()], ['absolute' => TRUE]);
     $link_to_object_text = $ldbase_object . ': ' . $ldbase_object_title;
-    $link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
+    //$link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
+    $link_to_object = $link_to_object_url->setAbsolute()->toString();
 
     $group_admins = $this->getGroupUserIdsByRoles($node, ['project_group-administrator']);
     // create a new message from template
@@ -116,6 +119,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
       $message->set('field_from_user', $current_user);
       $message->set('field_to_user', $admin_id);
       $message->setArguments([
+        '@object_text' => $link_to_object_text,
         '@link_to_object' => $link_to_object,
       ]);
 
@@ -141,13 +145,15 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $link_route = 'view.existing_records_requests.page_1';
     $link_url = Url::fromRoute($link_route, ['group' => $group_id]);
     $link_text = 'View Existing Records Requests';
-    $existing_records_requests_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    //$existing_records_requests_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    $existing_records_requests_link = $link_url->setAbsolute()->toString();
     $ldbase_object = ucfirst($content_entity->bundle());
     $ldbase_object_title = $content_entity->getTitle();
     $link_to_object_route = 'entity.node.canonical';
     $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $content_id]);
     $link_to_object_text = $ldbase_object . ': ' . $ldbase_object_title;
-    $link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
+    //$link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
+    $link_to_object = $link_to_object_url->setAbsolute()->toString();
     $real_person_id = $existing_record_request->field_requesting_person->target_id;
     $real_person_node = $this->entityTypeManager->getStorage('node')->load($real_person_id);
     $real_user_id = $real_person_node->field_drupal_account_id->target_id;
@@ -161,6 +167,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
       $message->set('field_to_user', $admin_id);
       $message->set('field_group', $group_id);
       $message->setArguments([
+        '@object_text' => $link_to_object_text,
         '@link_to_object' => $link_to_object,
         '@existing_records_requests_link' => $existing_records_requests_link,
         '@user' => $real_person_node->getTitle(),
@@ -182,7 +189,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $link_route = 'view.possible_account_matches.page_1';
     $link_url = Url::fromRoute($link_route,[],['absolute' => TRUE]);
     $link_text = 'Possible Account Matches';
-    $possible_matches_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    //$possible_matches_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    $possible_matches_link = $link_url->setAbsolute()->toString();
 
     // create a new message from template
     // Notify uses Message Author (uid) as "To" address
@@ -210,13 +218,15 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $link_route = 'entity.node.canonical';
     $link_url = Url::fromRoute($link_route, ['node' => $node->id()]);
     $link_text = $ldbase_object . ': ' . $ldbase_object_title;
-    $link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    //$link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    $link_to_object = $link_url->setAbsolute()->toString();
     // create a new message from template
     // Notify uses Message Author (uid) as "To" address
     $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $added_user_id]);
     $message->set('field_from_user', $current_user->id());
     $message->set('field_to_user', $added_user_id);
     $message->setArguments([
+      '@object_text' => $link_text,
       '@link_to_object' => $link_to_object,
       '@user' => $current_user->getDisplayName(),
     ]);
@@ -240,7 +250,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
       $link_route = 'entity.node.canonical';
       $link_text = $dataset_node->getTitle();
       $link_url = Url::fromRoute($link_route, ['node' => $dataset_node->id()]);
-      $dataset_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+      //$dataset_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+      $dataset_link = $link_url->setAbsolute()->toString();
 
       foreach ($subscribers as $subscriber) {
         $user_id = $subscriber['target_id'];
@@ -253,6 +264,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
         $message->set('field_from_user', $current_user);
         $message->set('field_to_user', $user_id);
         $message->setArguments([
+          '@object_text' => $link_text,
           '@link_to_dataset' => $dataset_link,
         ]);
         $message->save();
@@ -278,7 +290,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $link_route = 'entity.node.canonical';
     $link_text = $dataset_node->getTitle();
     $link_url = Url::fromRoute($link_route, ['node' => $dataset_node->id()]);
-    $dataset_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    //$dataset_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
+    $dataset_link = $link_url->setAbsolute()->toString();
 
     $admin_user_ids = $this->getLdbaseAdministratorUserIds();
     // send a message to each admin
@@ -351,7 +364,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
       $link_route = 'entity.node.canonical';
       $link_url = Url::fromRoute($link_route, ['node' => $node->id()]);
       $link_text = $ldbase_object . ': ' . $ldbase_object_title;
-      $link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+      //$link_to_object = Link::fromTextAndUrl($link_text, $link_url)->toString();
+      $link_to_object = $link_url->setAbsolute()->toString();
       // create a new message from template
       $message = $this->entityTypeManager->getStorage('message')->create(['template' => $message_template, 'uid' => $node_author]);
       $message->set('field_from_user', $current_user->id());
@@ -361,6 +375,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
         '@old_term_name' => $message_array['old_term_name'],
         '@new_term_name' => $message_array['new_term_name'],
         '@reason_for_change' => $message_array['reason_for_change'],
+        '@object_text' => $link_text,
         '@link_to_object' => $link_to_object,
       ]);
       // save the message
