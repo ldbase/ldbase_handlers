@@ -392,3 +392,16 @@ ldbase_handlers.change_taxonomy_term:
     parameters:
       taxonomy_term:
         type: entity:taxonomy_term
+
+ldbase_handlers.mark_message_read:
+  path: '/ajax/message/{message}/{user}/mark-read'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\MessageController::markMessageRead'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    parameters:
+      message:
+        type: entity:message
+      user:
+        type: entity:user

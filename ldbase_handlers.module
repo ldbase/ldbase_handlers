@@ -394,3 +394,17 @@ function ldbase_handlers_mail($key, &$message, $params) {
       break;
   }
 }
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function ldbase_handlers_views_pre_render(\Drupal\views\ViewExecutable $view) {
+  if ($view->id() == 'my_messages' && $view->current_display == 'page_2') {
+    $view->element['#attached']['library'][] = 'ldbase_handlers/message_dialogs';
+
+    $uid = \Drupal::RouteMatch()->getParameter('user');
+    $view->element['#attached']['drupalSettings']['messageData']['uid'] = $uid;
+    $mid = \Drupal::RouteMatch()->getParameter('mid');
+    $view->element['#attached']['drupalSettings']['messageData']['mid'] = $mid;
+  }
+}

@@ -1,0 +1,8 @@
+message_dialogs:
+  version: 1.x
+  js:
+    js/message_dialogs.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal.dialog.ajax
+    - core/drupalSettings
