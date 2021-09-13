@@ -57,14 +57,14 @@ ldbase_handlers.add_dataset_to_project_2:
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_project
   weight: 0
-  
+
 ldbase_handlers.add_document_to_project_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: second-project-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_project
   weight: 1
-  
+
 ldbase_handlers.add_code_to_project_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: second-project-tasks
@@ -129,20 +129,27 @@ ldbase_handlers.add_codebook_to_dataset_2:
   menu_name: second-dataset-tasks
   title: 'Add Codebook'
   route_name: ldbase_handlers.add_codebook_to_dataset
-  weight: 0
-  
+  weight: 1
+
 ldbase_handlers.add_document_to_dataset_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: second-dataset-tasks
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_dataset
-  weight: 1
-  
+  weight: 3
+
 ldbase_handlers.add_code_to_dataset_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: second-dataset-tasks
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_dataset
+  weight: 0
+
+ldbase_handlers.add_dataset_to_dataset_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-dataset-tasks
+  title: 'Add Dataset'
+  route_name: ldbase_handlers.add_dataset_to_dataset
   weight: 2
 
 # Code Tasks items
