@@ -39,7 +39,7 @@ ldbase_handlers.add_document_to_project:
 ldbase_handlers.manage_project_users:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenuWithGroup
   menu_name: project-tasks
-  title: 'Manage Members'
+  title: 'Manage Administrators'
   route_name: view.group_members.ldbase_project
   weight: 4
 
