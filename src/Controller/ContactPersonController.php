@@ -54,6 +54,13 @@ class ContactPersonController extends ControllerBase {
    * @param \Drupal\Node\NodeInterface $node
    */
   public function contactPerson(NodeInterface $node) {
+    // Are you trying to get around a do_not_contact flag?
+    if ($node->field_do_not_contact->value) {
+      $redirect_message = $this->t("You may not contact this user through LDbase.");
+      $this->messenger()->addWarning($redirect_message);
+
+      return $this->redirect('entity.node.canonical', ['node' => $node->id()]);
+    }
     // Has the user verified their email address?
     $uid = $this->currentUser->id();
     if ($this->userEmailVerification->isVerificationNeeded($uid)) {
