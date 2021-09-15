@@ -90,7 +90,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $field_to_user = $node->field_drupal_account_id->target_id;
       $field_to_users = '';
       $message_uid = $field_to_user;
-      $email_list = $node->field_email_value;
+      $email_list = $node->field_email->value;
 
       $message = $this->entityTypeManager->getStorage('message')
         ->create(['template' => $message_template, 'uid' => $message_uid]);
@@ -126,7 +126,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       }
       $email_list = implode(',', $group_admin_emails);
     }
-
     // send email
     $module = 'ldbase_handlers';
     $key = 'ldbase_contact_form';
@@ -163,6 +162,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $original_node = $this->ldbaseObjectService->getLdbaseObjectFromUuid($original_uuid);
     $default_error_message = 'An invalid id was passed to the form.';
     if ($original_node->id() != $node->id()) {
+      $this->messenger()->addError($this->t($default_error_message));
+      $form_state->setErrorByName('form_introduction','');
+    }
+    if ($node->field_do_not_contact->value) {
       $this->messenger()->addError($this->t($default_error_message));
       $form_state->setErrorByName('form_introduction','');
     }

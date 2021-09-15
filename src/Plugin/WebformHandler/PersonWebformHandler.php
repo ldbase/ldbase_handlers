@@ -49,6 +49,7 @@ use Drupal\webform\Entity\WebformSubmission;
     $field_last_name = $submission_array['last_name'];
     $field_publishing_names = $submission_array['additional_publishing_names'];
     $field_email = $submission_array['email'];
+    $field_do_not_contact = $submission_array['do_not_contact_flag'];
     $field_orcid = $submission_array['orcid'];
     $field_google_scholar_id = $submission_array['google_scholar_id'];
     $field_web_presence = $submission_array['web_presence'];
@@ -97,6 +98,7 @@ use Drupal\webform\Entity\WebformSubmission;
         'field_last_name' => $field_last_name,
         'field_publishing_names' => $field_publishing_names,
         'field_email' => $field_email,
+        'field_do_not_contact' => $field_do_not_contact,
         'field_orcid' => $field_orcid,
         'field_google_scholar_id' => $field_google_scholar_id,
         'field_web_presence' => $field_web_presence,
@@ -119,6 +121,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $node->set('field_last_name', $field_last_name);
       $node->set('field_publishing_names', $field_publishing_names);
       $node->set('field_email', $field_email);
+      $node->set('field_do_not_contact', $field_do_not_contact);
       $node->set('field_orcid', $field_orcid);
       $node->set('field_google_scholar_id', $field_google_scholar_id);
       $node->set('field_web_presence', $field_web_presence);

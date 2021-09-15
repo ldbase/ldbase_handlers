@@ -47,6 +47,7 @@ class PersonController extends ControllerBase {
     $last_name = $node->get('field_last_name')->value;
     $additional_publishing_names = $node->get('field_publishing_names')->getValue();
     $email = $node->get('field_email')->value;
+    $do_not_contact_flag = $node->field_do_not_contact->value;
     $orcid = $node->get('field_orcid')->value;
     $google_scholar_id = $node->get('field_google_scholar_id')->value;
     $web_presence = $node->get('field_web_presence')->getValue();
@@ -72,6 +73,7 @@ class PersonController extends ControllerBase {
         'last_name' => $last_name,
         'additional_publishing_names' => $additional_publishing_names,
         'email' => $email,
+        'do_not_contact_flag' => $do_not_contact_flag,
         'orcid' => $orcid,
         'google_scholar_id' => $google_scholar_id,
         'web_presence' => $web_presence,
