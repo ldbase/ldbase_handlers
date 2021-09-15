@@ -73,9 +73,11 @@ class ContactProjectController extends ControllerBase {
       }
       else {
         // load form
+        $subject_line = $this->t("LDbase user has question about Project: @title", ['@title' => $node->getTitle()]);
         $node_id = $node->id();
         $values = [
           'data' => [
+            'subject' => $subject_line,
             'node_id' => $node_id,
           ],
         ];
@@ -86,6 +88,7 @@ class ContactProjectController extends ControllerBase {
         $project_title = $node->getTitle();
         $form_introduction = $this->t('Use this form to contact the Project Administrators of Project: @title.  The message will be sent by email and will contain your email address so that they can respond to you.', ['@title' => $project_title]);
         $webform['elements']['form_introduction']['#markup'] = $form_introduction;
+        $webform['elements']['subject']['#attributes']['readonly'] = 'readonly';
 
         return $webform;
       }
