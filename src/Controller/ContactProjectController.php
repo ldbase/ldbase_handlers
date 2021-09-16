@@ -89,6 +89,8 @@ class ContactProjectController extends ControllerBase {
         $form_introduction = $this->t('Use this form to contact the Project Administrators of Project: @title.  The message will be sent by email and will contain your email address so that they can respond to you.', ['@title' => $project_title]);
         $webform['elements']['form_introduction']['#markup'] = $form_introduction;
         $webform['elements']['subject']['#attributes']['readonly'] = 'readonly';
+        $subject_description = $this->t('The subject for project messages is read-only.');
+        $webform['elements']['subject']['#description'] = $subject_description;
 
         return $webform;
       }
