@@ -48,6 +48,7 @@ class PersonController extends ControllerBase {
     $additional_publishing_names = $node->get('field_publishing_names')->getValue();
     $email = $node->get('field_email')->value;
     $do_not_contact_flag = $node->field_do_not_contact->value;
+    $person_contact_opt_in = !($node->field_do_not_contact->value);
     $orcid = $node->get('field_orcid')->value;
     $google_scholar_id = $node->get('field_google_scholar_id')->value;
     $web_presence = $node->get('field_web_presence')->getValue();
@@ -61,6 +62,10 @@ class PersonController extends ControllerBase {
     $thumbnail = $node->field_thumbnail->entity;
     $thumbnail_fid = !empty($thumbnail) ? $thumbnail->id() : NULL;
 
+    $user = $node->field_drupal_account_id->entity;
+    $mass_contact_opt_in = !($user->mass_contact_opt_out->value);
+
+
     $values = [
       'data' => [
         'node_id' => $nid,
@@ -73,7 +78,8 @@ class PersonController extends ControllerBase {
         'last_name' => $last_name,
         'additional_publishing_names' => $additional_publishing_names,
         'email' => $email,
-        'do_not_contact_flag' => $do_not_contact_flag,
+        'person_contact_opt_in' => $person_contact_opt_in,
+        'mass_contact_opt_in' => $mass_contact_opt_in,
         'orcid' => $orcid,
         'google_scholar_id' => $google_scholar_id,
         'web_presence' => $web_presence,
