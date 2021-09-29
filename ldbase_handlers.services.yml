@@ -51,4 +51,4 @@ services:
       - { name: event_subscriber }
   ldbase_handlers.autocomplete_matcher:
     class: Drupal\ldbase_handlers\EntityAutocompleteMatcher
-    arguments: ['@plugin.manager.entity_reference_selection']
+    arguments: ['@plugin.manager.entity_reference_selection','@entity_type.manager','@entity.repository']

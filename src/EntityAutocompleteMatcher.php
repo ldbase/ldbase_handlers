@@ -4,8 +4,48 @@ namespace Drupal\ldbase_handlers;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Tags;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 class EntityAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMatcher {
+
+  /**
+   * The entity reference selection handler plugin manager.
+   *
+   * @var \Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface
+   */
+  protected $selectionManager;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The entity repository service
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * constructs a EntityAutoComplete object
+   *
+   * @param Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface $selection_manager
+   *
+   * @param Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *  The entity type manager.
+   * @param Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *  The entity repository service
+   */
+  public function __construct(SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository) {
+    $this->selectionManager = $selection_manager;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->entityRepository = $entity_repository;
+  }
 
   /**
    * Gets matched labels based on a given search string.
@@ -31,8 +71,8 @@ class EntityAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMa
       foreach ($entity_labels as $values) {
         foreach ($values as $entity_id => $label) {
 
-          $entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($entity_id);
-          $entity = \Drupal::entityManager()->getTranslationFromContext($entity);
+          $entity = $this->entityTypeManager->getStorage($target_type)->load($entity_id);
+          $entity = $this->entityRepository->getTranslationFromContext($entity);
 
           if ($entity->getEntityType()->id() == 'node') {
             // if this node is a person bundle, then get the email
