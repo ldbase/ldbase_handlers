@@ -30,7 +30,7 @@ services:
     parent: default_plugin_manager
   ldbase_handlers.breadcrumbs:
     class: Drupal\ldbase_handlers\Breadcrumb\LDbaseGroupBreadcrumbBuilder
-    arguments: []
+    arguments: ['@entity_type.manager', '@ldbase.object_service']
     tags:
       - { name: breadcrumb_builder, priority: 200 }
   ldbase_handlers.message_service:
