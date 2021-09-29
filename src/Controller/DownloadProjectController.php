@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Node\NodeInterface;
+use Drupal\Core\Url;
 
 /**
  * Download Project Controller.
@@ -77,7 +78,7 @@ class DownloadProjectController extends ControllerBase {
     // get nodes in project hierarchy
     $nodes_in_tree = $this->getFileChildNodes($node);
 
-    $redirect_on_error_to = \Drupal::url('entity.node.canonical', ['node' => $node->id()]);
+    $redirect_on_error_to = Url::fromRoute('entity.node.canonical', ['node' => $node->id()]);
     $files = [];
     $account = \Drupal::currentUser();
     $embargo_service = \Drupal::service('ldbase_embargoes.file_access');
