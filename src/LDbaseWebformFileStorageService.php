@@ -3,6 +3,7 @@
 namespace Drupal\ldbase_handlers;
 
 use Drupal\file\Entity\File;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\File\FileSystemInterface;
 
 /**
@@ -23,7 +24,7 @@ class LDbaseWebformFileStorageService implements LDbaseWebformFileStorageService
       $new_dir = 'private://' . $ctype . 's/' . date('Y-m', time()) . '/';
       \Drupal::service('file_system')->prepareDirectory($new_dir, FileSystemInterface::CREATE_DIRECTORY);
       $new_copy = file_copy($original_file, $new_dir . $original_file->getFileName(), FileSystemInterface::FILE_EXISTS_RENAME);
-      file_delete($original_fid);
+      EntityStorageInterface::delete($original_fid);
       return $new_copy->id();
     }
     else {
