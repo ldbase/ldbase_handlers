@@ -69,7 +69,7 @@ class LDbaseGroupBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     }
 
     foreach ($breadcrumb_trail as $breadcrumb_link) {
-      $ntity = $this->entityTypeManager->getStorage('node')->load($breadcrumb_link['nid']);
+      $entity = $this->entityTypeManager->getStorage('node')->load($breadcrumb_link['nid']);
       $formatted_bundle = ucfirst($entity->bundle());
       $formatted_title = "{$formatted_bundle}: {$breadcrumb_link['title']}";
       $breadcrumb->addLink(Link::createFromRoute($formatted_title, 'entity.node.canonical', ['node' => $breadcrumb_link['nid']], ['absolute' => TRUE]));
