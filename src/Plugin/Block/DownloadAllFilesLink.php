@@ -12,7 +12,7 @@ use Drupal\Node\NodeInterface;
  *   id = "download_all_files_link",
  *   admin_label = @Translation("LDbase Download All Files Link"),
  *   category = @Translation("LDbase Menu"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
  *       label = @Translation("Current Node")

@@ -11,7 +11,7 @@ use Drupal\Core\Url;
  *   id = "content_delete_link",
  *   admin_label = @Translation("LDbase Delete Content Link"),
  *   category = @Translation("LDbase Menu"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
  *       label = @Translation("Current Node")

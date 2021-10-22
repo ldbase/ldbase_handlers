@@ -11,7 +11,7 @@ use Drupal\Core\Url;
  *   id = "dataset_versions_view_link",
  *   admin_label = @Translation("LDbase Dataset Versions View Link"),
  *   category = @Translation("LDbase Menu"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
  *       label = @Translation("Current Dataset Node")

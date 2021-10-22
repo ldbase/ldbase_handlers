@@ -11,7 +11,7 @@ use Drupal\Core\Url;
  *   id = "dataset_subscription_link",
  *   admin_label = @Translation("LDbase Dataset Subscription Link"),
  *   category = @Translation("LDbase Block"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
  *       label = @Translation("Current Node")

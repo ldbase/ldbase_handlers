@@ -11,7 +11,7 @@ use Drupal\Core\Url;
  *   id = "content_edit_link",
  *   admin_label = @Translation("LDbase Content Edit Link"),
  *   category = @Translation("LDbase Menu"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
  *       label = @Translation("Current Node")

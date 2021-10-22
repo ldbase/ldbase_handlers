@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "ldbase_contact_link",
  *   admin_label = @Translation("LDbase Contact Link"),
  *   category = @Translation("LDbase Block"),
- *   context = {
+ *   context_definitions = {
  *     "node" = @ContextDefinition(
  *       "entity:node",
  *       label = @Translation("Current Node")
