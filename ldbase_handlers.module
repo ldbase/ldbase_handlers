@@ -91,7 +91,7 @@ function ldbase_handlers_webform_submission_form_alter(array &$form, \Drupal\Cor
 /**
  * Implements hook_ENTITY_TYPE_presave().
  */
-function ldbase_handlers_node_presave(Node $node) {
+function ldbase_handlers_node_presave(\Drupal\Node\NodeInterface $node) {
   // trim title field
   $trimmed_title = trim($node->get('title')->value);
   $node->setTitle($trimmed_title);
@@ -100,7 +100,7 @@ function ldbase_handlers_node_presave(Node $node) {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function ldbase_handlers_node_insert(Node $node) {
+function ldbase_handlers_node_insert(\Drupal\Node\NodeInterface $node) {
   //message users added as contributors
   $contributor_content = ['project','dataset','document','code'];
   if (in_array($node->getType(), $contributor_content)) {

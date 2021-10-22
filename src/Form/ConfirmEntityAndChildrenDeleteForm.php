@@ -2,6 +2,7 @@
 
 namespace Drupal\ldbase_handlers\Form;
 
+use Drupal\node\NodeInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -15,14 +16,14 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
 
   /**
    * UUID of parent node
-   * @param Drupal\node\Entity\Node $node
+   * @param Drupal\node\NodeInterface $node
    */
   protected $node;
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, Node $node = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL) {
     $this->node = $node;
     return parent::buildForm($form, $form_state);
   }

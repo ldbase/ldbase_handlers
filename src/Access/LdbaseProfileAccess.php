@@ -21,8 +21,7 @@ class LdbaseProfileAccess implements AccessInterface {
     $this->entityTypeManager = $entityTypeManager;
   }
 
-  public function access(AccountInterface $account, Node $node = NULL) {
-
+  public function access(AccountInterface $account, \Drupal\Node\NodeInterface $node = NULL) {
     if ($node) {
       $profile_id = $node->get('field_drupal_account_id')->target_id;
       $user_id = \Drupal::currentUser()->id();

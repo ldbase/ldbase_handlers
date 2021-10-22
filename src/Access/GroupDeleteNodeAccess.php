@@ -23,7 +23,7 @@ class GroupDeleteNodeAccess implements AccessInterface {
     $this->entityTypeManager = $entityTypeManager;
   }
 
-  public function access(AccountInterface $account, Node $node = NULL) {
+  public function access(AccountInterface $account, \Drupal\Node\NodeInterface $node = NULL) {
     if ($node) {
       // get node's group
       $group_contents = GroupContent::loadByEntity($node);
