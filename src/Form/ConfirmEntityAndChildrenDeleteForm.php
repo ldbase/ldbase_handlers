@@ -2,12 +2,15 @@
 
 namespace Drupal\ldbase_handlers\Form;
 
-use Drupal\node\NodeInterface;
+use Drupal\Node\NodeInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ldbase_content\LDbaseObjectService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines form to confirm deletion of LDbase content and its children.
@@ -15,10 +18,36 @@ use Drupal\Core\Render\Markup;
 class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The LDbase Object Service
+   *
+   * @var \Drupal\ldbase_content\LDbaseObjectService
+   */
+  protected $ldbaseObjectService;
+
+  /**
    * UUID of parent node
-   * @param Drupal\node\NodeInterface $node
+   * @param Drupal\Node\NodeInterface $node
    */
   protected $node;
+
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, LDbaseObjectService $ldbase_object_service) {
+    $this->entityTypeManager = $entity_type_manager;
+    $this->ldbaseObjectService = $ldbase_object_service;
+  }
+
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('ldbase.object_service')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -53,7 +82,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
    */
   public function getQuestion() {
     $node = $this->node;
-    $bundle = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
+    $bundle = $this->ldbaseObjectService->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
     return t('Are you sure you want to delete %type: %title and any related items from LDbase?', [
       '%type' => ucfirst($bundle),
       '%title' => $node->getTitle(),
@@ -65,7 +94,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
    */
   public function getDescription() {
     $node = $this->node;
-    $bundle = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
+    $bundle = $this->ldbaseObjectService->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
     $description = "<div class='delete-content-confirmation'>" .
       '<p>' . t('Related items branch down from %type: %title in the Project Tree.', [
         '%type' => ucfirst($bundle),
@@ -76,7 +105,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
       "<li class='delete-content-confirmation-list-item'>" .
       t(ucfirst($bundle) . ': ' . $node->getTitle()) .
       '</li>' .
-      \Drupal\ldbase_handlers\Form\ConfirmEntityAndChildrenDeleteForm::getChildrenAsHtmlList($node->id()) .
+      $this->getChildrenAsHtmlList($node->id()) .
       '</ul>' .
       '<p>' . t('This action cannot be undone.') . '</p>' .
       '</div>';
@@ -91,7 +120,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
     // redirect afterward to object parent
     // if no parent (project deleted), redirect to account home page
     if ($this->node->getType() !== 'project') {
-      $parent_nid = \Drupal::service('ldbase.object_service')->getLdbaseObjectParent($this_nid);
+      $parent_nid = $this->ldbaseObjectService->getLdbaseObjectParent($this_nid);
       $route = 'entity.node.canonical';
       $url_parameters = [
         'node' => $parent_nid,
@@ -106,9 +135,9 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
       $url = Url::fromRoute($route, $url_parameters);
     }
     // add any child nodes to be deleted
-    $nodes_to_delete = array_merge([$this_nid], \Drupal\ldbase_handlers\Form\ConfirmEntityAndChildrenDeleteForm::getChildrenIdsAsArray($this_nid));
+    $nodes_to_delete = array_merge([$this_nid], $this->getChildrenIdsAsArray($this_nid));
     foreach ($nodes_to_delete as $id) {
-      $delete = Node::load($id);
+      $delete = $this->entityTypeManager->getStorage('node')->load($id);
       if ($delete) {
         $delete->delete();
       }
@@ -125,7 +154,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
     $ordered_types = ['dataset','code','document'];
     foreach ($ordered_types as $type) {
 
-      $children_query = \Drupal::entityQuery('node')
+      $children_query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', $type)
       ->condition('field_affiliated_parents', $parent_id);
       $children_result = $children_query->execute();
@@ -133,12 +162,12 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
       if (!empty($children_result)) {
         $list .= '<ul>';
         foreach ($children_result as $child) {
-          $node = Node::load($child);
-          $bundle = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
+          $node = $this->entityTypeManager->getStorage('node')->load($child);
+          $bundle = $this->ldbaseObjectService->isLdbaseCodebook($node->uuid()) ? 'codebook' : $node->bundle();
           $list .= '<li>' .
             t(ucfirst($bundle) . ': ' . $node->getTitle()) .
             '</li>';
-          $list .= \Drupal\ldbase_handlers\Form\ConfirmEntityAndChildrenDeleteForm::getChildrenAsHtmlList($node->id());
+          $list .= $this->getChildrenAsHtmlList($node->id());
         }
         $list .= '</ul>';
       }
@@ -151,13 +180,13 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
    */
   private function getChildrenIdsAsArray($parent_id) {
     $node_array = [];
-    $children_query = \Drupal::entityQuery('node')
+    $children_query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('field_affiliated_parents', $parent_id);
     $children_result = $children_query->execute();
 
     foreach ($children_result as $child) {
       array_push($node_array, $child);
-      $node_array = array_merge($node_array, \Drupal\ldbase_handlers\Form\ConfirmEntityAndChildrenDeleteForm::getChildrenIdsAsArray($child));
+      $node_array = array_merge($node_array, $this->getChildrenIdsAsArray($child));
     }
     return $node_array;
   }
