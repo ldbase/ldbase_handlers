@@ -15,6 +15,7 @@ use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\Entity\WebformSubmission;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Create and edit Dataset nodes from a webform submission
@@ -31,6 +32,54 @@ use Drupal\webform\Entity\WebformSubmission;
  */
 
  class DatasetWebformHandler extends WebformHandlerBase {
+
+  /**
+   * The Webform file storage service
+   *
+   * @var \Drupal\ldbase_handlers\LDbaseWebformFleStorageService
+   */
+  protected $fileStorageService;
+
+  /**
+   * The EntityTypeManager
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The LDbase Unpublish Service.
+   *
+   * @var \Drupal\ldbase_handlers\LDbaseUnpublishService
+   */
+  protected $unpublishService;
+
+  /**
+   * The LDbase embargoes service
+   *
+   * @var \Drupal\ldbase_embargoes\EmbargoesEmbargoesService
+   */
+  protected $embargoesService;
+
+  /**
+   * The LDbase message service.
+   *
+   * @var \Drupal\ldbase_handlers\LDbaseMessageService
+   */
+  protected $ldbaseMessageService;
+
+  /**
+   * {@inheritdoec}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->fileStorageService = $container->get('ldbase.webform_file_storage_service');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->unpublishService = $container->get('ldbase_handlers.unpublish');
+    $instance->embargoesService = $container->get('ldbase_embargoes.embargoes');
+    $instance->ldbaseMessageService = $container->get('ldbase_handlers.message_service');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -129,7 +178,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     if (!empty($submission_array['license'])) {
       $submitted_license = $submission_array['license'];
-      $check_license = \Drupal::entityTypeManager()
+      $check_license = $this->entityTypeManager
           ->getStorage('taxonomy_term')
           ->loadByProperties([
             'vid' => 'licenses',
@@ -171,7 +220,7 @@ use Drupal\webform\Entity\WebformSubmission;
           $notify_dataset_subscribers = true;
 
           $file_id = $files_array[$key]['dataset_version_upload'];
-          $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($file_id, 'dataset');
+          $new_fid = $this->fileStorageService->transferWebformFile($file_id, 'dataset');
           $paragraph_file_id = $new_fid;
 
           if (empty($composite['dataset_version_id'])) {
@@ -245,7 +294,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     if (!$nid) {
       // create node
-      $node = Node::create([
+      $node = $this->entityTypeManager->getStorage('node')->create([
         'type' => 'dataset',
         'status' => $published_flag,
         'title' => $title,
@@ -279,7 +328,7 @@ use Drupal\webform\Entity\WebformSubmission;
       //save the node
       $node->save();
       // get groupId of parent that was passed in - assumes Group Cardinality = 1
-      $parent_node = Node::load($passed_id);
+      $parent_node = $this->entityTypeManager->getStorage('node')->load($passed_id);
       $group_contents = GroupContent::loadByEntity($parent_node);
       foreach ($group_contents as $group_content) {
         $group = $group_content->getGroup();
@@ -290,7 +339,7 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     else {
       // update node
-      $node = Node::load($nid);
+      $node = $this->entityTypeManager->getStorage('node')->load($nid);
       $existing_flag = $node->status->value;
       $status_has_changed = $published_flag != $existing_flag ? true : false;
       $node->set('status', $published_flag);
@@ -325,7 +374,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
       // if unpublished then unpublish children
       if (!$published_flag) {
-        $unpublished_children = \Drupal::service('ldbase_handlers.unpublish')->unpublishChildNodes($nid);
+        $unpublished_children = $this->unpublishService->unpublishChildNodes($nid);
         if ($unpublished_children) {
           $text = count($unpublished_children) > 1 ? 'nodes' : 'node';
           $this->messenger()
@@ -333,7 +382,7 @@ use Drupal\webform\Entity\WebformSubmission;
         }
       }
       else {
-        $has_unpublished_child = \Drupal::service('ldbase_handlers.unpublish')->hasUnpublishedChild($nid);
+        $has_unpublished_child = $this->unpublishService->hasUnpublishedChild($nid);
         if ($status_has_changed && $has_unpublished_child) {
           $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
         }
@@ -351,10 +400,10 @@ use Drupal\webform\Entity\WebformSubmission;
     // create or update embargo
     if ($embargoed) {
       // is this node embargoed? getAllEmbargoesByNids() ?
-      $embargo_id = \Drupal::service('ldbase_embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
+      $embargo_id = $this->embargoesService->getAllEmbargoesByNids([$node->id()]);
       // load by embargo_id or create
       if (empty($embargo_id)) {
-        $embargo = Node::create([
+        $embargo = $this->entityTypeManager->getStorage('node')->create([
           'type' => 'embargo',
           'status' => TRUE, // published
           'title' => 'change_to_uuid',
@@ -366,24 +415,24 @@ use Drupal\webform\Entity\WebformSubmission;
         ]);
         $embargo->set('title', $embargo->uuid->value);
         $embargo->save();
-        \Drupal::messenger()->addMessage("Your embargo has been created.");
+        $this->messenger()->addMessage("Your embargo has been created.");
       }
       else {
-        $embargo = Node::load($embargo_id[0]);
+        $embargo = \Drupal::entityTypeManager()->getStorage('node')->load($embargo_id[0]);
         $embargo->set('field_expiration_type', $embargo_expiration_type);
         $embargo->set('field_expiration_date', $embargo_expiry);
         $embargo->set('field_exempt_users', $embargo_exempt_users);
         $embargo->save();
-        \Drupal::messenger()->addMessage("Your embargo has been updated.");
+        $this->messenger()->addMessage("Your embargo has been updated.");
       }
     }
     else {
       // if no restriction, check for embargoes and delete
-      $embargo_id = \Drupal::service('ldbase_embargoes.embargoes')->getAllEmbargoesByNids([$node->id()]);
+      $embargo_id = $this->embargoesService->getAllEmbargoesByNids([$node->id()]);
       if (!empty($embargo_id)) {
-        $embargo_to_delete = \Drupal::entityTypeManager()->getStorage('node')->load($embargo_id[0]);
+        $embargo_to_delete = $this->entityTypeManager->getStorage('node')->load($embargo_id[0]);
         $embargo_to_delete->delete();
-        \Drupal::messenger()->addMessage("Your embargo has been deleted.");
+        $this->messenger()->addMessage("Your embargo has been deleted.");
         // notify dataset subscribers
         $notify_dataset_subscribers = true;
       }
@@ -393,7 +442,7 @@ use Drupal\webform\Entity\WebformSubmission;
     if ($notify_dataset_subscribers) {
       $subscribers = $node->field_subscribed_users->getValue();
       if (!empty($subscribers)) {
-        \Drupal::service('ldbase_handlers.message_service')->datasetHasBeenUpdated($node);
+        $this->ldbaseMessageService->datasetHasBeenUpdated($node);
       }
     }
 
@@ -404,7 +453,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // if harmonized dataset has changed and is true, send message
     if ($form_state->get('send_harmonized_data_message')) {
-      \Drupal::service('ldbase_handlers.message_service')->harmonizedDatasetMessage($node);
+      $this->ldbaseMessageService->harmonizedDatasetMessage($node);
     }
   }
 
@@ -580,7 +629,7 @@ use Drupal\webform\Entity\WebformSubmission;
    */
   private function getExistingDatasetVersions($nid) {
     $versions = [];
-    $node = Node::load($nid);
+    $node = $this->entityTypeManager->getStorage('node')->load($nid);
     foreach ($node->field_dataset_version as $delta => $file_metadata_paragraph) {
       $p = $file_metadata_paragraph->entity;
       $versions[$delta]['target_id'] = $file_metadata_paragraph->target_id;
@@ -607,7 +656,7 @@ use Drupal\webform\Entity\WebformSubmission;
       $field_data = $submitted_data[$current['field']];
       foreach ($field_data as $idx => $term) {
         // if not a valid id for this taxonomy
-        if (!\Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($term)) {
+        if (!$this->entityTypeManager->getStorage('taxonomy_term')->load($term)) {
           // add term to taxonomy
           $new_term = Term::create([
             'name' => $term,
@@ -621,7 +670,7 @@ use Drupal\webform\Entity\WebformSubmission;
           $field_data[$new_id] = $new_id;
 
           // save message that term was added
-          \Drupal::service('ldbase_handlers.message_service')->newTermAddedMessage($new_term);
+          $this->ldbaseMessageService->newTermAddedMessage($new_term);
         }
       }
       $webform_submission->setElementData($current['field'], $field_data);
