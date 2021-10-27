@@ -11,6 +11,7 @@ use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\Entity\WebformSubmission;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Create and edit Organization nodes from a webform submission
@@ -27,6 +28,30 @@ use Drupal\webform\Entity\WebformSubmission;
  */
 
  class OrganizationWebformHandler extends WebformHandlerBase {
+
+  /**
+   * The Webform file storage service
+   *
+   * @var \Drupal\ldbase_handlers\LDbaseWebformFleStorageService
+   */
+  protected $fileStorageService;
+
+  /**
+   * The EntityTypeManager
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * {@inheritdoec}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->fileStorageService = $container->get('ldbase.webform_file_storage_service');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -48,7 +73,7 @@ use Drupal\webform\Entity\WebformSubmission;
     // Get image upload, save to public files, attach to node.
     $image_fid = $submission_array['image'];
     if (!empty($image_fid)) {
-      $new_fid = \Drupal::service('ldbase.webform_file_storage_service')->transferWebformFile($image_fid, 'organization');
+      $new_fid = $this->fileStorageService->transferWebformFile($image_fid, 'organization');
       $field_thumbnail = [
         'target_id' => $new_fid,
         'alt' => 'Thumbnail for ' . $title,
@@ -61,7 +86,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     if (!$nid) {
       // create node
-      $node = Node::create([
+      $node = $this->entityTypeManager->getStorage('node')->create([
         'type' => 'organization',
         'status' => TRUE, // published
         'title' => $title,
@@ -74,7 +99,7 @@ use Drupal\webform\Entity\WebformSubmission;
     }
     else {
       // update node
-      $node = Node::load($nid);
+      $node = $this->entityTypeManager->getStorage('node')->load($nid);
       $node->set('title', $title);
       $node->set('body', $body);
       $node->set('field_website', $field_website);
