@@ -65,7 +65,7 @@ class EntityAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMa
       // Get an array of matching entities.
       $match_operator = !empty($selection_settings['match_operator']) ? $selection_settings['match_operator'] : 'CONTAINS';
       $entity_labels = $handler->getReferenceableEntities($string, $match_operator, 10);
-
+      $email = '';
       // Loop through the entities and convert them into autocomplete output.
       foreach ($entity_labels as $values) {
         foreach ($values as $entity_id => $label) {
