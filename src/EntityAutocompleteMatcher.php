@@ -54,10 +54,9 @@ class EntityAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMa
 
     $matches = [];
 
-    $options = [
-      'target_type'      => $target_type,
-      'handler'          => $selection_handler,
-      'handler_settings' => $selection_settings,
+    $options = $selection_settings + [
+      'target_type' => $target_type,
+      'handler' => $selection_handler,
     ];
 
     $handler = $this->selectionManager->getInstance($options);
