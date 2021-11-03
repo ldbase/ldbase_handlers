@@ -31,7 +31,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $current_user = \Drupal::currentUser()->id();
     // get values for message arguments in template
     $taxonomy_term = $term->getName();
-    $vocabulary = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->load($term->getVocabularyId())->label();
+    $vocabulary = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->load($term->bundle())->label();
 
     $admin_user_ids = $this->getLdbaseAdministratorUserIds();
     // send a message to each admin
