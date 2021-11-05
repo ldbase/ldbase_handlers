@@ -103,7 +103,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       }
     }
     else {
-      $markup = "Link Requires Node Id.";
+      if ($node_type == 'tombstone') {
+        $markup = "";
+      }
+      else {
+        $markup = "Link Requires Node Id.";
+      }
     }
 
     $block = [
