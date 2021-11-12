@@ -38,6 +38,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
     $submission_array = $webform_submission->getData();
     $nid = $submission_array['node_id'];
     $title = $submission_array['title'];
+    $group_title = $submission_array['title'];
     $body = [
       'value' => $submission_array['description'],
       'format' => 'basic_html',
@@ -166,7 +167,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       //save the node
       $node->save();
       // Create new project_group from Project
-      $new_group_name = $title;
+      $new_group_name = $group_title;
       $new_group = Group::create(['label' => $new_group_name, 'type' => 'project_group']);
       $new_group->save();
       // Add project to new group
