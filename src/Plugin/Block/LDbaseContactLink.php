@@ -79,9 +79,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $show_link = true;
       // check if target person has account
       if ($node_type == 'person') {
+        $text = 'Contact this person';
         if (empty($node->field_drupal_account_id->target_id)) {
           $show_link = false;
         }
+      }
+      else {
+        $text = 'Contact members of this project';
       }
 
       if ($node->field_do_not_contact->value) {
@@ -90,7 +94,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
       if ($show_link) {
         $route = 'ldbase_handlers.contact_' . $node_type;
-        $text = 'Contact ' . ucfirst($node_type);
+
 
         $url = Url::fromRoute($route, array('node' => $uuid));
         if ($url->access()) {
