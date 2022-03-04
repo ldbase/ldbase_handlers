@@ -99,6 +99,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
         $url = Url::fromRoute($route, array('node' => $uuid));
         if ($url->access()) {
           $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
+          $class[] = 'button';
+          $link['#attributes'] = ['class' => $class];
           $markup .= render($link) . ' ';
         }
       }
