@@ -50,9 +50,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   /**
    * The LDbase Unpublish Service.
    *
-   * @var \Drupal\ldbase_handlers\LDbaseUnpublishService
+   * @var \Drupal\ldbase_handlers\PublishStatusService
    */
-  protected $unpublishService;
+  protected $publishStatusService;
 
   /**
    * The LDbase embargoes service
@@ -75,7 +75,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->fileStorageService = $container->get('ldbase.webform_file_storage_service');
     $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->unpublishService = $container->get('ldbase_handlers.unpublish');
+    $instance->publishStatusService = $container->get('ldbase_handlers.publish_status_service');
     $instance->embargoesService = $container->get('ldbase_embargoes.embargoes');
     $instance->ldbaseMessageService = $container->get('ldbase_handlers.message_service');
     return $instance;
@@ -235,7 +235,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
             'field_file_format' => $composite['dataset_version_format'],
             'field_file_upload' => $paragraph_file_id,
             'field_file_version_id' => $dataset_version_id,
-            'field_file_version_label' => $composite['dataset_version_label'],
+            //'field_file_version_label' => $composite['dataset_version_label'],
             'field_file_version_description' => $composite['dataset_version_description'],
           ]);
           $paragraph_data->save();
@@ -248,7 +248,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
         else { // file not changed
           $paragraph_data = Paragraph::load($composite['dataset_version_target_id']);
           $paragraph_data->set('field_file_format', $composite['dataset_version_format']);
-          $paragraph_data->set('field_file_version_label', $composite['dataset_version_label']);
+          //$paragraph_data->set('field_file_version_label', $composite['dataset_version_label']);
           $paragraph_data->set('field_file_version_description', $composite['dataset_version_description']);
           $paragraph_data->save();
         }
@@ -374,7 +374,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
       // if unpublished then unpublish children
       if (!$published_flag) {
-        $unpublished_children = $this->unpublishService->unpublishChildNodes($nid);
+        $unpublished_children = $this->publishStatusService->unpublishChildNodes($nid);
         if ($unpublished_children) {
           $text = count($unpublished_children) > 1 ? 'nodes' : 'node';
           $this->messenger()
@@ -382,7 +382,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
         }
       }
       else {
-        $has_unpublished_child = $this->unpublishService->hasUnpublishedChild($nid);
+        $has_unpublished_child = $this->publishStatusService->hasUnpublishedChild($nid);
         if ($status_has_changed && $has_unpublished_child) {
           $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
         }

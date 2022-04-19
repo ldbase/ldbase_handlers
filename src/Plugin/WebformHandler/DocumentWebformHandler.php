@@ -167,7 +167,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
       // if unpublished then unpublish children
       if (!$published_flag) {
-        $unpublished_children = \Drupal::service('ldbase_handlers.unpublish')->unpublishChildNodes($nid);
+        $unpublished_children = \Drupal::service('ldbase_handlers.publish_status_service')->unpublishChildNodes($nid);
         if ($unpublished_children) {
           $text = count($unpublished_children) > 1 ? 'nodes' : 'node';
           $this->messenger()
@@ -175,7 +175,7 @@ use Drupal\webform\Entity\WebformSubmission;
         }
       }
       else {
-        $has_unpublished_child = \Drupal::service('ldbase_handlers.unpublish')->hasUnpublishedChild($nid);
+        $has_unpublished_child = \Drupal::service('ldbase_handlers.publish_status_service')->hasUnpublishedChild($nid);
         if ($status_has_changed && $has_unpublished_child) {
           $this->messenger()->addStatus($this->t('Remember to publish the other items in your project hierarchy so the metadata will be shared.'));
         }

@@ -319,6 +319,17 @@ ldbase_handlers.edit_project:
       node:
         type: ldbase_uuid
 
+ldbase_handlers.publish_all_confirmation:
+  path: '/projects/{node}/publish-all-items'
+  defaults:
+    _form: '\Drupal\ldbase_handlers\Form\ConfirmPublishAllForm'
+    _title: "Publish everything in this Project?"
+  requirements:
+    _group_update_node_access_check: 'TRUE'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
 
 # confirm DOI creation
 ldbase_handlers.confirm_doi_creation:

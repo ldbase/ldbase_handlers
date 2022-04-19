@@ -41,7 +41,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     $paragraph = Paragraph::load($version['dataset_version_target_id']);
     $paragraph->set('field_file_format', $version['dataset_version_format']);
-    $paragraph->set('field_file_version_label', $version['dataset_version_label']);
+    //$paragraph->set('field_file_version_label', $version['dataset_version_label']);
     $paragraph->set('field_file_version_description', $version['dataset_version_description']);
     $paragraph->save();
 

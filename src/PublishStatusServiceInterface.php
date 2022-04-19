@@ -2,13 +2,19 @@
 
 namespace Drupal\ldbase_handlers;
 
-interface LDbaseUnpublishServiceInterface {
+interface PublishStatusServiceInterface {
 
   /**
    * Unpublish child nodes
    *
    */
   public function unpublishChildNodes($nid);
+
+  /**
+   * Unpublish child nodes
+   *
+   */
+  public function publishChildNodes($nid);
 
   /**
    * get  nodes

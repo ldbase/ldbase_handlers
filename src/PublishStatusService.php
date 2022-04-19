@@ -5,17 +5,20 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\Entity\Node;
 
 /**
- * Class LDbaseUnpublishService.
+ * Class PublishStatusService.
  */
 
- class LDbaseUnpublishService implements LDbaseUnpublishServiceInterface {
+ class PublishStatusService implements PublishStatusServiceInterface {
 
-    /**
-     * An entity type manager interface.
-     *
-     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-     */
-    protected $entityManager;
+  const UNPUBLISHED_PATTERN = "/\(unpublished\)$/";
+  const UNPUBLISHED_TEXT = " (unpublished)";
+
+  /**
+   * An entity type manager interface.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityManager;
 
   /**
    * Constructs a new LDbaseUnpublishService object.
@@ -38,25 +41,64 @@ use Drupal\node\Entity\Node;
    *
    */
   public function unpublishChildNodes($nid) {
+    $unpublished_nodes = $this->changePublishStatus($nid, false);
+    return $unpublished_nodes;
+  }
+
+  /**
+   * Publish child nodes
+   *
+   * @param int $nid
+   *  parent nid
+   *
+   * @return int[]
+   *  array of node ids that were unpublished
+   *
+   */
+  public function publishChildNodes($nid) {
+    $published_nodes = $this->changePublishStatus($nid, true);
+    return $published_nodes;
+  }
+
+  /**
+   * Changes publish status of node and children
+   *
+   * @param int $nid
+   *  parent nid
+   *
+   * @param bool $publish
+   *  publish status to which items are being changed
+   *
+   * @return int[]
+   *  array of node ids that were changed
+   *
+   */
+  private function changePublishStatus($nid, $publish) {
     $node_storage = $this->entityManager->getStorage('node');
-    $nids_to_uunpublish = $this->getChildNids($nid);
-    $unpublished_nodes = [];
-    $unpublished_pattern = '/\(unpublished\)$/';
-    foreach ($nids_to_uunpublish as $nid) {
+    $nids_to_change = $this->getChildNids($nid);
+    $changed_nids = [];
+    foreach ($nids_to_change as $nid) {
       $node = $node_storage->load($nid);
       $title = $node->getTitle();
-      // add (Unpublished) to title if not there
-      if (preg_match($unpublished_pattern, trim($title)) === 0) {
-        $title .= ' (unpublished)';
-        $node->set('title', $title);
+      if (!$publish) {
+        // add (Unpublished) to title if not there
+        if (preg_match(self::UNPUBLISHED_PATTERN, trim($title)) === 0) {
+          $title .= self::UNPUBLISHED_TEXT;
+          $node->set('title', $title);
+        }
       }
-      if ($node->status->value == 1) {
-        $node->set('status', 0);
-        array_push($unpublished_nodes, $nid);
+      else {
+        $published_title = preg_replace(self::UNPUBLISHED_PATTERN, '', trim($title));
+        $node->set('title', $published_title);
       }
+      if ($node->status->value != $publish) {
+        array_push($changed_nids, $nid);
+      }
+      $node->set('status', $publish);
+
       $node->save();
     }
-    return $unpublished_nodes;
+    return $changed_nids;
   }
 
   /**

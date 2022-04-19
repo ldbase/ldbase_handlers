@@ -175,7 +175,7 @@ class DatasetController extends ControllerBase {
       $file[$delta]['dataset_version_format'] = $p->field_file_format->target_id;
       $file[$delta]['dataset_version_upload'] = $p->field_file_upload->entity->id();
       $file[$delta]['dataset_version_id'] = $p->field_file_version_id->value;
-      $file[$delta]['dataset_version_label'] = $p->field_file_version_label->value;
+      //$file[$delta]['dataset_version_label'] = $p->field_file_version_label->value;
       $file[$delta]['dataset_version_description'] = $p->field_file_version_description->value;
       $file[$delta]['dataset_version_target_id'] = $file_metadata_paragraph->target_id;
       $file[$delta]['dataset_version_target_revision_id'] = $file_metadata_paragraph->target_revision_id;
@@ -278,7 +278,7 @@ class DatasetController extends ControllerBase {
     $dataset_version[0]['dataset_version_format'] = $paragraph->field_file_format->target_id;
     $dataset_version[0]['dataset_version_upload'] = $paragraph->field_file_upload->entity->id();
     $dataset_version[0]['dataset_version_id'] = $paragraph->field_file_version_id->value;
-    $dataset_version[0]['dataset_version_label'] = $paragraph->field_file_version_label->value;
+    //$dataset_version[0]['dataset_version_label'] = $paragraph->field_file_version_label->value;
     $dataset_version[0]['dataset_version_description'] = $paragraph->field_file_version_description->value;
     $dataset_version[0]['dataset_version_target_id'] = $paragraph->id->value;
     $dataset_version[0]['dataset_version_target_revision_id'] = $paragraph->revision_id->value;
