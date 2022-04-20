@@ -69,7 +69,7 @@ class ConfirmPublishAllForm extends ConfirmFormBase {
     $message = '<p>' . t('If you confirm, all the metadata and data in this project hierarchy will be available to the public.') . '</p>';
     $message .= '<p>' . t('Any embargoed files will still be embargoed.') . '</p>';
 
-    $description = "<div class='publish-all--confirmation'>" . $message . '</div>';
+    $description = "<div class='publish-all--confirmation'>" . $message . "</div>";
     return Markup::create($description);
   }
 
@@ -87,7 +87,7 @@ class ConfirmPublishAllForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // make sure this is a project
     if ($this->node->bundle() == 'project') {
-      $changed_nodes = $this->publishStatusService->publishChildNodes($this->node->id());
+      $changed_nodes = $this->publishStatusService->publishNodeAndChildren($this->node->id());
       $message = t("You published %count items.", ['%count' => count($changed_nodes)]);
     }
     else {

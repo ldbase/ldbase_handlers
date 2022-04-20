@@ -398,6 +398,20 @@ function ldbase_handlers_preprocess_menu__document_tasks(&$variables) {
 }
 
 /**
+ * Implements HOOK_preprocess_menu__MENU_NAME().
+ * Disables Publish all link if there are no items to publish in Project Hierarchy.
+ */
+function ldbase_handlers_preprocess_menu__project_tasks(&$variables) {
+  $node = \Drupal::RouteMatch()->getParameter('node');
+  $uuid = $node->uuid();
+  $status = $node->status->value;
+  $has_unpublished_child = \Drupal::service('ldbase_handlers.publish_status_service')->hasUnpublishedChild($node->id());
+  if ($status && !$has_unpublished_child) {
+    unset($variables['items']['ldbase_handlers.publish_all_confirmation']);
+  }
+}
+
+/**
  * Implements hook_ENTITY_TYPE_presave().
  * Saves message to user when added to a project group
  */

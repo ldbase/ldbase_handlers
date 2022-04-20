@@ -41,8 +41,25 @@ use Drupal\node\Entity\Node;
    *
    */
   public function unpublishChildNodes($nid) {
-    $unpublished_nodes = $this->changePublishStatus($nid, false);
+    $nids_to_change = $this->getChildNids($nid);
+    $unpublished_nodes = $this->changePublishStatus($nids_to_change, false);
     return $unpublished_nodes;
+  }
+
+  /**
+   * Publish this and all children
+   *
+   * @param int $nid
+   *  parent nid
+   *
+   * @return int[]
+   *  array of node ids that were unpublished
+   */
+  public function publishNodeAndChildren($nid) {
+    $nids_to_change = $this->getChildNids($nid);
+    $nids_to_change[] = $nid;
+    $published_nodes = $this->changePublishStatus($nids_to_change, true);
+    return $published_nodes;
   }
 
   /**
@@ -56,15 +73,15 @@ use Drupal\node\Entity\Node;
    *
    */
   public function publishChildNodes($nid) {
-    $published_nodes = $this->changePublishStatus($nid, true);
+    $nids_to_change = $this->getChildNids($nid);
+    $published_nodes = $this->changePublishStatus($nids_to_change, true);
     return $published_nodes;
   }
 
   /**
    * Changes publish status of node and children
    *
-   * @param int $nid
-   *  parent nid
+   * @param int[] $nids_to_change
    *
    * @param bool $publish
    *  publish status to which items are being changed
@@ -73,9 +90,8 @@ use Drupal\node\Entity\Node;
    *  array of node ids that were changed
    *
    */
-  private function changePublishStatus($nid, $publish) {
+  private function changePublishStatus($nids_to_change, $publish) {
     $node_storage = $this->entityManager->getStorage('node');
-    $nids_to_change = $this->getChildNids($nid);
     $changed_nids = [];
     foreach ($nids_to_change as $nid) {
       $node = $node_storage->load($nid);
@@ -98,6 +114,7 @@ use Drupal\node\Entity\Node;
 
       $node->save();
     }
+
     return $changed_nids;
   }
 

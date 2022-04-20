@@ -43,11 +43,13 @@ ldbase_handlers.manage_project_users:
   route_name: view.group_members.ldbase_project
   weight: 4
 
-ldbase_handlers.confirm_project_deletion:
+#
+
+ldbase_handlers.publish_all_confirmation:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
-  title: 'Delete this Project'
-  route_name: ldbase_handlers.confirm_project_deletion
+  title: 'Publish All'
+  route_name: ldbase_handlers.publish_all_confirmation
   weight: 5
 
 # Mini Project Tasks menu items
@@ -71,6 +73,13 @@ ldbase_handlers.add_code_to_project_2:
   title: 'Add Code'
   route_name: ldbase_handlers.add_code_to_project
   weight: 2
+
+ldbase_handlers.confirm_project_deletion_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-project-tasks
+  title: 'Delete this Project'
+  route_name: ldbase_handlers.confirm_project_deletion
+  weight: 5
 
 # Dataset Tasks menu items
 ldbase_handlers.edit_dataset:
