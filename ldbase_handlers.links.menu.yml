@@ -43,8 +43,6 @@ ldbase_handlers.manage_project_users:
   route_name: view.group_members.ldbase_project
   weight: 4
 
-#
-
 ldbase_handlers.publish_all_confirmation:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
   menu_name: project-tasks
@@ -125,13 +123,6 @@ ldbase_handlers.add_document_to_dataset:
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_dataset
 
-ldbase_handlers.confirm_dataset_deletion:
-  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: dataset-tasks
-  title: 'Delete this Dataset'
-  route_name: ldbase_handlers.confirm_dataset_deletion
-  weight: 2
-
 # Mini Dataset Tasks menu items
 ldbase_handlers.add_codebook_to_dataset_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
@@ -160,6 +151,13 @@ ldbase_handlers.add_dataset_to_dataset_2:
   title: 'Add Dataset'
   route_name: ldbase_handlers.add_dataset_to_dataset
   weight: 2
+
+ldbase_handlers.confirm_dataset_deletion_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-dataset-tasks
+  title: 'Delete this Dataset'
+  route_name: ldbase_handlers.confirm_dataset_deletion
+  weight: 4
 
 # Code Tasks items
 ldbase_handlers.edit_code:
@@ -193,12 +191,24 @@ ldbase_handlers.add_document_to_code:
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_code
 
-ldbase_handlers.confirm_code_deletion:
+# Mini Code Tasks Menu
+ldbase_handlers.add_code_to_code_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: code-tasks
+  menu_name: second-code-tasks
+  title: 'Add Code'
+  route_name: ldbase_handlers.add_code_to_code
+
+ldbase_handlers.add_document_to_code_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-code-tasks
+  title: 'Add Document'
+  route_name: ldbase_handlers.add_document_to_code
+
+ldbase_handlers.confirm_code_deletion_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-code-tasks
   title: 'Delete this Code'
   route_name: ldbase_handlers.confirm_code_deletion
-  weight: 2
 
 # Document Tasks menu items
 ldbase_handlers.edit_document:
@@ -215,9 +225,24 @@ ldbase_handlers.add_document_to_document:
   route_name: ldbase_handlers.add_document_to_document
   weight: 1
 
-ldbase_handlers.confirm_document_deletion:
+# Mini Document Tasks
+ldbase_handlers.edit_document_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
-  menu_name: document-tasks
+  menu_name: second-document-tasks
+  title: 'Edit this Document'
+  route_name: ldbase_handlers.edit_document
+  weight: 0
+
+ldbase_handlers.add_document_to_document_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-document-tasks
+  title: 'Add Document to this Document'
+  route_name: ldbase_handlers.add_document_to_document
+  weight: 1
+
+ldbase_handlers.confirm_document_deletion_2:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: second-document-tasks
   title: 'Delete this Document'
   route_name: ldbase_handlers.confirm_document_deletion
   weight: 2
