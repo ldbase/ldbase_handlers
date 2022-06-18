@@ -48,9 +48,11 @@ use Drupal\Core\Url;
 
         $url = Url::fromRoute($route, array('node' => $uuid, 'user' => $user_id, 'change' => $change));
         if ($url->access()) {
+          $markup = '<span class="subscription-icon ' . $change . '-subscription-icon">';
           $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
           $link['#attributes'] = ['class' => $class];
           $markup .= render($link) . ' ';
+          $markup .= '</span>';
         }
       }
     }

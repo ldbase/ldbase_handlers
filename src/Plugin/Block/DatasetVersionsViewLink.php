@@ -35,7 +35,7 @@ class DatasetVersionsViewLink extends BlockBase {
       if ($node->get('field_dataset_upload_or_external')->value === 'upload' && count($node->field_dataset_version) > 1) {
         $route = 'view.dataset_versions.all_versions';
         $text = 'View All Dataset Versions';
-        $class[] = 'ldbase-button datasets-view-button';
+        $class[] = 'datasets-view-button';
 
         $url = Url::fromRoute($route, array('node' => $nid, 'uuid' => $uuid));
 
