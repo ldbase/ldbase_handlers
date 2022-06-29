@@ -71,7 +71,7 @@ class DownloadAllFilesLink extends BlockBase {
 
           $url = Url::fromRoute($route, array('node' => $uuid));
           if ($url->access()) {
-             $markup = '<span class="download-all-files download-all-files-icon">';
+            $markup = '<span class="download-all-files download-all-files-icon">';
             $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
             $link['#attributes'] = ['class' => $class];
             $markup .= render($link) . ' ';

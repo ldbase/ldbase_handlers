@@ -98,10 +98,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
         $url = Url::fromRoute($route, array('node' => $uuid));
         if ($url->access()) {
+          $markup = '<div class="ldbase-contact-link-icon">';
           $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
-          $class[] = 'button';
+          $class[] = 'ldbase-contact-link';
           $link['#attributes'] = ['class' => $class];
           $markup .= render($link) . ' ';
+          $markup .= '</div>';
         }
       }
       else {
