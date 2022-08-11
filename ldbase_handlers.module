@@ -390,10 +390,13 @@ function custom_password_confirmation_labels($form, $form_state) {
  * Changes Document edit and delete tasks to identify Codebooks (type of document)
  */
 function ldbase_handlers_preprocess_menu__document_tasks(&$variables) {
-  $uuid = \Drupal::RouteMatch()->getParameter('node')->uuid();
-  $doc_type = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($uuid) ? 'Codebook' : 'Document';
-  $variables['items']['ldbase_handlers.edit_document']['title'] = "Edit this " . $doc_type;
-  $variables['items']['ldbase_handlers.add_document_to_document']['title'] = "Add Document to this " . $doc_type;
+  $node = \Drupal::RouteMatch()->getParameter('node');
+  if (!empty($node)) {
+    $uuid = $node->uuid();
+    $doc_type = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($uuid) ? 'Codebook' : 'Document';
+    $variables['items']['ldbase_handlers.edit_document']['title'] = "Edit this " . $doc_type;
+    $variables['items']['ldbase_handlers.add_document_to_document']['title'] = "Add Document to this " . $doc_type;
+  }
 }
 
 /**
@@ -401,11 +404,14 @@ function ldbase_handlers_preprocess_menu__document_tasks(&$variables) {
  * Changes Document edit and delete tasks to identify Codebooks (type of document)
  */
 function ldbase_handlers_preprocess_menu__second_document_tasks(&$variables) {
-  $uuid = \Drupal::RouteMatch()->getParameter('node')->uuid();
-  $doc_type = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($uuid) ? 'Codebook' : 'Document';
-  $variables['items']['ldbase_handlers.edit_document_2']['title'] = "Edit this " . $doc_type;
-  $variables['items']['ldbase_handlers.add_document_to_document_2']['title'] = "Add Document to this " . $doc_type;
-  $variables['items']['ldbase_handlers.confirm_document_deletion_2']['title'] = "Delete this " . $doc_type;
+  $node = \Drupal::RouteMatch()->getParameter('node');
+  if (!empty($node)) {
+    $uuid = $node->uuid();
+    $doc_type = \Drupal::service('ldbase.object_service')->isLdbaseCodebook($uuid) ? 'Codebook' : 'Document';
+    $variables['items']['ldbase_handlers.edit_document_2']['title'] = "Edit this " . $doc_type;
+    $variables['items']['ldbase_handlers.add_document_to_document_2']['title'] = "Add Document to this " . $doc_type;
+    $variables['items']['ldbase_handlers.confirm_document_deletion_2']['title'] = "Delete this " . $doc_type;
+  }
 }
 
 /**
@@ -421,6 +427,29 @@ function ldbase_handlers_preprocess_menu__project_tasks(&$variables) {
     unset($variables['items']['ldbase_handlers.publish_all_confirmation']);
   }
 }
+
+/*function ldbase_handlers_preprocess_menu__ldbase_tools(&$variables) {
+  $node = \Drupal::RouteMatch()->getParameter('node');
+  if (!empty($node)) {
+    // dataset page
+    if ($node->bundle() != 'dataset') {
+      unset($variables['items']['ldbase_handlers.dataset_subscription_link']);
+    }
+    else {
+      $subscribed = false;
+      // check if user has already subscribed
+      $uid = \Drupal::currentUser()->id();
+      $field_subscribed_users = $node->field_subscribed_users->getValue();
+      foreach ($field_subscribed_users as $value) {
+        if ($value['target_id'] == $uid) {
+          $subscribed = true;
+        }
+      }
+      $change = $subscribed ? 'stop' : 'start';
+      $variables['items']['ldbase_handlers.dataset_subscription_link']['attributes']['class'] = $change . '-subscription-icon';
+    }
+  }
+}*/
 
 /**
  * Implements hook_ENTITY_TYPE_presave().

@@ -246,3 +246,21 @@ ldbase_handlers.confirm_document_deletion_2:
   title: 'Delete this Document'
   route_name: ldbase_handlers.confirm_document_deletion
   weight: 2
+
+ldbase_handlers.download_project_files_link:
+  class: Drupal\ldbase_handlers\Plugin\Menu\DownloadAllFilesLink
+  menu_name: ldbase-tools
+  title: 'Download All Project Files'
+  Weight: 1
+
+ldbase_handlers.dataset_subscription_link:
+  class: Drupal\ldbase_handlers\Plugin\Menu\DatasetSubscriptionLink
+  menu_name: ldbase-tools
+  title: 'Default Subscription Title'
+  weight: 2
+
+ldbase_handlers.contact_project_link:
+  class: Drupal\ldbase_handlers\Plugin\Menu\ContactProjectLink
+  menu_name: ldbase-tools
+  title: 'Contact Project Members'
+  weight: 3
