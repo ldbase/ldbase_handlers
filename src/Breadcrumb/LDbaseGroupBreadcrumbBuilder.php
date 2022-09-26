@@ -77,8 +77,11 @@ class LDbaseGroupBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     // add link back to Members view
     $url_bits = explode('/', $url);
-    $group_bit = $url_bits[3];
+    if (!empty($url_bits[3])) {
+      $group_bit = $url_bits[3];
     $breadcrumb->addLink(Link::createFromRoute('Members', 'view.group_members.ldbase_project', ['node' => $ldbase_object_uuid, 'group' => $group_bit]));
+    }
+
 
     return $breadcrumb;
   }
