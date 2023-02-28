@@ -20,7 +20,7 @@ class HandlersBatchService {
    * @param object $context
    *  Context for operations.
    */
-  public function unpublishedThirtyNotification($id, $nid, $operation_details, &$context) {
+  public static function unpublishedThirtyNotification($id, $nid, $operation_details, &$context) {
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     $message_service = \Drupal::service('ldbase_handlers.message_service');
     $node = $node_storage->load($nid);
