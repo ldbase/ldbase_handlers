@@ -403,14 +403,16 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
    * Get Group UserIds given a node and optional array of group role machine names
    */
   public function getGroupUserIdsByRoles(Node $node, array $groupRoles = NULL) {
+    $ids = [];
     // get node's group
     $group_contents = GroupContent::loadByEntity($node);
-    $node_group = array_pop($group_contents)->getGroup();
+    if (!empty($group_contents)) {
+      $node_group = array_pop($group_contents)->getGroup();
 
-    $group_members = $node_group->getMembers($groupRoles);
-    $ids = [];
-    foreach ($group_members as $member) {
-      array_push($ids, $member->getUser()->uid->value);
+      $group_members = $node_group->getMembers($groupRoles);
+      foreach ($group_members as $member) {
+        array_push($ids, $member->getUser()->uid->value);
+      }
     }
 
     return $ids;
