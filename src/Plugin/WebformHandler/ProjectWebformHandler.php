@@ -177,7 +177,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
     else {
       //update node
       $node = Node::load($nid);
-      $existing_flag = $node->status->value;
+      $existing_flag = $node->get('status')->value;
       $status_has_changed = $published_flag != $existing_flag ? true : false;
       $node->set('status', $published_flag);
       $node->set('title', $title);
@@ -230,9 +230,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
     // check for required project type
     $this->validateRequiredProjectType($form_state);
     // add any new taxonomy terms from Select2 fields
-    if (!$form_state->hasAnyErrors()) {
-      $this->validateSelect2Fields($form, $form_state, $webform_submission);
-    }
+    $this->validateSelect2Fields($form, $form_state, $webform_submission);
   }
 
   /**
@@ -288,6 +286,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
           // save and get term id
           $new_term->save();
           $new_id = $new_term->id();
+          $form['elements'][$current['field']]['#options'][$new_id] = $term ;
           unset($field_data[$idx]);
           $field_data[$new_id] = $new_id;
 
