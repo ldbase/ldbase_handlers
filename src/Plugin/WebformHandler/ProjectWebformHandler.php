@@ -273,21 +273,29 @@ class ProjectWebformHandler extends WebformHandlerBase {
       ["field" => "curricula", "vid" => "curricula"],
       ["field" => "time_method", "vid" => "time_methods"],
     ];
-
+    $entity_type_manager = \Drupal::entityTypeManager();
     foreach ($fields_vids as $current) {
       $field_data = $submitted_data[$current['field']];
       foreach ($field_data as $idx => $term) {
         // if not a valid id for this taxonomy
-        if (!\Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($term)) {
-          // add term to taxonomy
-          $new_term = Term::create([
-            'name' => $term,
-            'vid' => $current['vid'],
-            'field_needs_review' => ['value' => 1,]
-          ]);
-          // save and get term id
-          $new_term->save();
-          $new_id = $new_term->id();
+        if (!$entity_type_manager->getStorage('taxonomy_term')->load($term)) {
+          if (!$entity_type_manager->getStorage('taxonomy_term')->loadByProperties(['name' => $term, 'vid' => $current['vid']])) {
+            // add term to taxonomy
+            $new_term = Term::create([
+              'name' => $term,
+              'vid' => $current['vid'],
+              'field_needs_review' => ['value' => 1,]
+            ]);
+            // save and get term id
+            $new_term->save();
+            $new_id = $new_term->id();
+          }
+          else {
+            $new_term_array = $entity_type_manager->getStorage('taxonomy_term')->loadByProperties(['name' => $term, 'vid' => $current['vid']]);
+            $new_term = array_pop($new_term_array);
+            $new_id = $new_term->id();
+          }
+
           unset($field_data[$idx]);
           $field_data[$new_id] = $new_id;
 

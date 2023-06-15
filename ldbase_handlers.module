@@ -56,7 +56,7 @@ function ldbase_handlers_webform_element_alter(array &$element, FormStateInterfa
     if (in_array($element['#webform_id'], $select2_fields)) {
       $use_validation = array('validateMultipleOptions');
       unset($element['#element_validate'][0]);
-      array_push($element['#element_validate'], $use_validation);
+      $element['#element_validate'][] = $use_validation;
       $element['#validated']  = TRUE;
     }
   }

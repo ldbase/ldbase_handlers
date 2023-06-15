@@ -657,20 +657,28 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       foreach ($field_data as $idx => $term) {
         // if not a valid id for this taxonomy
         if (!$this->entityTypeManager->getStorage('taxonomy_term')->load($term)) {
-          // add term to taxonomy
-          $new_term = Term::create([
-            'name' => $term,
-            'vid' => $current['vid'],
-            'field_needs_review' => ['value' => 1,]
-          ]);
-          // save and get term id
-          $new_term->save();
-          $new_id = $new_term->id();
+          if (!$this->entityTypeManager->getStorage('taxonomy_term')->loadByProperties(['name' => $term, 'vid' => $current['vid']])) {
+            // add term to taxonomy
+            $new_term = Term::create([
+              'name' => $term,
+              'vid' => $current['vid'],
+              'field_needs_review' => ['value' => 1,]
+            ]);
+            // save and get term id
+            $new_term->save();
+            $new_id = $new_term->id();
+          }
+          else {
+            $new_term_array = $this->entityTypeManager->getStorage('taxonomy_term')->loadByProperties(['name' => $term, 'vid' => $current['vid']]);
+            $new_term = array_pop($new_term_array);
+            $new_id = $new_term->id();
+          }
+
           unset($field_data[$idx]);
           $field_data[$new_id] = $new_id;
 
           // save message that term was added
-          $this->ldbaseMessageService->newTermAddedMessage($new_term);
+          \Drupal::service('ldbase_handlers.message_service')->newTermAddedMessage($new_term);
         }
       }
       $webform_submission->setElementData($current['field'], $field_data);
