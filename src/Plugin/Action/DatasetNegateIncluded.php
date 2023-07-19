@@ -31,7 +31,7 @@ class DatasetNegateIncluded extends ActionBase {
     /** @var \Drupal\node\NodeInterface $node */
     // TODO: Implement execute() method.
     if ($node && $node->hasField('field_added_to_integrated_data')) {
-      $node->set('field_added_to_integrated_data','no');
+      $node->set('field_added_to_integrated_data',0);
       $node->save();
     }
   }

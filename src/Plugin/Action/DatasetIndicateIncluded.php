@@ -31,7 +31,7 @@ class DatasetIndicateIncluded extends ActionBase {
     /** @var \Drupal\node\NodeInterface $node */
     // TODO: Implement execute() method.
     if ($node && $node->hasField('field_added_to_integrated_data')) {
-      $node->set('field_added_to_integrated_data','yes');
+      $node->set('field_added_to_integrated_data',1);
       $node->save();
     }
   }
