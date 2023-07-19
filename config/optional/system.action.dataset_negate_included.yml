@@ -1,0 +1,11 @@
+# File system.action.dataset_negate_included.yml
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: dataset_negate_included
+label: 'Not Included in Integrated Dataset'
+type: node
+plugin: dataset_negate_included
+configuration: {  }
