@@ -10,7 +10,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @Action(
  *   id = "dataset_indicate_included",
- *   label = @Translation("Set Included in Integrated Dataset."),
+ *   label = @Translation("Indicate Included in Integrated Dataset."),
  *   type = "node"
  * )
  */
