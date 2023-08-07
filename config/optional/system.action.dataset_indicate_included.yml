@@ -1,0 +1,11 @@
+# File system.action.dataset_indicate_included.yml
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: dataset_indicate_included
+label: 'Included in Integrated Dataset'
+type: node
+plugin: dataset_indicate_included
+configuration: {  }
