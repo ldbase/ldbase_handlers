@@ -2,6 +2,7 @@
 
 namespace Drupal\ldbase_handlers;
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityTypeManager;
@@ -106,10 +107,10 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $ldbase_object = ucfirst($node->bundle());
     $ldbase_object_title = $node->getTitle();
     $link_to_object_route = 'entity.node.canonical';
-    $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $node->id()], ['absolute' => TRUE]);
+    $link_to_object_url = Url::fromRoute($link_to_object_route, ['node' => $node->id()]);
+    $destination_param = UrlHelper::buildQuery(['destination' => $link_to_object_url->toString()]);
     $link_to_object_text = $ldbase_object . ': ' . $ldbase_object_title;
-    //$link_to_object = Link::fromTextAndUrl($link_to_object_text, $link_to_object_url)->toString();
-    $link_to_object = $link_to_object_url->setAbsolute()->toString();
+    $link_to_object = $link_to_object_url->setAbsolute()->toString() . '?' . $destination_param;
 
     $group_admins = $this->getGroupUserIdsByRoles($node, ['project_group-administrator']);
     // create a new message from template
@@ -144,9 +145,10 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $group_id = $group_content->getGroup()->id();
     $link_route = 'view.existing_records_requests.page_1';
     $link_url = Url::fromRoute($link_route, ['group' => $group_id]);
+    $destination_param = UrlHelper::buildQuery(['destination' => $link_url->toString()]);
     $link_text = 'View Existing Records Requests';
     //$existing_records_requests_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
-    $existing_records_requests_link = $link_url->setAbsolute()->toString();
+    $existing_records_requests_link = $link_url->setAbsolute()->toString() . '?' . $destination_param;
     $ldbase_object = ucfirst($content_entity->bundle());
     $ldbase_object_title = $content_entity->getTitle();
     $link_to_object_route = 'entity.node.canonical';
@@ -187,10 +189,11 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $message_template = 'ldbase_possible_duplicate_person';
     $current_user = 1;
     $link_route = 'view.possible_account_matches.page_1';
-    $link_url = Url::fromRoute($link_route,[],['absolute' => TRUE]);
+    $link_url = Url::fromRoute($link_route,[]);
+    $destination_param = UrlHelper::buildQuery(['destination' => $link_url->toString()]);
     $link_text = 'Possible Account Matches';
-    //$possible_matches_link = Link::fromTextAndUrl($link_text, $link_url)->toString();
-    $possible_matches_link = $link_url->setAbsolute()->toString();
+    // add destination query param to take user to page after login
+    $possible_matches_link = $link_url->setAbsolute()->toString() . '?' . $destination_param;
 
     // create a new message from template
     // Notify uses Message Author (uid) as "To" address
