@@ -171,6 +171,7 @@ class DownloadProjectController extends ControllerBase {
     $nid = $node->id();
     $node_storage = $this->entityTypeManager->getStorage('node');
     $children_ids = $node_storage->getQuery()
+      ->accessCheck(TRUE)
       ->condition('field_affiliated_parents', $nid)
       ->execute();
 

@@ -131,6 +131,7 @@ use Drupal\node\Entity\Node;
     $nid_array = [];
     $node_storage = $this->entityManager->getStorage('node');
     $children_ids = $node_storage->getQuery()
+      ->accessCheck(TRUE)
       ->condition('field_affiliated_parents', $nid)
       ->execute();
 

@@ -16,7 +16,7 @@ services:
       - { name: access_check, applies_to: _user_profile_access_check }
   ldbase.webform_file_storage_service:
     class: Drupal\ldbase_handlers\LDbaseWebformFileStorageService
-    arguments: []
+    arguments: ['@file_system' , '@file.repository']
   ldbase.uuid_converter_service:
     class: Drupal\ldbase_handlers\Routing\UuidConverterService
     tags:

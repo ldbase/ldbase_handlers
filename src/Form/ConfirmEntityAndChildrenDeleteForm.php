@@ -155,8 +155,9 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
     foreach ($ordered_types as $type) {
 
       $children_query = $this->entityTypeManager->getStorage('node')->getQuery()
-      ->condition('type', $type)
-      ->condition('field_affiliated_parents', $parent_id);
+        ->accessCheck(TRUE)
+        ->condition('type', $type)
+        ->condition('field_affiliated_parents', $parent_id);
       $children_result = $children_query->execute();
 
       if (!empty($children_result)) {
@@ -181,6 +182,7 @@ class ConfirmEntityAndChildrenDeleteForm extends ConfirmFormBase {
   private function getChildrenIdsAsArray($parent_id) {
     $node_array = [];
     $children_query = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->accessCheck(TRUE)
       ->condition('field_affiliated_parents', $parent_id);
     $children_result = $children_query->execute();
 

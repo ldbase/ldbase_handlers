@@ -5,6 +5,7 @@ namespace Drupal\ldbase_handlers\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Renderer;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -35,6 +36,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
    */
   protected $entityTypeManager;
 
+   /**
+    * The renderer service
+    *
+    * @var \Drupal\Core\Render\Renderer
+    */
+   protected $renderer;
+
   /**
    * Construct a new Contact Link Block.
    *
@@ -46,10 +54,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The Entity Type Manager
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   The renderer service
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entityTypeManager, Renderer $renderer) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entityTypeManager;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -60,12 +71,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('renderer')
     );
   }
 
   /**
    * {@inheritdoc}
+   * @throws \Exception
    */
   public function build() {
     $node = $this->getContextValue('node');
@@ -102,7 +115,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
           $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
           $class[] = 'ldbase-contact-link';
           $link['#attributes'] = ['class' => $class];
-          $markup .= render($link) . ' ';
+          $markup .= $this->renderer->render($link) . ' ';
           $markup .= '</div>';
         }
       }

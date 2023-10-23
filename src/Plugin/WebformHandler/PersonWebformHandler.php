@@ -170,6 +170,7 @@ use Drupal\webform\Entity\WebformSubmission;
 
     if ($email <> $original_email) {
       $existing_ids = \Drupal::entityQuery('user')
+        ->accessCheck(TRUE)
         ->condition('mail', $email)
         ->execute();
 

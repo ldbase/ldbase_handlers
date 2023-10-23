@@ -395,6 +395,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $query = \Drupal::entityQuery('user');
     $roles = $query->orConditionGroup()->condition('roles', 'administrator')->condition('roles', 'fcrr_admin');
     $ids = $query
+      ->accessCheck(TRUE)
       ->condition($roles)
       ->condition('status', 1)
       ->execute();

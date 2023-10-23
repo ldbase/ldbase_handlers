@@ -4,8 +4,11 @@ namespace Drupal\ldbase_handlers\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Link;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Renderer;
 use Drupal\Core\Url;
 use Drupal\Node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @Block(
@@ -20,7 +23,43 @@ use Drupal\Node\NodeInterface;
  *   }
  * )
  */
-class DownloadAllFilesLink extends BlockBase {
+class DownloadAllFilesLink extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The renderer service
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
+
+  /**
+   * Construct a new Contact Link Block.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   The renderer service
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Renderer $renderer) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('renderer')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -66,7 +105,7 @@ class DownloadAllFilesLink extends BlockBase {
         }
         if ($show_button) {
           $route = 'ldbase_handlers.download_all_project_files';
-          $text = 'Download all Project Files';
+          $text = 'DOWNLOAD all Project Files';
           $class[] = 'download-all-files-button';
 
           $url = Url::fromRoute($route, array('node' => $uuid));
@@ -74,7 +113,7 @@ class DownloadAllFilesLink extends BlockBase {
             $markup = '<span class="download-all-files download-all-files-icon">';
             $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
             $link['#attributes'] = ['class' => $class];
-            $markup .= render($link) . ' ';
+            $markup .= $this->renderer->render($link) . ' ';
             $markup .= '</span>';
           }
         }
@@ -105,6 +144,7 @@ class DownloadAllFilesLink extends BlockBase {
     $nid = $node->id();
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     $children_ids = $node_storage->getQuery()
+      ->accessCheck(TRUE)
       ->condition('field_affiliated_parents', $nid)
       ->execute();
 

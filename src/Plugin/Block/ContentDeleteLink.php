@@ -19,7 +19,8 @@ use Drupal\Core\Url;
  *   }
  * )
  */
-class ContentDeleteLink extends BlockBase {
+class ContentDeleteLink extends BlockBase  {
+
   /**
    * {@inheritdoc}
    */
@@ -40,7 +41,7 @@ class ContentDeleteLink extends BlockBase {
       if ($url->access()) {
         $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
       $link['#attributes'] = ['class' => $class];
-      $markup .= render($link) . ' ';
+      $markup .= \Drupal::service('renderer')->render($link) . ' ';
       }
 
     } else {

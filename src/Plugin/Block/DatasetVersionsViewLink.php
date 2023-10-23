@@ -4,7 +4,10 @@ namespace Drupal\ldbase_handlers\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Link;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Renderer;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @Block(
@@ -19,7 +22,44 @@ use Drupal\Core\Url;
  *   }
  * )
  */
-class DatasetVersionsViewLink extends BlockBase {
+class DatasetVersionsViewLink extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The renderer service
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
+
+  /**
+   * Construct a new Dataset Versions View  Link Block.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   The renderer service
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Renderer $renderer) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('renderer')
+    );
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -45,7 +85,7 @@ class DatasetVersionsViewLink extends BlockBase {
         }
         $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
         $link['#attributes'] = ['class' => $class];
-        $markup .= render($link) . ' ';
+        $markup .= $this->renderer->render($link) . ' ';
       }
     }
     else {

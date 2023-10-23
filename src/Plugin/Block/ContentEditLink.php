@@ -47,7 +47,7 @@ class ContentEditLink extends BlockBase {
       if ($url->access()) {
         $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
       $link['#attributes'] = ['class' => $class];
-      $markup .= render($link) . ' ';
+      $markup .= \Drupal::service('renderer')->render($link) . ' ';
       }
 
     } else {

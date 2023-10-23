@@ -51,7 +51,7 @@ use Drupal\Core\Url;
           $markup = '<span class="subscription-icon ' . $change . '-subscription-icon">';
           $link = Link::fromTextAndUrl(t($text), $url)->toRenderable();
           $link['#attributes'] = ['class' => $class];
-          $markup .= render($link) . ' ';
+          $markup .= \Drupal::service('renderer')->render($link) . ' ';
           $markup .= '</span>';
         }
       }
