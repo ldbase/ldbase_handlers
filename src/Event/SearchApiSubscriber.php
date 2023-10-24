@@ -21,6 +21,9 @@ class SearchApiSubscriber implements EventSubscriberInterface {
    * @inheritDoc
    */
   public static function getSubscribedEvents() {
+    if (!class_exists('\Drupal\search_api\Event\SearchApiEvents', TRUE)) {
+      return [];
+    }
     return [
       SearchApiEvents::QUERY_PRE_EXECUTE => 'onQueryPreExecute',
     ];
