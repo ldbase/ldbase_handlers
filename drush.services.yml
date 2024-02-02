@@ -1,6 +1,0 @@
-services:
-  ldbase_handlers.commands:
-    class: \Drupal\ldbase_handlers\Commands\LDbaseHandlersCommands
-    tags:
-      - { name: drush.command }
-    arguments: ['@entity_type.manager', '@logger.factory']

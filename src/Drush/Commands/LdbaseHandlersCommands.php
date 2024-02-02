@@ -1,48 +1,53 @@
 <?php
-namespace Drupal\ldbase_handlers\Commands;
 
+namespace Drupal\ldbase_handlers\Drush\Commands;
+
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Utility\Token;
+use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * A Drush commandfile.
+ *
+ * In addition to this file, you need a drush.services.yml
+ * in root of your module, and a composer.json file that provides the name
+ * of the services file to use.
  */
-class LDbaseHandlersCommands extends DrushCommands {
+final class LdbaseHandlersCommands extends DrushCommands {
+
   /**
-   * Entity type service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * Constructs a LdbaseHandlersCommands object.
    */
-  private $entityTypeManager;
+  public function __construct(
+    private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly LoggerChannelFactoryInterface $loggerFactory,
+  ) {
+    parent::__construct();
+  }
+
   /**
-   * Logger service.
-   *
-   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   * {@inheritdoc}
    */
-  private $loggerChannelFactory;
-  /**
-   * Constructs a new LDbaseNewAccountCommands object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   Entity type service.
-   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerChannelFactory
-   *   Logger service.
-   */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, LoggerChannelFactoryInterface $loggerChannelFactory) {
-    $this->entityTypeManager = $entityTypeManager;
-    $this->loggerChannelFactory = $loggerChannelFactory;
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('logger.factory'),
+    );
   }
 
   /**
    * Get nodes that have remained unpublished for 30 days
-   *
-   * @command ldbase:unpublished-thirty-days
-   * @aliases ldbase:utd
    */
+  #[CLI\Command(name: 'ldbase_handlers:unpublished-thirty-days', aliases: ['ldbase:utd'])]
+  #[CLI\Usage(name: 'ldbase_handlers:unpublished-thirty-days', description: 'Straight-forward Usage without options or args')]
   public function unpublishedThirtyDays() {
     // log process start
-    $this->loggerChannelFactory->get('ldbase')->info('Searching for nodes unpublished for 30 days ...');
+    $this->logger()->success(dt('Beginning process ...'));
+    $this->loggerFactory->get('ldbase')->info('Searching for nodes unpublished for 30 days ...');
 
     // get person nodes that are not connected to a drupal user
     $node_storage = $this->entityTypeManager->getStorage('node');
@@ -73,6 +78,7 @@ class LDbaseHandlersCommands extends DrushCommands {
     }
     else {
       $this->logger()->warning('No eligible unpublished nodes found.');
+      $this->loggerFactory->get('ldbase')->warning('No eligible unpublished nodes found.');
     }
 
     // create batch
@@ -92,7 +98,8 @@ class LDbaseHandlersCommands extends DrushCommands {
     $this->logger()->notice("Batch operations end.");
     // Log some information.
     $message = 'Finished queuing ' . $numOperations . ' notificiation(s) of long-unpublished nodes.';
-    $this->loggerChannelFactory->get('ldbase')->info($message);
-
+    $this->logger->info($message);
+    $this->loggerFactory->get('ldbase')->info($message);
   }
+
 }
