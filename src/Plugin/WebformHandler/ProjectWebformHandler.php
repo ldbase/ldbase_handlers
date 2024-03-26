@@ -260,7 +260,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
   private function validateRequiredProjectType(FormStateInterface $form_state) {
     $project_type = $form_state->getValue('project_type');
     if (empty($project_type)) {
-      $message = 'You must select or enter at least one Project Descriptor.';
+      $message = 'You must select or enter at least one Project Method.';
       $form_state->setErrorByName('project_type', $message);
     }
   }
