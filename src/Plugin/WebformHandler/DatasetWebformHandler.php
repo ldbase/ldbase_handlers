@@ -342,6 +342,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $node = $this->entityTypeManager->getStorage('node')->load($nid);
       $existing_flag = $node->status->value;
       $status_has_changed = $published_flag != $existing_flag ? true : false;
+      $existing_harmonized_status = $node->get('field_harmonized_dataset')->value;
       $node->set('status', $published_flag);
       $node->set('title', $title);
       $node->set('field_doi', $field_doi);
@@ -389,7 +390,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       }
 
       // if harmonized dataset answer is true and item is published, then send message on confirmation
-      if ($field_harmonized_dataset && $published_flag) {
+      // unless the answer was already true, in which case do not notify again
+      if ($field_harmonized_dataset && $published_flag  && $field_harmonized_dataset <> $existing_harmonized_status) {
         $form_state->set('send_harmonized_data_message', TRUE);
       }
       else {
