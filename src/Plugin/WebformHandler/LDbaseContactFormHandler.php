@@ -108,6 +108,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $groupRoles = ['project_group-administrator'];
       $field_to_users = $this->ldbaseMessageService->getGroupUserIdsByRoles($node,$groupRoles);
       $group_admin_emails = [];
+      $from_name = $this->ldbaseMessageService->getPersonName($field_from_user) . ' (' . $from_email . ')';
+      $to_names = [];
+      foreach ($field_to_users as $name) {
+        $to_names[] = $this->ldbaseMessageService->getPersonName($name);
+      }
+
       // save a message for each, but email all at once
       foreach ($field_to_users as $admin_id) {
         $admin = $this->entityTypeManager->getStorage('user')->load($admin_id);
@@ -121,6 +127,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
         $message->setArguments([
           '@subject' => $message_subject,
           '@message' => $message_body,
+          '@additional_text' => 'The above message is from a registered LDbase user who used the “Contact Project Members” form on your LDbase project. You can respond to their message by sending them a separate email, but please note that this will give this LDbase user your email address. If you do not wish to respond, you can simply delete this email. If you no longer wish to receive messages from LDbase users about this project, you can go to your Project Edit page and change the settings.',
+          '@from_name' => $from_name,
+          '@to_names' => implode(', ', $to_names),
         ]);
         $message->save();
       }
@@ -137,7 +146,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $send = TRUE;
 
     $mail_result = $this->mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
-
   }
 
   /**

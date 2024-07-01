@@ -73,11 +73,12 @@ class ContactProjectController extends ControllerBase {
       }
       else {
         // load form
-        $subject_line = $this->t("LDbase user has question about Project: @title", ['@title' => $node->getTitle()]);
+        $email_subject = "Message from LDbase User";
+        // $subject_line = $this->t("LDbase user has question about Project: @title", ['@title' => $node->getTitle()]);
         $node_id = $node->id();
         $values = [
           'data' => [
-            'subject' => $subject_line,
+            'subject' => $email_subject,
             'node_id' => $node_id,
           ],
         ];

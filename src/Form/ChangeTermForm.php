@@ -159,7 +159,7 @@ class ChangeTermForm extends FormBase {
     $new_term = $this->entityTypeManager->getStorage('taxonomy_term')->load($use_instead);
     $new_term_name = $new_term->name->value;
     // send message to node authors that the term has changed
-    if (!empty($message_nodes)) {
+    /*if (!empty($message_nodes)) {
       $ldbase_message_service = \Drupal::service('ldbase_handlers.message_service');
       $message_array = [
         'old_term_name' => $old_term_name,
@@ -169,7 +169,7 @@ class ChangeTermForm extends FormBase {
       ];
 
       $ldbase_message_service->taxonomyTermChanged($message_array);
-    }
+    }*/
 
     $url = Url::fromRoute('ldbase_handlers.review_taxonomy_terms');
     $this->messenger()->addStatus(t('The term %old_term has been replaced with %new_term',['%old_term' => $old_term_name,'%new_term' => $new_term_name]));

@@ -161,6 +161,16 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $real_user_id = $real_person_node->field_drupal_account_id->target_id;
 
     $group_admins = $this->getGroupUserIdsByRoles($content_entity, ['project_group-administrator']);
+    // get group admin names and emails
+    $group_admins_emails = [];
+    foreach ($group_admins as $admin_id) {
+      $admin = $this->entityTypeManager->getStorage('user')->load($admin_id);
+      $admin_name = $this->getPersonName($admin_id);
+      $admin_email = $admin->mail->value;
+      $group_admins_emails[] = $admin_name . ' <' . $admin_email .'>';
+    }
+    $admin_email_list = implode('; ', $group_admins_emails);
+
     // create a new message from template
     // Notify uses Message Author (uid) as "To" address
     foreach ($group_admins as $admin_id) {
@@ -173,6 +183,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
         '@link_to_object' => $link_to_object,
         '@existing_records_requests_link' => $existing_records_requests_link,
         '@user' => $real_person_node->getTitle(),
+        '@email_sent_to' => $admin_email_list,
       ]);
 
       $message->save();
@@ -323,7 +334,17 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   public function reportProblemMessage(array $message_data) {
     $message_template = 'ldbase_report_a_problem';
     $current_user = \Drupal::currentUser();
-    $admin_user_ids = $this->getLdbaseAdministratorUserIds();
+    $admin_user_ids= $this->getLdbaseAdministratorUserIds();
+    $admin_emails = [];
+    foreach ($admin_user_ids as $admin_id) {
+      $admin = $this->entityTypeManager->getStorage('user')->load($admin_id);
+      $admin_name = $this->getPersonName($admin_id);
+      $admin_email = $admin->mail->value;
+      $admin_emails[] = $admin_name . ' <' . $admin_email .'>';
+    }
+    $admin_email_list = implode('; ', $admin_emails);
+
+
     // send a message to each admin
     foreach ($admin_user_ids as $admin_id) {
       // create a new message from template
@@ -336,7 +357,8 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
         '@email' => $message_data['email'],
         '@reply_requested' => $message_data['reply_requested'],
         '@issue' => $message_data['issue'],
-        '@url' => $message_data['url']
+        '@url' => $message_data['url'],
+        '@email_sent_to' => $admin_email_list,
       ]);
       // save the message
       $message->save();
@@ -420,6 +442,33 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     }
 
     return $ids;
+  }
+
+  public function getPersonName($user_id) {
+    $query = $this->entityTypeManager->getStorage('node')->getQuery();
+    // get person node associated with this user's Drupal account
+    $query->condition('type', 'person')
+      ->condition('field_drupal_account_id', $user_id)
+      ->accessCheck(FALSE);
+    $results = $query->execute();
+    // make sure there is only one, load it, and get title
+    if (count($results) == 1) {
+      $nodeId = array_pop($results);
+      $personNode = $this->entityTypeManager->getStorage('node')->load($nodeId);
+      $personName = $personNode->getTitle();
+    }
+    else {
+      $personName = '';
+    }
+    // return title/name
+    return $personName;
+  }
+
+  public function getEmailByUserId($user_id) {
+    $user = $this->entityTypeManager->getStorage('user')->load($user_id);
+    $user_email = $user->get('mail')->getString();
+
+    return $user_email;
   }
 
   /**
