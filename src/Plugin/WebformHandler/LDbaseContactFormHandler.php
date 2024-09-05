@@ -79,7 +79,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $submission_array = $webform_submission->getData();
     $node = $this->entityTypeManager->getStorage('node')->load($submission_array['node_id']);
-    $message_template = 'ldbase_contact_form';
+
     $field_from_user = $this->currentUser->id();
     $from_email = $this->currentUser->getEmail();
     $message_subject = $submission_array['subject'];
@@ -87,24 +87,26 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
     // contact person
     if ($node->bundle() == 'person') {
+      $message_template = 'ldbase_contact_person_form';
       $field_to_user = $node->field_drupal_account_id->target_id;
-      $field_to_users = '';
       $message_uid = $field_to_user;
       $email_list = $node->field_email->value;
+      $from_name = $this->ldbaseMessageService->getPersonName($field_from_user) . ' (' . $from_email . ')';
 
       $message = $this->entityTypeManager->getStorage('message')
         ->create(['template' => $message_template, 'uid' => $message_uid]);
       $message->set('field_from_user', $field_from_user);
       $message->set('field_to_user', $field_to_user);
-      $message->set('field_to_users', $field_to_users);
       $message->setArguments([
         '@subject' => $message_subject,
         '@message' => $message_body,
+        '@from_email' => $from_email,
       ]);
       $message->save();
     }
     // contact project
     if ($node->bundle() == 'project') {
+      $message_template = 'ldbase_contact_form';
       $groupRoles = ['project_group-administrator'];
       $field_to_users = $this->ldbaseMessageService->getGroupUserIdsByRoles($node,$groupRoles);
       $group_admin_emails = [];
