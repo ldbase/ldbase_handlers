@@ -64,7 +64,11 @@ class PersonController extends ControllerBase {
 
     $user = $node->field_drupal_account_id->entity;
     $mass_contact_opt_in = !($user->mass_contact_opt_out->value);
-
+    $full_name[] = [
+      'primary_first_name' => $first_name,
+      'primary_middle_name' => $middle_name,
+      'primary_last_name' => $last_name,
+    ];
 
     $values = [
       'data' => [
@@ -76,6 +80,7 @@ class PersonController extends ControllerBase {
         'first_name' => $first_name,
         'middle_name' => $middle_name,
         'last_name' => $last_name,
+        'full_name' => $full_name,
         'additional_publishing_names' => $additional_publishing_names,
         'email' => $email,
         'person_contact_opt_in' => $person_contact_opt_in,
