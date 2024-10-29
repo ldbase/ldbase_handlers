@@ -29,7 +29,7 @@ ldbase_handlers.contact_person:
     _controller: '\Drupal\ldbase_handlers\Controller\ContactPersonController::contactPerson'
     _title: 'Contact LDbase User'
   requirements:
-    _role: 'authenticated'
+    _permission: 'access content'
   options:
     parameters:
       node:

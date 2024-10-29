@@ -2,8 +2,10 @@
 
 namespace Drupal\ldbase_handlers\Controller;
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\Node\NodeInterface;
 use Drupal\user_email_verification\UserEmailVerification;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -54,6 +56,7 @@ class ContactPersonController extends ControllerBase {
    * @param \Drupal\Node\NodeInterface $node
    */
   public function contactPerson(NodeInterface $node) {
+
     // Are you trying to get around a do_not_contact flag?
     if ($node->field_do_not_contact->value) {
       $redirect_message = $this->t("You may not contact this user through LDbase.");
@@ -66,6 +69,16 @@ class ContactPersonController extends ControllerBase {
     if ($this->userEmailVerification->isVerificationNeeded($uid)) {
       // if not user, redirect to Person view with error message
       $redirect_message = $this->t("You must verify your email address to contact others. <a href='/user/user-email-verification'>Resend verification link</a>");
+      $this->messenger()->addWarning($redirect_message);
+
+      return $this->redirect('entity.node.canonical', ['node' => $node->id()]);
+    }
+    elseif (!$uid) {
+      // if not logged in, redirect to Person view with error message
+      $link_url = Url::fromRoute('entity.node.canonical', ['node' => $node->id()]);
+      $destination_param = UrlHelper::buildQuery(['destination' => $link_url->toString()]);
+
+      $redirect_message = $this->t("You must log in to contact others. <a href='/user/login?$destination_param'>Log in</a>");
       $this->messenger()->addWarning($redirect_message);
 
       return $this->redirect('entity.node.canonical', ['node' => $node->id()]);
