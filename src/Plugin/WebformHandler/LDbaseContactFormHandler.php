@@ -169,7 +169,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     $node = $this->entityTypeManager->getStorage('node')->load($submission_array['node_id']);
     // check that id hasn't been changed
     $original_uuid = $webform_submission->getSourceUrl()->getRouteParameters()['node'];
-    $original_node = $this->ldbaseObjectService->getLdbaseObjectFromUuid($original_uuid);
+    $original_object = $this->ldbaseObjectService->getLdbaseObjectFromUuid($original_uuid);
+    $original_object_id = $original_object->id();
+    $original_node = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($original_object_id);
     $default_error_message = 'An invalid id was passed to the form.';
     if ($original_node->id() != $node->id()) {
       $this->messenger()->addError($this->t($default_error_message));

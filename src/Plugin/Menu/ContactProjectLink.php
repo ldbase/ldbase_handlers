@@ -6,6 +6,7 @@ use Drupal\Core\Menu\MenuLinkDefault;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Menu\StaticMenuLinkOverridesInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\ldbase_content\LDbaseObjectService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,6 +22,13 @@ class ContactProjectLink extends MenuLinkDefault {
   protected $routeMatch;
 
   /**
+   *  The LDbaseObjectService.
+   *
+   *  @var  \Drupal\ldbase_content\LDbaseObjectService
+   */
+  protected  $ldbaseObjectService;
+
+  /**
    * Constructs a new Contact Project Members link.
    *
    * @param array $configuration
@@ -33,10 +41,13 @@ class ContactProjectLink extends MenuLinkDefault {
    *   The static override storage.
    * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
    *   The route match service.
+   * @param \Drupal\ldbase_content\LDbaseObjectService $ldbase_object_service
+   *    The LDbase Object Service
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match, StaticMenuLinkOverridesInterface $static_override) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match, StaticMenuLinkOverridesInterface $static_override, LDbaseObjectService $ldbase_object_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $static_override);
     $this->routeMatch = $route_match;
+    $this->ldbaseObjectService = $ldbase_object_service;
   }
 
   /**
@@ -48,7 +59,8 @@ class ContactProjectLink extends MenuLinkDefault {
       $plugin_id,
       $plugin_definition,
       $container->get('current_route_match'),
-      $container->get('menu_link.static.overrides')
+      $container->get('menu_link.static.overrides'),
+      $container->get('ldbase.object_service')
     );
   }
 
@@ -71,15 +83,17 @@ class ContactProjectLink extends MenuLinkDefault {
    */
   public function isEnabled() {
     $node = $this->routeMatch->getParameter('node');
+    $show_for_bundles = ['project','dataset','document','code'];
     if (!empty($node)) {
-      if ($node->bundle() != 'project') {
+      if (!in_array($node->bundle(), $show_for_bundles)){
         return FALSE;
       }
       else {
         /* if this is a project node show link*/
         $show_link = TRUE;
         /* unless project doesn't want you to */
-        if ($node->field_do_not_contact->value) {
+        $project_node = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($node->id());
+        if ($project_node->field_do_not_contact->value) {
           $show_link = FALSE;
         }
         return $show_link;
