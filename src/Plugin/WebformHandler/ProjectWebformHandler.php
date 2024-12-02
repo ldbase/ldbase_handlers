@@ -227,9 +227,14 @@ class ProjectWebformHandler extends WebformHandlerBase {
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // project end date cannot come before start date
     $this->validateActivityRange($form_state);
-    // add any new taxonomy terms from Select2 fields
-    if (!$form_state->hasAnyErrors()) {
-      $this->validateSelect2Fields($form, $form_state, $webform_submission);
+    $request = \Drupal::request();
+    // do not validate or add new terms if this is an Ajax request
+    // ajax requests are caused by uploading images
+    if (!$request->isXmlHttpRequest()) {
+      // add any new taxonomy terms from Select2 fields
+      if (!$form_state->hasAnyErrors()) {
+        $this->validateSelect2Fields($form, $form_state, $webform_submission);
+      }
     }
   }
 
