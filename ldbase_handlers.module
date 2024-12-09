@@ -286,8 +286,7 @@ function ldbase_handlers_form_group_content_form_alter(&$form, FormStateInterfac
       'match_operator' => $match_operator,
     ];
     $description_text = "<p>Type in/Select the name of the person. This gives them
-    full access to edit the metadata and data associated with this project. They
-    must already have an account with LDbase.</p>";
+    full access to edit the metadata and data associated with this project. In order for a person to show up in this list, they need to have already created an account on LDbase. If you are not seeing their name, please ask them to create an account.</p>";
     $description_text .= "<div id='project-admins-form-description' class='container'>";
     $description_text .= "<div class='row'>";
     $description_text .= "<div id='manage-members-administrator-info' class='col-md'>";
