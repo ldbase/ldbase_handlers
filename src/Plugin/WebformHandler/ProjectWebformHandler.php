@@ -6,6 +6,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Entity\Group;
+use Drupal\group\Entity\GroupContent;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
@@ -198,6 +199,12 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $form_state->set('confirm_doi', $submission_array['generate_a_doi']);
       //save the node
       $node->save();
+
+      $group_content = GroupContent::loadByEntity($node);
+      $group = array_shift($group_content)->getGroup();
+      $group->set('label', $title);
+      $group->save();
+
 
       // if unpublished then unpublish children
       if (!$published_flag) {
