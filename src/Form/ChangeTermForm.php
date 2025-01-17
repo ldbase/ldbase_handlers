@@ -2,6 +2,7 @@
 
 namespace Drupal\ldbase_handlers\Form;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Form\FormBase;
@@ -26,6 +27,7 @@ class ChangeTermForm extends FormBase {
    * @var \Drupal\Core\Entity\EntityFieldManager;
    */
   private $fieldManager;
+
 
   /**
    * {@inheritdoc}
@@ -118,22 +120,74 @@ class ChangeTermForm extends FormBase {
     $use_instead = $form_state->getValue('use_instead');
     $message_to_users = $form_state->getValue('message_to_users');
 
+
     // find the fields that use this vocabulary
     $vocabulary_fields = $this->getVocabularyFields($vid);
-    // get the nodes with the field that reference the old term
+
+    // get the nodes or paragraphs with the field that reference the old term
     $nids = [];
+    $pids = [];
     $query = $this->entityTypeManager->getStorage('node')->getQuery();
+    $paragraphQuery = $this->entityTypeManager->getStorage('paragraph')->getQuery();
     foreach ($vocabulary_fields as $bundle => $fields) {
-      foreach ($fields as $field) {
-        $result = $query->condition('type', $bundle)
-                    ->condition($field, $tid)
-                    ->accessCheck(false)
-                    ->execute();
-        $nids = array_merge($nids, $result);
+      if ($bundle == 'paragraph') {
+        foreach ($fields as $field) {
+          // get paragraph settings
+          $field_definitions = $this->fieldManager->getFieldDefinitions('paragraph', $field);
+          //loop over paragraph fields
+          foreach ($field_definitions as $fd) {
+            $field_settings = $fd->getSettings();
+            if (array_key_exists('handler', $field_settings)) {
+              $handler = $fd->getSettings()['handler'];
+              if ($handler == 'default:taxonomy_term') {
+                $result = $paragraphQuery->condition('type', $field)
+                  ->condition($fd->getName(), $tid)
+                  ->accessCheck(FALSE)
+                  ->execute();
+                $pids = array_merge($pids, $result);
+
+                $vocabulary_fields[$bundle][0] = $fd->getName();
+              }
+            }
+          }
+        }
+        // for each result, load paragraph and get parent
+        foreach ($pids as $pid) {
+          $paragraph = $this->entityTypeManager->getStorage('paragraph')
+            ->load($pid);
+          $nids[] = $paragraph->getParentEntity()->id();
+        }
+      }
+      else {
+        foreach ($fields as $field) {
+          $result = $query->condition('type', $bundle)
+            ->condition($field, $tid)
+            ->accessCheck(FALSE)
+            ->execute();
+          $nids = array_merge($nids, $result);
+        }
       }
     }
-    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($nids);
+    if ($pids) {
+      $paragraphs = $this->entityTypeManager->getStorage('paragraph')->loadMultiple($pids);
+      foreach ($paragraphs as $paragraph) {
+        foreach ($vocabulary_fields as $bundle => $fields) {
+          if ($bundle == 'paragraph') {
+            foreach ($fields as $field) {
+              $field_values = [];
+              $field_values[] = ['target_id' => $use_instead];
 
+              $paragraph->set($field, $field_values);
+
+              $paragraph->save();
+
+            }
+          }
+        }
+      }
+    }
+
+    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($nids);
     $message_nodes = [];
     // add new term reference
     foreach ($nodes as $node) {
@@ -199,14 +253,25 @@ class ChangeTermForm extends FormBase {
     foreach ($bundles as $bundle) {
       // get the fields for the bundles
       $fields = $this->fieldManager->getFieldDefinitions('node', $bundle);
+
       // check the handler settings for each field
       foreach ($fields as $field) {
-        $handler = $field->getSettings()['handler'];
-        if ($handler == 'default:taxonomy_term') {
-          $field_config = $field->get('dependencies')['config'];
-          foreach ($field_config as $config) {
-            if ($config == 'taxonomy.vocabulary.' . $vid) {
-              $vocabulary_fields[$bundle][] = $field->getName();
+        if ($field->getType() == 'entity_reference_revisions') {
+          if($field->getName() == 'field_grant_information') {
+            $vocabulary_fields['paragraph'][] = 'grant_information';
+          }
+        }
+        else {
+          $field_settings = $field->getSettings();
+          if (array_key_exists('handler',$field_settings)) {
+            $handler = $field->getSettings()['handler'];
+            if ($handler == 'default:taxonomy_term') {
+              $field_config = $field->get('dependencies')['config'];
+              foreach ($field_config as $config) {
+                if ($config == 'taxonomy.vocabulary.' . $vid) {
+                  $vocabulary_fields[$bundle][] = $field->getName();
+                }
+              }
             }
           }
         }
