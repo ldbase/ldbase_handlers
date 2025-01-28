@@ -168,6 +168,7 @@ class ChangeTermForm extends FormBase {
         }
       }
     }
+
     if ($pids) {
       $paragraphs = $this->entityTypeManager->getStorage('paragraph')->loadMultiple($pids);
       foreach ($paragraphs as $paragraph) {
@@ -249,7 +250,7 @@ class ChangeTermForm extends FormBase {
   private function getVocabularyFields($vid) {
     $vocabulary_fields = [];
     // bundles to check
-    $bundles = ['project','dataset'];
+    $bundles = ['project','dataset','person'];
     foreach ($bundles as $bundle) {
       // get the fields for the bundles
       $fields = $this->fieldManager->getFieldDefinitions('node', $bundle);
@@ -277,6 +278,7 @@ class ChangeTermForm extends FormBase {
         }
       }
     }
+
     return $vocabulary_fields;
   }
 
