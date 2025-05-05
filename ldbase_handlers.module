@@ -285,14 +285,18 @@ function ldbase_handlers_form_group_content_form_alter(&$form, FormStateInterfac
       ],
       'match_operator' => $match_operator,
     ];
-    $description_text = "<p>Type in/Select the name of the person. This gives them
-    full access to edit the metadata and data associated with this project. In order for a person to show up in this list, they need to have already created an account on LDbase. If you are not seeing their name, please ask them to create an account.</p>";
-    $description_text .= "<div id='project-admins-form-description' class='container'>";
+    $description_text = "<div id='project-admins-form-description' class='container'>";
+    $description_text .= "<div class='row'><p>Type in/Select the name of the person. This gives them
+    full access to edit the metadata and data associated with this project. In order for a person to show up in this list, they need to have already created an account on LDbase.</p>
+    <p id='manage-members-red-text'>If you are not seeing their name, please ask them to create an account.</p>
+    </div>";
+
     $description_text .= "<div class='row'>";
     $description_text .= "<div id='manage-members-administrator-info' class='col-md'>";
     $description_text .= "<h4>A Project Administrator can</h4>";
     $description_text .= "<ul id='manage-members-administrator-list'>";
     $description_text .= "<li>Add/Edit all project metadata</li>";
+    $description_text .= "<li>Rearrange the project hierarchy</li>";
     $description_text .= "<li>Upload data to the project (datasets, codebooks, code, and documents)</li>";
     $description_text .= "<li>Approve exempt access to certain users for any data you have embargoed</li>";
     $description_text .= "<li>Access/Edit embargoed data</li>";
@@ -304,6 +308,7 @@ function ldbase_handlers_form_group_content_form_alter(&$form, FormStateInterfac
     $description_text .= "<h4>A Project Editor can</h4>";
     $description_text .= "<ul id='manage-members-administrator-list'>";
     $description_text .= "<li>Add/Edit all project metadata</li>";
+   $description_text .= "<li>Rearrange the project hierarchy</li>";
     $description_text .= "<li>Upload data to the project (datasets, codebooks, code, and documents)</li>";
     $description_text .= "<li>Approve exempt access to certain users for any data you have embargoed</li>";
     $description_text .= "<li>Access/Edit embargoed data</li>";
