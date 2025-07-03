@@ -6,6 +6,7 @@ use Drupal\Core\Render\Element\PasswordConfirm;
 use Drupal\Core\Url;
 
 
+
 /**
  * Implements hook_webform_element_alter().
  *
@@ -489,5 +490,30 @@ function ldbase_handlers_views_pre_render(\Drupal\views\ViewExecutable $view) {
     $view->element['#attached']['drupalSettings']['messageData']['uid'] = $uid;
     $mid = \Drupal::RouteMatch()->getParameter('mid');
     $view->element['#attached']['drupalSettings']['messageData']['mid'] = $mid;
+  }
+}
+
+/**
+ * Implements hook_system_breadcrumb_alter().
+ */
+function ldbase_handlers_system_breadcrumb_alter(\Drupal\Core\Breadcrumb\Breadcrumb &$breadcrumb, \Drupal\Core\Routing\RouteMatchInterface $route_match, array $context) {
+  // change breadcrumb from group to node on records request view
+  if ($route_match->getRouteName() == 'view.existing_records_requests.page_1' && !empty($breadcrumb->getLinks())) {
+    $links = $breadcrumb->getLinks();
+    foreach ($links as $link) {
+      if ($link->getUrl()->getRouteName() == 'entity.group.canonical') {
+        $content_array = $route_match->getParameter('group')->getContent();
+        foreach ($content_array as $content) {
+          if ($content->get('type')->target_id == 'project_group-group_node-project') {
+            $project_id = $content->get('entity_id')->getString();
+            $route_name = 'entity.node.canonical';
+            $route_parameters = ['node' => $project_id];
+            $options = $link->getUrl()->getOptions();
+            $new_url = Url::fromRoute($route_name, $route_parameters, $options);
+            $link->setUrl($new_url);
+          }
+        }
+      }
+    }
   }
 }
