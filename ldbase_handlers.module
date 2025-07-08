@@ -501,16 +501,22 @@ function ldbase_handlers_system_breadcrumb_alter(\Drupal\Core\Breadcrumb\Breadcr
   if ($route_match->getRouteName() == 'view.existing_records_requests.page_1' && !empty($breadcrumb->getLinks())) {
     $links = $breadcrumb->getLinks();
     foreach ($links as $link) {
+      // if link is to group page, change to project page
       if ($link->getUrl()->getRouteName() == 'entity.group.canonical') {
         $content_array = $route_match->getParameter('group')->getContent();
         foreach ($content_array as $content) {
+          // find the group content for the project node
           if ($content->get('type')->target_id == 'project_group-group_node-project') {
             $project_id = $content->get('entity_id')->getString();
             $route_name = 'entity.node.canonical';
             $route_parameters = ['node' => $project_id];
             $options = $link->getUrl()->getOptions();
+            // change the route and parameters
             $new_url = Url::fromRoute($route_name, $route_parameters, $options);
             $link->setUrl($new_url);
+            $project_name = $link->getText();
+            // change the link text
+            $link->setText('Project: ' . $project_name);
           }
         }
       }
