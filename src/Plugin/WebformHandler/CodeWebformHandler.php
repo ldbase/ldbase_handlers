@@ -97,7 +97,12 @@ use Drupal\webform\Entity\WebformSubmission;
 
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
-
+    $parent_node = Node::load($passed_id);
+    $parent_published_flag = $parent_node->get('status')->value;
+    // if parent node is unpublished, make sure that this node is also unpublished
+    if (!$parent_published_flag) {
+      $published_flag = false;
+    }
     // if unpublished add '(unpublished)' to title if not there already
     $unpublished_pattern = '/\(unpublished\)$/';
     if (!$published_flag) {
@@ -131,7 +136,7 @@ use Drupal\webform\Entity\WebformSubmission;
       //save the node
       $node->save();
       // get groupId of parent that was passed in - assumes Group Cardinality = 1
-      $parent_node = Node::load($passed_id);
+
       $group_contents = GroupContent::loadByEntity($parent_node);
       foreach ($group_contents as $group_content) {
         $group = $group_content->getGroup();
