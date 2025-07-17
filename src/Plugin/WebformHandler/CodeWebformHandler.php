@@ -102,6 +102,7 @@ use Drupal\webform\Entity\WebformSubmission;
     // if parent node is unpublished, make sure that this node is also unpublished
     if (!$parent_published_flag) {
       $published_flag = false;
+      $this->messenger()->addStatus($this->t('This code was unpublished, because it was nested under an unpublished item.'));
     }
     // if unpublished add '(unpublished)' to title if not there already
     $unpublished_pattern = '/\(unpublished\)$/';

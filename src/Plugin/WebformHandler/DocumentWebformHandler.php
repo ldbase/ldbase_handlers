@@ -106,6 +106,8 @@ use Drupal\webform\Entity\WebformSubmission;
     // if parent node is unpublished, make sure that this node is also unpublished
     if (!$parent_published_flag) {
       $published_flag = false;
+      $type = $this->isCodebook($field_document_type) ? 'codebook' : 'document';
+      $this->messenger()->addStatus($this->t('This ' . $type . ' was unpublished, because it was nested under an unpublished item.'));
     }
     // if unpublished add '(unpublished)' to title if not there already
     $unpublished_pattern = '/\(unpublished\)$/';
@@ -244,6 +246,16 @@ use Drupal\webform\Entity\WebformSubmission;
     $this->messenger()->addStatus($this->t($form_state->get('redirect_message')));
 
     $form_state->setRedirect($route_name, $route_parameters);
+  }
+
+  private function isCodebook($target_id) {
+    $document_type_term = $this->entityTypeManager->getStorage('taxonomy_term')->load($target_id)->getName();
+    if ($document_type_term === 'Codebook') {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
   }
 
  }
