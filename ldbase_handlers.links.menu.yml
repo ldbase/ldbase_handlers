@@ -123,6 +123,14 @@ ldbase_handlers.add_document_to_dataset:
   title: 'Add Document'
   route_name: ldbase_handlers.add_document_to_dataset
 
+ldbase_handlers.clone_dataset:
+  class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu
+  menu_name: dataset-tasks
+  title: 'Clone this Dataset'
+  route_name: ldbase_handlers.clone_dataset
+  weight: 2
+
+
 # Mini Dataset Tasks menu items
 ldbase_handlers.add_codebook_to_dataset_2:
   class: Drupal\ldbase_handlers\Plugin\Menu\TasksMenu

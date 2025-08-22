@@ -306,6 +306,18 @@ ldbase_handlers.change_dataset_subscription:
       user:
         type: entity:user
 
+ldbase_handlers.clone_dataset:
+  path: '/datasets/{node}/clone-dataset'
+  defaults:
+    _controller: '\Drupal\ldbase_handlers\Controller\DatasetController::cloneDataset'
+    _title_callback: '\Drupal\ldbase_handlers\Controller\DatasetController::getCloneTitle'
+  requirements:
+    _group_update_node_access_check: 'TRUE'
+  options:
+    parameters:
+      node:
+        type: ldbase_uuid
+
 # Project
 ldbase_handlers.edit_project:
   path: '/projects/{node}/edit'

@@ -3,8 +3,11 @@
 namespace Drupal\ldbase_handlers\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\ldbase_content\LDbaseObjectService;
+use Drupal\ldbase_embargoes\EmbargoesEmbargoesServiceInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -16,13 +19,43 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class DatasetController extends ControllerBase {
 
   /**
+   * The EntityTypeManager
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The LDbase object service
+   *
+   * @var \Drupal\ldbase_content\LDbaseObjectService
+   */
+  protected $ldbaseObjectService;
+
+  /**
+   * An embargoes service.
+   *
+   * @var \Drupal\ldbase_embargoes\EmbargoesEmbargoesServiceInterface
+   */
+  protected $embargoes;
+
+  /**
    * DatasetController constructor
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *
+   * @param \Drupal\ldbase_content\LDbaseObjectService $ldbaseObjectService
+   *
+   * @param \Drupal\ldbase_embargoes\EmbargoesEmbargoesServiceInterface $embargoes
+   *
    */
-  public function __construct(MessengerInterface $messenger) {
+  public function __construct(MessengerInterface $messenger, EntityTypeManager $entityTypeManager, LDbaseObjectService $ldbaseObjectService, EmbargoesEmbargoesServiceInterface $embargoes) {
     $this->messenger = $messenger;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->ldbaseObjectService = $ldbaseObjectService;
+    $this->embargoes = $embargoes;
   }
 
   /**
@@ -30,7 +63,10 @@ class DatasetController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('entity_type.manager'),
+      $container->get('ldbase.object_service'),
+      $container->get('ldbase_embargoes.embargoes')
     );
   }
 
@@ -51,7 +87,7 @@ class DatasetController extends ControllerBase {
     ];
 
     $operation = 'add';
-    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_dataset');
+    $webform = $this->entityTypeManager->getStorage('webform')->load('create_update_dataset');
     $webform = $webform->getSubmissionForm($values, $operation);
     // get manage members text or link (if access)
     $exempt_users_description = $this->getEmbargoExemptUsersDescription($node);
@@ -87,6 +123,15 @@ class DatasetController extends ControllerBase {
    */
   public function getEditTitle(NodeInterface $node) {
     return 'Edit Dataset: ' . $node->getTitle();
+  }
+
+  /**
+   * Gets title for cloning page
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function getCloneTitle(NodeInterface $node) {
+    return 'Cloning Dataset: Copy of ' . $node->getTitle();
   }
 
   /**
@@ -187,8 +232,8 @@ class DatasetController extends ControllerBase {
 
     //Set $embargoed
     //Set $embargo_expiry
-    $embargo_id = \Drupal::service('ldbase_embargoes.embargoes')->getAllEmbargoesByNids(array($node->id()));
-    $embargo = !empty($embargo_id) ? \Drupal::entityTypeManager()->getStorage('node')->load($embargo_id[0]) : '';
+    $embargo_id = $this->embargoes->getAllEmbargoesByNids(array($node->id()));
+    $embargo = !empty($embargo_id) ? $this->entityTypeManager->getStorage('node')->load($embargo_id[0]) : '';
     $embargoed = !empty($embargo);
     $embargo_expiry = empty($embargo) ? '' : $embargo->get('field_expiration_date')->value;
     $embargo_exempt_users = empty($embargo) ? [] : $embargo->get('field_exempt_users')->getValue();
@@ -200,7 +245,7 @@ class DatasetController extends ControllerBase {
     $harmonized_dataset = $node->get('field_harmonized_dataset')->value;
 
     // is parent node published?
-    $parent_node = \Drupal::entityTypeManager()->getStorage('node')->load($passed_id);
+    $parent_node = $this->entityTypeManager->getStorage('node')->load($passed_id);
     $parent_is_published = $parent_node->status->value;
 
     $values = [
@@ -239,7 +284,7 @@ class DatasetController extends ControllerBase {
     ];
 
     $operation = 'edit';
-    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_dataset');
+    $webform = $this->entityTypeManager->getStorage('webform')->load('create_update_dataset');
     $webform = $webform->getSubmissionForm($values, $operation);
     // get manage members text or link (if access)
     $exempt_users_description = $this->getEmbargoExemptUsersDescription($node);
@@ -260,6 +305,93 @@ class DatasetController extends ControllerBase {
       $message = $this->t('You may save, but to publish this item you must first publish its parent %type: %title.', ['%type' => $type, '%title' => $title]);
       $webform['elements']['disabled_publish_message']['#message_message']['#markup'] = $message;
     }
+
+    return $webform;
+  }
+
+  /**
+   * Clones Dataset node data into a webform for editing
+   *
+   * @param \Drupal\Node\NodeInterface $node
+   */
+  public function cloneDataset(NodeInterface $node) {
+    // get node data
+    $node_id = $node->id();
+    $published_flag = $node->get('status')->value;
+    $title = $node->getTitle();
+    $description = $node->get('body')->value;
+    $contributors = $node->get('field_related_persons')->getValue();
+    $host_organizations = $node->get('field_related_organizations')->getValue();
+    $location = $node->get('field_location')->getValue();
+    $constructs = [];
+    foreach ($node->get('field_component_skills')->getValue() as $delta => $value) {
+      $constructs[$delta] = $value['target_id'];
+    }
+    $time_points = $node->get('field_time_points')->value;
+    $data_collection_period = [];
+    foreach ($node->field_data_collection_range as $delta => $date_range_paragraph) {
+      $p = $date_range_paragraph->entity;
+      $data_collection_period[$delta]['start_month'] = $p->field_from_month->value;
+      $data_collection_period[$delta]['start_year'] = $p->field_from_year->value;
+      $data_collection_period[$delta]['end_month'] = $p->field_to_month->value;
+      $data_collection_period[$delta]['end_year'] = $p->field_to_year->value;
+      $data_collection_period[$delta]['period_target_id'] = $date_range_paragraph->target_id;
+      $data_collection_period[$delta]['period_target_revision_id'] = $date_range_paragraph->target_revision_id;
+    }
+    $data_collection_locations = [];
+    foreach ($node->get('field_data_collection_locations')->getValue() as $delta => $value) {
+      $data_collection_locations[$delta] = $value['target_id'];
+    }
+    $assessment_name = [];
+    foreach($node->get('field_assessment_name')->getValue() as $delta => $value) {
+      $assessment_name[$delta] = $value['target_id'];
+    }
+    // demographics paragraph (participants)
+    $participants = [];
+    foreach ($node->field_demographics_information as $delta => $demographics_paragraph) {
+      $p = $demographics_paragraph->entity;
+      $participants[$delta]['number_of_participants'] = $p->field_number_of_participants->value;
+      $participants[$delta]['participant_type'] = $p->field_participant_type->target_id;
+      $participants[$delta]['age_range_from'] = $p->get('field_age_range')->from;
+      $participants[$delta]['age_range_to'] = $p->get('field_age_range')->to;
+      $participants[$delta]['participants_target_id'] = $demographics_paragraph->target_id;
+      $participants[$delta]['participants_target_revision_id'] = $demographics_paragraph->target_revision_id;
+    }
+    $special_populations = [];
+    foreach ($node->get('field_special_populations')->getValue() as $delta => $value) {
+      $special_populations[$delta] = $value['target_id'];
+    }
+    $variable_types_in_dataset = [];
+    foreach ($node->get('field_variable_types_in_dataset')->getValue() as $delta => $value) {
+      $variable_types_in_dataset[$delta] = $value['target_id'];
+    }
+
+    $project_node = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($node_id);
+    $passed_id = $project_node->id();
+
+    $values = [
+      'data' => [
+        'published_flag' => $published_flag,
+        'title' => 'Copy of ' . $title,
+        'description' => $description,
+        'contributors' => $contributors,
+        'host_organizations' => $host_organizations,
+        'location' => $location,
+        'constructs' => $constructs,
+        'time_points' => $time_points,
+        'data_collection_period' => $data_collection_period,
+        'data_collection_locations' =>  $data_collection_locations,
+        'assessment_name' => $assessment_name,
+        'participants' => $participants,
+        'special_populations' => $special_populations,
+        'variable_types_in_dataset' => $variable_types_in_dataset,
+        'passed_id' => $passed_id,
+      ]
+    ];
+
+    $operation = 'edit';
+    $webform = $this->entityTypeManager->getStorage('webform')->load('create_update_dataset');
+    $webform = $webform->getSubmissionForm($values, $operation);
 
     return $webform;
   }
@@ -286,7 +418,7 @@ class DatasetController extends ControllerBase {
     ];
 
     $operation = 'edit';
-    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('edit_dataset_version');
+    $webform = $this->entityTypeManager->getStorage('webform')->load('edit_dataset_version');
     $webform = $webform->getSubmissionForm($values, $operation);
     return $webform;
   }
@@ -318,7 +450,7 @@ class DatasetController extends ControllerBase {
   private function getManageMembersLink(NodeInterface $node, $plural) {
     $nid = $node->id();
     // get top project uuid
-    $project = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($nid);
+    $project = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($nid);
     // get group id
     $group_contents = GroupContent::loadByEntity($project);
     $group = array_pop($group_contents)->getGroup();

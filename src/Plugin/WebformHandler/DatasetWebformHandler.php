@@ -281,12 +281,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     // hidden passed_id field
     $passed_id = $submission_array['passed_id'];
     $parent_node = $this->entityTypeManager->getStorage('node')->load($passed_id);
-    $parent_published_flag = $parent_node->get('status')->value;
-    // if parent node is unpublished, make sure that this node is also unpublished
-    if (!$parent_published_flag) {
-      $published_flag = false;
-      $this->messenger()->addStatus($this->t('This dataset was unpublished, because it was nested under an unpublished item.'));
-    }
+
     // if unpublished add '(unpublished)' to title if not there already
     $unpublished_pattern = '/\(unpublished\)$/';
     if (!$published_flag) {
@@ -349,6 +344,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
       $node = $this->entityTypeManager->getStorage('node')->load($nid);
       $existing_flag = $node->status->value;
       $status_has_changed = $published_flag != $existing_flag ? true : false;
+
+      $parent_published_flag = $parent_node->get('status')->value;
+      // if parent node is unpublished, make sure that this node is also unpublished
+      if ($published_flag && !$parent_published_flag) {
+        $published_flag = false;
+        $this->messenger()->addStatus($this->t('This dataset was unpublished, because it was nested under an unpublished item.'));
+      }
+
       $existing_harmonized_status = $node->get('field_harmonized_dataset')->value;
       $node->set('status', $published_flag);
       $node->set('title', $title);
