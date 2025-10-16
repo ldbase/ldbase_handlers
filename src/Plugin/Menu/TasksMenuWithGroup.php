@@ -4,7 +4,7 @@ namespace Drupal\ldbase_handlers\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 use Drupal\Core\Cache\Cache;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
 
 /**
  * Gets the nid for the currently viewed node and assigns it to a
@@ -24,7 +24,7 @@ class TasksMenuWithGroup extends MenuLinkDefault {
    */
   public function getRouteParameters() {
     if ($node = \Drupal::routeMatch()->getParameter('node')) {
-        $group_contents = GroupContent::loadByEntity($node);
+        $group_contents = GroupRelationship::loadByEntity($node);
         $group = array_pop($group_contents)->getGroup();
 
       return ['node' => $node->uuid(), 'group' => $group->id()];

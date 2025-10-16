@@ -8,7 +8,7 @@ use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -26,7 +26,7 @@ class GroupUpdateNodeAccess implements AccessInterface {
   public function access(AccountInterface $account, \Drupal\Node\NodeInterface $node = NULL) {
     if ($node) {
       // get node's group
-      $group_contents = GroupContent::loadByEntity($node);
+      $group_contents = GroupRelationship::loadByEntity($node);
       $node_group = array_pop($group_contents)->getGroup();
       // get user's membership and roles in group
       $group_member = $node_group->getMember($account);

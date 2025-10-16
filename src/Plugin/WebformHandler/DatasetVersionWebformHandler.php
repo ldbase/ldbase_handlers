@@ -2,18 +2,11 @@
 
 namespace Drupal\ldbase_handlers\Plugin\WebformHandler;
 
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupContent;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\taxonomy\Entity\Term;
-use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\Entity\WebformSubmission;
 
 /**
  * Create and edit Dataset nodes from a webform submission

@@ -2,18 +2,14 @@
 
 namespace Drupal\ldbase_handlers\Plugin\WebformHandler;
 
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
-use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\Entity\WebformSubmission;
 
 /**
  * Create and edit Project nodes from a webform submission
@@ -173,7 +169,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       $new_group->save();
       // Add project to new group
       $plugin_id = 'group_node:' . $node->getType();
-      $new_group->addContent($node, $plugin_id);
+      $new_group->addRelationship($node, $plugin_id);
     }
     else {
       //update node
@@ -200,7 +196,7 @@ class ProjectWebformHandler extends WebformHandlerBase {
       //save the node
       $node->save();
 
-      $group_content = GroupContent::loadByEntity($node);
+      $group_content = GroupRelationship::loadByEntity($node);
       $group = array_shift($group_content)->getGroup();
       $group->set('label', $title);
       $group->save();

@@ -10,7 +10,7 @@ use Drupal\message\Entity\Message;
 use Drpal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
 
 /**
  * Class LDbaseMessageService.
@@ -140,7 +140,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
     $existing_record_request = $this->entityTypeManager->getStorage('node')->load($new_request_id);
     $content_id = $existing_record_request->field_requested_node_link->target_id;
     $content_entity = $this->entityTypeManager->getStorage('node')->load($content_id);
-    $group_contents = GroupContent::loadByEntity($content_entity);
+    $group_contents = GroupRelationship::loadByEntity($content_entity);
     $group_content = reset($group_contents); // content can only belong to one group
     $group_id = $group_content->getGroup()->id();
     $link_route = 'view.existing_records_requests.page_1';
@@ -431,7 +431,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   public function getGroupUserIdsByRoles(Node $node, array $groupRoles = NULL) {
     $ids = [];
     // get node's group
-    $group_contents = GroupContent::loadByEntity($node);
+    $group_contents = GroupRelationship::loadByEntity($node);
     if (!empty($group_contents)) {
       $node_group = array_pop($group_contents)->getGroup();
 

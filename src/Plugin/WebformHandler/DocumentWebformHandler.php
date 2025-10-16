@@ -2,18 +2,11 @@
 
 namespace Drupal\ldbase_handlers\Plugin\WebformHandler;
 
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
 use Drupal\node\Entity\Node;
-use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\taxonomy\Entity\Term;
-use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\Entity\WebformSubmission;
 
 /**
  * Create and edit Document nodes from a webform submission.
@@ -136,13 +129,13 @@ use Drupal\webform\Entity\WebformSubmission;
       //save the node
       $node->save();
       // get groupId of parent that was passed in - assumes Group Cardinality = 1
-      $group_contents = GroupContent::loadByEntity($parent_node);
+      $group_contents = GroupRelationship::loadByEntity($parent_node);
       foreach ($group_contents as $group_content) {
         $group = $group_content->getGroup();
       }
       // add this dataset to the parent's group
       $plugin_id = 'group_node:' . $node->getType();
-      $group->addContent($node, $plugin_id);
+      $group->addRelationship($node, $plugin_id);
     }
     else {
       // update node

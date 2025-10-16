@@ -4,11 +4,9 @@ namespace Drupal\ldbase_handlers\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
 use Drupal\Node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -233,7 +231,7 @@ class DocumentController extends ControllerBase {
     // get top project uuid
     $project = \Drupal::service('ldbase.object_service')->getLdbaseRootProjectNodeFromLdbaseObjectNid($nid);
     // get group id
-    $group_contents = GroupContent::loadByEntity($project);
+    $group_contents = GroupRelationship::loadByEntity($project);
     $group = array_pop($group_contents)->getGroup();
 
     // create link

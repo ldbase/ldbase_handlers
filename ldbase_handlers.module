@@ -503,7 +503,7 @@ function ldbase_handlers_system_breadcrumb_alter(\Drupal\Core\Breadcrumb\Breadcr
     foreach ($links as $link) {
       // if link is to group page, change to project page
       if ($link->getUrl()->getRouteName() == 'entity.group.canonical') {
-        $content_array = $route_match->getParameter('group')->getContent();
+        $content_array = $route_match->getParameter('group')->getRelationships();
         foreach ($content_array as $content) {
           // find the group content for the project node
           if ($content->get('type')->target_id == 'project_group-group_node-project') {
