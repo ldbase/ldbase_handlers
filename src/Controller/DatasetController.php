@@ -366,6 +366,11 @@ class DatasetController extends ControllerBase {
       $variable_types_in_dataset[$delta] = $value['target_id'];
     }
 
+    $license = $node->get('field_license')->target_id;
+    if (empty($license)) {
+      $license = $node->get('field_license_other')->value;
+    }
+
     $project_node = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($node_id);
     $passed_id = $project_node->id();
 
@@ -385,6 +390,7 @@ class DatasetController extends ControllerBase {
         'participants' => $participants,
         'special_populations' => $special_populations,
         'variable_types_in_dataset' => $variable_types_in_dataset,
+        'license' => $license,
         'passed_id' => $passed_id,
       ]
     ];
