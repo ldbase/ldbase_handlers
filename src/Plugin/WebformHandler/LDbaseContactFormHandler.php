@@ -133,21 +133,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
           '@from_name' => $from_name,
           '@to_names' => implode(', ', $to_names),
         ]);
+        // save the message
         $message->save();
       }
-      $email_list = implode(',', $group_admin_emails);
+
     }
     // send email
-    $module = 'ldbase_handlers';
-    $key = 'ldbase_contact_form';
-    $to = $email_list;
-    $reply = $from_email;
-    $params['subject'] = 'LDbase Contact Message: ' . $message_subject;
-    $params['body'] = $message_body;
-    $langcode = $this->currentUser->getPreferredLangcode();
-    $send = TRUE;
-
-    $mail_result = $this->mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
+    $this->ldbaseMessageService->sendLdbaseMessage($message);
   }
 
   /**
@@ -166,41 +158,32 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $submission_array = $webform_submission->getData();
-    $node = $this->entityTypeManager->getStorage('node')->load($submission_array['node_id']);
-    // check that id hasn't been changed
-    $original_uuid = $webform_submission->getSourceUrl()->getRouteParameters()['node'];
-    $original_object = $this->ldbaseObjectService->getLdbaseObjectFromUuid($original_uuid);
-    $original_object_id = $original_object->id();
-    $original_node = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($original_object_id);
+    $node = $this->entityTypeManager->getStorage('node')
+      ->load($submission_array['node_id']);
     $default_error_message = 'An invalid id was passed to the form.';
-    if ($original_node->id() != $node->id()) {
-      $this->messenger()->addError($this->t($default_error_message));
-      $form_state->setErrorByName('form_introduction','');
+    if ($node->bundle() !== 'person') {
+      // check that id hasn't been changed
+      $original_uuid = $webform_submission->getSourceUrl()
+        ->getRouteParameters()['node'];
+      $original_object = $this->ldbaseObjectService->getLdbaseObjectFromUuid($original_uuid);
+      $original_object_id = $original_object->id();
+      $original_node = $this->ldbaseObjectService->getLdbaseRootProjectNodeFromLdbaseObjectNid($original_object_id);
+
+      if ($original_node->id() != $node->id()) {
+        $this->messenger()->addError($this->t($default_error_message));
+        $form_state->setErrorByName('form_introduction', '');
+      }
     }
-    if ($node->field_do_not_contact->value) {
-      $this->messenger()->addError($this->t($default_error_message));
-      $form_state->setErrorByName('form_introduction','');
-    }
-    // these checks shouldn't be needed but just in case
-    if ($node->bundle() == 'person') {
+    else {
+      if ($node->field_do_not_contact->value) {
+        $this->messenger()->addError($this->t($default_error_message));
+        $form_state->setErrorByName('form_introduction', '');
+      }
+
       if (!$node->field_drupal_account_id->target_id) {
         $this->messenger()->addError($this->t($default_error_message));
-        $form_state->setErrorByName('form_introduction','');
+        $form_state->setErrorByName('form_introduction', '');
       }
-      else {
-        // is this an active user account
-        $to_user = $this->entityTypeManager->getStorage('user')->load($node->field_drupal_account_id->target_id);
-        if (!$to_user->status->value) {
-          $this->messenger()->addError($this->t($default_error_message));
-          $form_state->setErrorByName('form_introduction','');
-        }
-      }
-    }
-    // if it's not a person then it has to be a project
-    elseif ($node->bundle() != 'project') {
-      $this->messenger()->addError($this->t($default_error_message));
-      $form_state->setErrorByName('form_introduction','');
     }
   }
-
  }

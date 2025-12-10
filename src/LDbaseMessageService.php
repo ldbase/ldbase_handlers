@@ -474,7 +474,7 @@ class LDbaseMessageService implements LDbaseMessageServiceInterface {
   /**
    * Calls the Notifier service and sends message
    */
-  private function sendLdbaseMessage($message) {
+  public function sendLdbaseMessage($message) {
     $notifier = \Drupal::service('message_notify.sender');
     $notifier->send($message);
   }
