@@ -230,6 +230,9 @@ class ProjectWebformHandler extends WebformHandlerBase {
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // project end date cannot come before start date
     $this->validateActivityRange($form_state);
+
+    $this->validateGrantInformationEntry($form_state);
+
     $request = \Drupal::request();
     // do not validate or add new terms if this is an Ajax request
     // ajax requests are caused by uploading images
@@ -351,6 +354,17 @@ class ProjectWebformHandler extends WebformHandlerBase {
         }
       }
     }
+  }
+
+  private function validateGrantInformationEntry(FormStateInterface $formState) {
+    $submitted_grant_information = $formState->getValue('grant_information');
+    foreach ($submitted_grant_information as $delta => $value) {
+      if (!empty($value['grant_number']) && empty($value['funding_agency'])) {
+        $message = 'If you entered a grant number, you must enter or select a funding agency.';
+        $formState->setErrorByName('grant_information][items]['.$delta, $message);
+      }
+    }
+
   }
 
   private function publishFlagHasChanged(Node $node, $submitted_flag) {
