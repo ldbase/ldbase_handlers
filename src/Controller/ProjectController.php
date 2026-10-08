@@ -2,22 +2,31 @@
 
 namespace Drupal\ldbase_handlers\Controller;
 
+
+use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class ProjectController extends ControllerBase {
 
   /**
+   * An entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * ProjectController constructor
    *
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *
    */
-  public function __construct(MessengerInterface $messenger) {
-    $this->messenger = $messenger;
+  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+    $this->entityTypeManager = $entityTypeManager;
   }
 
    /**
@@ -25,7 +34,7 @@ class ProjectController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('messenger')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -43,7 +52,7 @@ class ProjectController extends ControllerBase {
    *
    * @param \Drupal\Node\NodeInterface $node
    */
-  public function editProject(NodeInterface $node) {
+  public function editProject(NodeInterface $node, Request $request) {
     //get node data
     $node_id = $node->id();
     $published_flag = $node->status->value;
@@ -117,8 +126,16 @@ class ProjectController extends ControllerBase {
     ];
 
     $operation = 'edit';
-    $webform = \Drupal::entityTypeManager()->getStorage('webform')->load('create_update_project');
+    $webform = $this->entityTypeManager->getStorage('webform')->load('create_update_project');
+    $assets = $webform->getAssets();
+    if (!empty($assets['javascript'])) {
+      $response = new CacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
+      $response->addCacheableDependency($webform);
+    }
+
     $webform = $webform->getSubmissionForm($values, $operation);
+
+
 
     //overwrite doi descirption
     if (!empty($doi)) {

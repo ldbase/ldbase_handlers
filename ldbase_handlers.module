@@ -87,6 +87,10 @@ function ldbase_handlers_webform_submission_form_alter(array &$form, \Drupal\Cor
       '#weight' => 10,
     ];
   }
+
+  if ($form['#webform_id'] === 'create_update_project' || $form['#webform_id'] === 'create_update_dataset') {
+    $form['#attached']['library'][] = 'ldbase_handlers/webforms_with_select2_assets';
+  }
 }
 
 /**

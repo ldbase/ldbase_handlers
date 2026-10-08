@@ -1,0 +1,9 @@
+span.file {display: block}
+
+div.form-item--error > span.select2-container {
+  border: 2px solid red !important;
+}
+
+html {
+  scroll-padding-top: 180px;
+}

@@ -6,3 +6,15 @@ message_dialogs:
     - core/jquery
     - core/drupal.dialog.ajax
     - core/drupalSettings
+
+webforms_with_select2_assets:
+  version: 1.x
+  css:
+    theme:
+      css/select2_webforms_custom.css: {}
+  js:
+    js/select2_webforms_custom.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal.dialog.ajax
+    - core/drupaSettings
