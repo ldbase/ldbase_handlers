@@ -3,12 +3,10 @@
 namespace Drupal\ldbase_handlers\Controller;
 
 
-use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class ProjectController extends ControllerBase {
 
@@ -52,7 +50,7 @@ class ProjectController extends ControllerBase {
    *
    * @param \Drupal\Node\NodeInterface $node
    */
-  public function editProject(NodeInterface $node, Request $request) {
+  public function editProject(NodeInterface $node) {
     //get node data
     $node_id = $node->id();
     $published_flag = $node->status->value;
@@ -127,15 +125,8 @@ class ProjectController extends ControllerBase {
 
     $operation = 'edit';
     $webform = $this->entityTypeManager->getStorage('webform')->load('create_update_project');
-    $assets = $webform->getAssets();
-    if (!empty($assets['javascript'])) {
-      $response = new CacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
-      $response->addCacheableDependency($webform);
-    }
 
     $webform = $webform->getSubmissionForm($values, $operation);
-
-
 
     //overwrite doi descirption
     if (!empty($doi)) {
